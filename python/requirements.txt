@@ -1,0 +1,3 @@
+pandas
+python-dotenv
+git+https://github.com/robinhood-unofficial/pyrh.git#egg=pyrh
