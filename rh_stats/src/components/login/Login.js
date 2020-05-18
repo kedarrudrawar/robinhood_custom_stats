@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { useEffect } from 'react';
-import * as api from '../../api/api';
+// import { useEffect } from 'react';
+// import * as api from '../../api/api';
 
 
 export const Login = props => {
@@ -20,7 +20,13 @@ export const Login = props => {
     return (
         <form onSubmit={(e) => {
             e.preventDefault();
-            props.onSubmit(username, password);
+            props.onSubmit(username, password)
+            .then((isMFA) => {
+                if(isMFA)
+                    props.history.push('/MFA');
+            });
+            
+            
         }} >
             <label>Username:
                 <input id="username" type="text" value={username} onChange={changeUsername}></input><br/>
