@@ -1,25 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import {login, oauth2} from './api/api';
+import * as api from './api/api';
+import Time from 'react-time';
 
-class Login extends React.Component {
-  constructor(props){
-    super(props);
-  }
+import {BrowserRouter as Router,
+        Switch,
+        Route,
+        Link
+} from 'react-router-dom';
 
-  render() {
-    oauth2();
-    return (
-      <div>test</div>
-    );
+import App from './App';
 
-  }
-}
+
 
 
 ReactDOM.render(
-  <Login />,
+  <App />,
   document.getElementById('root')
 );
 
