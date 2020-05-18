@@ -7,3 +7,5 @@ export const POSITIONS = BASE_PATH + 'positions/'
 
 // portfolio
 export const PORTFOLIOS = BASE_PATH + 'portfolios/'
+
+export const ORDERS = BASE_PATH + 'orders/'

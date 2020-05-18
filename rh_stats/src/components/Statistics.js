@@ -10,6 +10,7 @@ export const Statistics = props => {
     
     const [cash, setCash] = useState('');
     const [totalInvested, setTotalInvested] = useState('');
+    const [positions, setPositions] = useState([]);
 
     useEffect(() => {
         api.getPortfolio(header)
@@ -18,6 +19,19 @@ export const Statistics = props => {
             setCash(parseFloat(portfolio['withdrawable_amount']).toFixed(2));
         })
     }, []);
+
+    // useEffect(() => {
+    api.getOrderHistory(header)
+    .then(positions => {
+        // positions.forEach(element => {
+        //     console.log('element:');
+        //     console.log(element);
+        //     const avgCost = parseFloat(element['average_buy_price']).toFixed(2);
+        //     const quantity = parseFloat(element['quantity']);
+        // });
+        
+    });
+    // }, []);
 
 
     console.log(cash.value);

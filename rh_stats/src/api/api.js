@@ -102,21 +102,54 @@ function processRHObject(object){
     return object.data.results;
 }
 
+
 export function getPortfolio(header){
     let headers = {...HEADERS, ...header};
     let data = {
         headers: headers,
     };
     return axios.get(urls.PORTFOLIOS, data)
-    .then((res) => {
+    .then(res => {
         let data = processRHObject(res)['0'];
         return data;
     });
 }
 
-export function getPositions(header){
+export function getPositions(header, filtered=true){
     let headers = {...HEADERS, ...header};
     let data = {
         headers: headers,
     }; 
+
+    return axios.get(urls.POSITIONS, data)
+    .then(res => {
+        let data = processRHObject(res);
+        return data;
+    })
+    .then(data => {
+        if(filtered){
+            let filteredArr = [];
+            for(let i = 0; i < data.length; i++){
+                console.log(data[i]['quantity']);
+                if (parseFloat(data[i]['quantity']) > 0){
+                    filteredArr.push(data[i]);
+                }
+            }
+            return filteredArr;
+        }
+        return data;
+    })
+}
+
+export function getOrderHistory(header){
+    let headers = {...HEADERS, ...header};
+    let data = {
+        headers: headers,
+    };  
+
+    return axios.get(urls.ORDERS, data)
+    .then(res => {
+        let data = processRHObject(res);
+        console.log(data);
+    })
 }
