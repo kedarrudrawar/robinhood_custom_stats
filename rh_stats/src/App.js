@@ -1,14 +1,17 @@
 import React from "react";
 import {useState} from 'react';
-import {Login} from './components/login/Login';
-import * as api from './api/api';
-
 import {
   BrowserRouter as Router,
   Switch,
   Route,
 } from "react-router-dom";
+
+import {Login} from './components/login/Login';
 import { MFA_Login } from "./components/login/MFA_Login";
+import * as api from './api/api';
+import { Challenge_Login } from "./components/login/Challenge_Login";
+import { Statistics } from "./components/Statistics";
+
 
 const App = props => {
   const [bearerToken, setBearerToken] = useState('');  
@@ -58,7 +61,6 @@ const App = props => {
 
   
   const handleMFASubmit = (mfa_code) => {
-    console.log("in mfa submit");
 
     return api.oauth2_MFA(username, password, mfa_code)
     .then((data) => {
@@ -76,6 +78,11 @@ const App = props => {
     });
   }
 
+  const handleChallengeSubmit = (challenge_id) => {
+    return false;
+  }
+
+
   return (
     <Router>
       <div className="App">
@@ -92,7 +99,15 @@ const App = props => {
                                         password={password}
                                     />}
                 />
-          {/* <Route path='/stats' component={Statistics}/> */}
+          <Route path='/challenge' 
+                exact 
+                render = {(props) => <Challenge_Login {...props}
+                                        onSubmit={handleChallengeSubmit}
+                                        username={username}
+                                        password={password}
+                                    />}
+                />
+          <Route path='/stats' component={Statistics}/>
         </Switch>
       </div>
     </Router>

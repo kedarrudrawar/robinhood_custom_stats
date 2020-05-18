@@ -1,8 +1,5 @@
 import React from 'react';
-// import { Link } from 'react-router-dom';
 import { useState } from 'react';
-// import { useEffect } from 'react';
-// import * as api from '../../api/api';
 
 
 export const Login = props => {
@@ -24,6 +21,8 @@ export const Login = props => {
             .then((result) => {
                 if(result.isMFA)
                     props.history.push('/MFA');
+                else if(result.isChallenge)
+                    props.history.push('/challenge')
             });
             
             
