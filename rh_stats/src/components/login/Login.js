@@ -21,8 +21,8 @@ export const Login = props => {
         <form onSubmit={(e) => {
             e.preventDefault();
             props.onSubmit(username, password)
-            .then((isMFA) => {
-                if(isMFA)
+            .then((result) => {
+                if(result.isMFA)
                     props.history.push('/MFA');
             });
             

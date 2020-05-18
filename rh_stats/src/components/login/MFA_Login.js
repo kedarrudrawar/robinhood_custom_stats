@@ -12,13 +12,12 @@ export const MFA_Login = props => {
         <form onSubmit={(e) => {
             e.preventDefault();
             props.onSubmit(mfa_code)
-            .then((success) => {
+            .then(success => {
                 if(success)
                     props.history.replace('/stats');
                 else{
                     alert('Invalid MFA code');
-                    props.history.pop();
-                    props.history.push('/login');
+                    props.history.replace('/login');
                 }
             });
         }} >

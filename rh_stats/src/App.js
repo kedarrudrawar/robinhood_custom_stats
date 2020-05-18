@@ -27,23 +27,47 @@ const App = props => {
     return api.oauth2(username, password)
     .then(data => {
       console.log(data);
-      return api.isMFA(data);
+      if(api.isMFA(data)){
+        return {
+          'isMFA': true,
+          'isChallenge': false,
+        };
+      }
+
+      else if(api.isChallenge(data)){
+        return {
+          'isMFA': false,
+          'isChallenge': true,
+        };
+      }
+
+      return {
+        'isMFA': false,
+        'isChallenge': false,
+      };
+
     })
     .catch(err => {
       alert('invalid credentials');
+      return {
+        'isMFA': false,
+        'isChallenge': false,
+      };
     });
   }
 
   
   const handleMFASubmit = (mfa_code) => {
     console.log("in mfa submit");
-    
+
     return api.oauth2_MFA(username, password, mfa_code)
     .then((data) => {
       let [bearer_token, refresh_token, expiry_time] = data;
       setBearerToken(bearer_token);
       setRefreshToken(refresh_token);
       setExpiryTime(expiry_time);
+      setUsername('');
+      setPassword('');
       return true;
     })
     .catch(e => {
@@ -53,9 +77,6 @@ const App = props => {
   }
 
   return (
-    // <Login 
-    //   onSubmit = {handleInitialSubmit}
-    // />
     <Router>
       <div className="App">
         <Switch>
