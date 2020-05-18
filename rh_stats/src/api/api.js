@@ -14,8 +14,8 @@ export let HEADERS = {
 }
 
 export const BODY = {
-    'password': process.env.REACT_APP_PASSWORD, 
-    'username': process.env.REACT_APP_USERNAME,
+    'password': '', 
+    'username': '',
     'grant_type': 'password',
     'client_id': CLIENT_ID,
     'expires_in': '734000',
@@ -24,25 +24,19 @@ export const BODY = {
     'challenge_type': 'email',
 }
 
-export function oauth2(){
+export function oauth2(username, password){
     let data = {
         headers: HEADERS,
     }
     Object.assign(data, BODY);
+    data['username'] = username;
+    data['password'] = password;
 
-
+    console.log('making request');
     return axios.post(urls.OAUTH2, data)
         .then((response) => {
             let res = response.data;
-            console.log(res);
-            if(isMFA(res)){
-                let mfa_code = getMFA();
-                return oauth2_MFA(mfa_code);
-            }
-            else if(isChallenge(res)){
-                let challenge_id = getChallenge();
-                return oauth2_Challenge(challenge_id);
-            }
+            return res;
         })
         .catch((err) => {
             console.log("got an error yall");
@@ -50,23 +44,25 @@ export function oauth2(){
         });
 }
 
-function isMFA(response){
-    return 'mfa_required' in response;
+export function isMFA(responseData){
+    return 'mfa_required' in responseData;
 }
 
-function isChallenge(response){
-    return 'challenge' in response;
+export function isChallenge(responseData){
+    return 'challenge' in responseData;
 }
 
-function getMFA(){
+export function getMFA(){
     
 }
 
-function getChallenge(){
+export function getChallenge(){
 
 }
 
 export function oauth2_MFA(username, password, mfa_code){
+    console.log('calling MFA request');
+
     let BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME;
     let data = {
         headers: HEADERS,

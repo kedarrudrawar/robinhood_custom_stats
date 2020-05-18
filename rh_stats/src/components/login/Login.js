@@ -18,8 +18,8 @@ export const Login = props => {
     }
 
     return (
-        <form onSubmit={(_event) => {
-            console.log("HERE");
+        <form onSubmit={(e) => {
+            e.preventDefault();
             props.onSubmit(username, password);
         }} >
             <label>Username:

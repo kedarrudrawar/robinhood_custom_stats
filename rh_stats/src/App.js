@@ -19,6 +19,15 @@ const App = props => {
   const handleInitialSubmit = (username, password) => {
     setUsername(username);
     setPassword(password);
+    let isMFA, isChallenge;
+
+    api.oauth2(username, password)
+    .then(data => {
+      console.log(data);
+      isMFA = api.isMFA(data);
+      isChallenge = api.isChallenge(data);
+      console.log('MFA: ' + isMFA);
+    });
   }
 
   
@@ -32,8 +41,6 @@ const App = props => {
     });
   }
 
-  console.log(username);
-  console.log(password);
 
   return (
     <Login 
