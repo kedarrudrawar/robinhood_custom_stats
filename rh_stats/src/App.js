@@ -7,9 +7,6 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
-  Redirect,
-  useHistory
 } from "react-router-dom";
 import { MFA_Login } from "./components/login/MFA_Login";
 
@@ -40,13 +37,18 @@ const App = props => {
   
   const handleMFASubmit = (mfa_code) => {
     console.log("in mfa submit");
-    return;
-    api.oauth2_MFA(username, password, mfa_code)
+    
+    return api.oauth2_MFA(username, password, mfa_code)
     .then((data) => {
       let [bearer_token, refresh_token, expiry_time] = data;
       setBearerToken(bearer_token);
       setRefreshToken(refresh_token);
       setExpiryTime(expiry_time);
+      return true;
+    })
+    .catch(e => {
+      console.log(e);
+      return false;
     });
   }
 
