@@ -91,3 +91,32 @@ export function oauth2_MFA(username, password, mfa_code){
 }
 
 // function oauth2_Challenge(){}
+
+
+
+/*************************************************/
+// DATA
+/*************************************************/
+
+function processRHObject(object){
+    return object.data.results;
+}
+
+export function getPortfolio(header){
+    let headers = {...HEADERS, ...header};
+    let data = {
+        headers: headers,
+    };
+    return axios.get(urls.PORTFOLIOS, data)
+    .then((res) => {
+        let data = processRHObject(res)['0'];
+        return data;
+    });
+}
+
+export function getPositions(header){
+    let headers = {...HEADERS, ...header};
+    let data = {
+        headers: headers,
+    }; 
+}

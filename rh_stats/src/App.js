@@ -14,11 +14,13 @@ import { Statistics } from "./components/Statistics";
 
 
 const App = props => {
-  const [bearerToken, setBearerToken] = useState('');  
-  const [refreshToken, setRefreshToken] = useState('');
-  const [expiryTime, setExpiryTime] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [bearerToken, setBearerToken] = useState(process.env.REACT_APP_BEARER);  
+  const [refreshToken, setRefreshToken] = useState(process.env.REACT_APP_REFRESH);
+  // const [bearerToken, setBearerToken] = useState();  
+  // const [refreshToken, setRefreshToken] = useState();
+  const [expiryTime, setExpiryTime] = useState();
+  const [username, setUsername] = useState();
+  const [password, setPassword] = useState();
 
 
   const handleInitialSubmit = async (username, password) => {
@@ -92,22 +94,29 @@ const App = props => {
                 render = {(props) => <Login {...props} onSubmit={handleInitialSubmit}/>}
                 />
           <Route path='/MFA' 
-                exact 
-                render = {(props) => <MFA_Login {...props}
-                                        onSubmit={handleMFASubmit}
-                                        username={username}
-                                        password={password}
-                                    />}
-                />
+            exact 
+            render = {(props) => 
+              <MFA_Login {...props}
+                onSubmit={handleMFASubmit}
+                username={username}
+                password={password}
+              />}
+            />
           <Route path='/challenge' 
-                exact 
-                render = {(props) => <Challenge_Login {...props}
-                                        onSubmit={handleChallengeSubmit}
-                                        username={username}
-                                        password={password}
-                                    />}
-                />
-          <Route path='/stats' component={Statistics}/>
+            exact 
+            render = {(props) => 
+              <Challenge_Login {...props}
+                onSubmit={handleChallengeSubmit}
+              />}
+            />
+          <Route path='/stats' 
+            render = {props => 
+              <Statistics {...props}
+                bearer={bearerToken}
+              />
+            }
+            
+            />
         </Switch>
       </div>
     </Router>
