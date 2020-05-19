@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export const MFA_Login = props => {
     const [mfa_code, setMFAcode] = useState('');

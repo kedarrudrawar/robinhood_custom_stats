@@ -3,6 +3,8 @@ import '../UI/Statistics.css'
 import { Head } from './html_head'
 import * as api from '../api/api';
 
+// import * as analysis from './Analysis';
+
 export const Statistics = props => {
     const header = {
         'Authorization': `Bearer ${props.bearer}`
@@ -10,31 +12,25 @@ export const Statistics = props => {
     
     const [cash, setCash] = useState('');
     const [totalInvested, setTotalInvested] = useState('');
-    const [positions, setPositions] = useState([]);
+    const [orders, setOrders] = useState([]);
+    // const [positions, setPositions] = useState([]);
 
     useEffect(() => {
-        api.getPortfolio(header)
-        .then((portfolio) => {
-            setTotalInvested(parseFloat(portfolio['market_value']).toFixed(2));
-            setCash(parseFloat(portfolio['withdrawable_amount']).toFixed(2));
-        })
+        
+
+    }, [orders]);
+
+
+
+    useEffect(() => {
+        const getOrderHistory = async () => {
+            let history = await api.getOrderHistory(header);
+            setOrders(await history);
+        }
+        getOrderHistory();
     }, []);
 
-    // useEffect(() => {
-    api.getOrderHistory(header)
-    .then(positions => {
-        // positions.forEach(element => {
-        //     console.log('element:');
-        //     console.log(element);
-        //     const avgCost = parseFloat(element['average_buy_price']).toFixed(2);
-        //     const quantity = parseFloat(element['quantity']);
-        // });
-        
-    });
-    // }, []);
 
-
-    console.log(cash.value);
 
     return (
         <div>
@@ -76,7 +72,10 @@ export const Statistics = props => {
             </div>
 
             <div className="table-title text">History</div>
-
+            { orders && orders.map((order, idx) => {
+                        return <div>order {idx}</div>
+                    })
+            }
             <div className='table'>
                 <div className='first row'>
                     <div className='cell text row-header'>Name</div>

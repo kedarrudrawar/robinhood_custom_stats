@@ -141,15 +141,43 @@ export function getPositions(header, filtered=true){
     })
 }
 
-export function getOrderHistory(header){
+
+export const getOrderHistory = async (header, filled=true) => {
     let headers = {...HEADERS, ...header};
-    let data = {
+    let payload = {
         headers: headers,
     };  
 
-    return axios.get(urls.ORDERS, data)
+    return axios.get(urls.ORDERS, payload)
     .then(res => {
-        let data = processRHObject(res);
-        console.log(data);
+        return processRHObject(res);
     })
+    .then(resData => {
+        if(filled){
+            resData = resData.filter(order => order['state'] !== 'cancelled');
+        }
+        const urls = resData.map(element => element['url']);
+
+        let orderPromises = urls.map(url => {
+            return new Promise((resolve, reject) => {
+                axios.get(url, payload)
+                .then(order => {
+                    return resolve(order);
+                })
+                .catch(err => {
+                    console.log('err');
+                    reject(err)
+                });
+            });
+        });
+        
+        return Promise.all(orderPromises)
+        .then((orders) => {
+            return orders;
+        })
+
+    });
+
+
+
 }
