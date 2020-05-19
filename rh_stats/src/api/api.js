@@ -170,7 +170,7 @@ export const getOrderHistoryNEW = async (header, filled=true) => {
         })
         .then(resData => {
             if(filled){
-                resData = resData.filter(order => order['state'] !== 'cancelled');
+                resData = resData.filter(order => order['state'] === 'filled');
             }
             return resData;
         }));
