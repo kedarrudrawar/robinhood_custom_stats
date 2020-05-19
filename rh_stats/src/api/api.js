@@ -99,7 +99,7 @@ export function oauth2_MFA(username, password, mfa_code){
 /*************************************************/
 
 function processRHObject(object){
-    return object.data.results;
+    return object.data;
 }
 
 
@@ -142,27 +142,106 @@ export function getPositions(header, filtered=true){
 }
 
 
+const checkForMoreOrders = async (url, payload) => {
+    return axios.get(url, payload)
+    .then(res => {
+        return processRHObject(res);
+    })
+    .then(processedRes => {
+        return processedRes.next;
+    })
+}
+
+
+
+export const getOrderHistoryNEW = async (header, filled=true) => {
+    let headers = {...HEADERS, ...header};
+    let payload = {
+        headers: headers,
+    };  
+
+    let url = urls.ORDERS
+    let nextOrdersLink = await checkForMoreOrders(url, payload);
+    let orders = [];
+    while(await nextOrdersLink !== null){
+        orders = orders.concat(await axios.get(url, payload)
+        .then(res => {
+            return processRHObject(res).results;
+        })
+        .then(resData => {
+            if(filled){
+                resData = resData.filter(order => order['state'] !== 'cancelled');
+            }
+            return resData;
+        }));
+
+        url = await nextOrdersLink;
+        nextOrdersLink = await checkForMoreOrders(url, payload);
+    }
+
+    return orders.concat(await axios.get(url, payload)
+    .then(res => {
+        return processRHObject(res).results;
+    })
+    .then(resData => {
+        if(filled){
+            resData = resData.filter(order => order['state'] !== 'cancelled');
+        }
+        return resData;
+    }));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export const getOrderHistory = async (header, filled=true) => {
     let headers = {...HEADERS, ...header};
     let payload = {
         headers: headers,
     };  
 
-    return axios.get(urls.ORDERS, payload)
+    let url = urls.ORDERS
+
+    let orders = axios.get(url, payload)
     .then(res => {
-        return processRHObject(res);
+        return processRHObject(res).results;
     })
     .then(resData => {
+        console.log(resData);
         if(filled){
             resData = resData.filter(order => order['state'] !== 'cancelled');
         }
-        const urls = resData.map(element => element['url']);
+        const orderURLs = resData.map(element => element['url']);
 
-        let orderPromises = urls.map(url => {
+        let orderPromises = orderURLs.map(url => {
             return new Promise((resolve, reject) => {
                 axios.get(url, payload)
                 .then(order => {
-                    return resolve(order);
+                    return resolve(order.data);
                 })
                 .catch(err => {
                     console.log('err');
@@ -177,7 +256,5 @@ export const getOrderHistory = async (header, filled=true) => {
         })
 
     });
-
-
-
+    
 }

@@ -3,7 +3,7 @@ import '../UI/Statistics.css'
 import { Head } from './html_head'
 import * as api from '../api/api';
 
-// import * as analysis from './Analysis';
+import * as analysis from './Analysis';
 
 export const Statistics = props => {
     const header = {
@@ -16,7 +16,7 @@ export const Statistics = props => {
     // const [positions, setPositions] = useState([]);
 
     useEffect(() => {
-        
+        analysis.getRealizedProfit(orders);
 
     }, [orders]);
 
@@ -24,8 +24,8 @@ export const Statistics = props => {
 
     useEffect(() => {
         const getOrderHistory = async () => {
-            let history = await api.getOrderHistory(header);
-            setOrders(await history);
+            let history = await api.getOrderHistoryNEW(header, false);
+            setOrders(history);
         }
         getOrderHistory();
     }, []);
