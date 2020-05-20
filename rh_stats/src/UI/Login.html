@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='UTF-8'>
+        <link rel="stylesheet" href="Login.css">
+    </head>
+    <body>
+        <div class='Page'>
+            <!-- <div class='graphic'>Graphic</div> -->
+            <div class='login-container'>
+                <div class='login login-width'>
+                    <div class='header'>
+                        <!-- <div class='small-title login-contents'>Login</div> -->
+                        <div class='large-title login-contents '>Link your Robinhood Account</div>
+                    </div>
+
+                    <div class='login-body login-width'>
+                        <form class='login-form'>
+                            <label>Email<br/>
+                                <input 
+                                class='input-box input-text' 
+                                id="username" 
+                                type="text" 
+                                value='Robinhood Login Email' 
+                                onChange={changeUsername}></input><br/>
+                            </label><br/>
+                            <label>Password<br/>
+                                <input class='input-box input-text' id="password" type="password" value=password onChange={changePassword}></input><br/>
+                            </label>
+                        </form>
+                        <button class='login-btn login-btn-text login-contents'> Login</button>
+                        <div class='note login-contents '>We do not store your Robinhood credentials.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

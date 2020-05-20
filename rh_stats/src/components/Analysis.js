@@ -62,7 +62,6 @@ export async function getRealizedProfit(buyOrders, sellOrders){
         let tick  = row.get('symbol');
         let quantity = parseFloat(row.get('quantity'));
         let price = parseFloat(row.get('average_price')); 
-        // console.log(`Selling ${quantity} ${tick} @ ${price}`);
         if (!(tick in weighted_avg)) {
             weighted_avg[tick] = 0;
             quantity_dict[tick] = 0;
@@ -71,14 +70,12 @@ export async function getRealizedProfit(buyOrders, sellOrders){
         weighted_avg[tick] += price * quantity;
         quantity_dict[tick] += quantity;
 
-        // console.log(`updated: ${weighted_avg[tick]}`);
     }
 
     for(const row of await buyDF){
         let tick  = row.get('symbol');
         let quantity = parseFloat(row.get('quantity'));
         let price = parseFloat(row.get('average_price')); 
-        // console.log(`Buying ${quantity} ${tick} @ ${price}`);
 
         if(!(tick in weighted_avg) || quantity_dict[tick] === 0)  
             continue; // sell orders have been depleted, remaining buys are for current position
@@ -87,6 +84,6 @@ export async function getRealizedProfit(buyOrders, sellOrders){
         quantity_dict[tick] -= quantity;
         weighted_avg[tick] -= price * quantity;
     }
-
+    
     return weighted_avg;
 }

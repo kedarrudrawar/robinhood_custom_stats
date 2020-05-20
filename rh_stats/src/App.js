@@ -14,10 +14,10 @@ import { Statistics } from "./components/Statistics";
 
 
 const App = props => {
-  const [bearerToken, setBearerToken] = useState(process.env.REACT_APP_BEARER);  
-  // const [bearerToken, setBearerToken] = useState();  
-  const [refreshToken, setRefreshToken] = useState(process.env.REACT_APP_REFRESH);
-  // const [refreshToken, setRefreshToken] = useState();
+  // const [bearerToken, setBearerToken] = useState(process.env.REACT_APP_BEARER);  
+  const [bearerToken, setBearerToken] = useState();  
+  // const [_refreshToken, setRefreshToken] = useState(process.env.REACT_APP_REFRESH);
+  const [refreshToken, setRefreshToken] = useState();
   const [expiryTime, setExpiryTime] = useState();
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();

@@ -8,4 +8,8 @@ export const POSITIONS = BASE_PATH + 'positions/'
 // portfolio
 export const PORTFOLIOS = BASE_PATH + 'portfolios/'
 
+// order history
 export const ORDERS = BASE_PATH + 'orders/'
+
+// account details
+export const ACCOUNTS = BASE_PATH + 'accounts/'

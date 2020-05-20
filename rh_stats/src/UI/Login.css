@@ -1,0 +1,145 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'IBM Plex Sans';
+}
+
+.Page {
+    display: flex;
+    align-items: center;
+    /* border: 3px blue solid; */
+    height: 100vh;
+}
+
+.graphic {
+    display: flex;
+    width: 50%;
+    align-items: center;
+    justify-content: center;
+    /* border: 2px green solid; */
+}
+
+.login-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100vw;
+    /* border: 3px orange solid; */
+}
+
+.login-width {
+    width: 425px;
+}
+
+.login {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    /* padding: 232px 0 232px 0; */
+    /* border: 2px green solid; */
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    /* border: 2px purple solid; */
+}
+
+.login-body {
+    display: flex;
+    flex-direction: column;
+    /* border: 2px black solid; */
+}
+
+.login-contents {
+    display: flex;
+    justify-content: flex;
+    margin-bottom: 10px;
+}
+
+.small-title { 
+    /* font-family: Roboto; */
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 19px;
+    /* identical to box height */
+
+    /* 800 */
+    color: #2D3748;
+}
+
+.large-title {
+    /* font-family: Roboto; */
+    font-style: normal;
+    font-weight: bold;
+    font-size: 30px;
+    line-height: 35px;
+
+    /* letter-spacing: 0.025em; */
+
+    /* 900 */
+
+    color: #1A202C;
+}
+
+.login-form {
+}
+
+.input-box {
+    margin-top: 5px;
+    width: 100%;
+    height: 50px;   
+    border: 1px solid #E8E8E8;
+    border-radius: 5px;
+}
+
+.input-text { 
+    /* font-family: Roboto; */
+    padding-left: 10px;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 20px;
+
+    color: #2D3748;
+}
+
+.login-btn {
+    display: flex;
+    justify-content: center;
+    
+    height: 50px;
+    width: 100%;
+    margin-top: 30px;
+    margin-bottom: 8px;
+    border: 0;
+    background-color: #00C804;
+
+    border-radius: 5px;
+}
+    
+.login-btn-text{
+    /* font-family: Roboto; */
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 19px;
+    color: #FFFFFF;
+}
+
+.note {
+    /* font-family: Roboto; */
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 19px;
+
+    display: flex;
+    justify-content: center;
+
+    color: #AAAAAA;
+
+}

@@ -102,12 +102,30 @@ function processRHObject(object){
     return object.data;
 }
 
-
-export function getPortfolio(header){
+function buildHeaders(header){
     let headers = {...HEADERS, ...header};
-    let data = {
+    return {
         headers: headers,
     };
+}
+
+export async function getAccountDetails(header){
+    let payload = buildHeaders(header);
+
+    return axios.get(urls.ACCOUNTS, payload)
+    .then(res => processRHObject(res))
+    .then(data => data.results)
+}
+
+
+
+
+
+
+
+
+export function getPortfolio(header){
+    let data = buildHeaders(header);
     return axios.get(urls.PORTFOLIOS, data)
     .then(res => {
         let data = processRHObject(res)['0'];
@@ -116,10 +134,7 @@ export function getPortfolio(header){
 }
 
 export function getPositions(header, filtered=true){
-    let headers = {...HEADERS, ...header};
-    let data = {
-        headers: headers,
-    }; 
+    let data = buildHeaders(header);
 
     return axios.get(urls.POSITIONS, data)
     .then(res => {
@@ -151,22 +166,9 @@ const checkForMoreOrders = async (url, payload) => {
         return processedRes.next;
     })
 }
- 
-function reverseArrayInPlace(arr) {
-    for (var i = 0; i <= Math.floor((arr.length - 1) / 2); i++) {
-        let el = arr[i];
-        arr[i] = arr[arr.length - 1 - i];
-        arr[arr.length - 1 - i] = el;
-    }
-    return arr;
-}       
-
 
 export const getOrderHistory = async (header, state=['filled'], side='', limit=Number.MAX_SAFE_INTEGER) => {
-    let headers = {...HEADERS, ...header};
-    let payload = {
-        headers: headers,
-    };  
+    let payload = buildHeaders(header);
 
     let url = urls.ORDERS
     let nextOrdersLink = await checkForMoreOrders(url, payload);
