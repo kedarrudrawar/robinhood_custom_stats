@@ -24,7 +24,7 @@ export const Statistics = props => {
 
     useEffect(() => {
         const getOrderHistory = async () => {
-            let history = await api.getOrderHistoryNEW(header);
+            let history = await api.getOrderHistory(header);
             setOrders(history);
         }
         getOrderHistory();

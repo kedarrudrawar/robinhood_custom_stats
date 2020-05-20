@@ -151,10 +151,18 @@ const checkForMoreOrders = async (url, payload) => {
         return processedRes.next;
     })
 }
+ 
+function reverseArrayInPlace(arr) {
+    for (var i = 0; i <= Math.floor((arr.length - 1) / 2); i++) {
+        let el = arr[i];
+        arr[i] = arr[arr.length - 1 - i];
+        arr[arr.length - 1 - i] = el;
+    }
+    return arr;
+}       
 
 
-
-export const getOrderHistoryNEW = async (header, filled=true) => {
+export const getOrderHistory = async (header, filled=true) => {
     let headers = {...HEADERS, ...header};
     let payload = {
         headers: headers,
@@ -179,7 +187,7 @@ export const getOrderHistoryNEW = async (header, filled=true) => {
         nextOrdersLink = await checkForMoreOrders(url, payload);
     }
 
-    return orders.concat(await axios.get(url, payload)
+    orders = orders.concat(await axios.get(url, payload)
     .then(res => {
         return processRHObject(res).results;
     })
@@ -187,74 +195,12 @@ export const getOrderHistoryNEW = async (header, filled=true) => {
         if(filled){
             resData = resData.filter(order => order['state'] !== 'cancelled');
         }
+
         return resData;
     }));
-}
+
+    return orders;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export const getOrderHistory = async (header, filled=true) => {
-    let headers = {...HEADERS, ...header};
-    let payload = {
-        headers: headers,
-    };  
-
-    let url = urls.ORDERS
-
-    let orders = axios.get(url, payload)
-    .then(res => {
-        return processRHObject(res).results;
-    })
-    .then(resData => {
-        console.log(resData);
-        if(filled){
-            resData = resData.filter(order => order['state'] !== 'cancelled');
-        }
-        const orderURLs = resData.map(element => element['url']);
-
-        let orderPromises = orderURLs.map(url => {
-            return new Promise((resolve, reject) => {
-                axios.get(url, payload)
-                .then(order => {
-                    return resolve(order.data);
-                })
-                .catch(err => {
-                    console.log('err');
-                    reject(err)
-                });
-            });
-        });
-        
-        return Promise.all(orderPromises)
-        .then((orders) => {
-            return orders;
-        })
-
-    });
     
 }
