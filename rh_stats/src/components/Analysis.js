@@ -35,60 +35,58 @@ import axios from 'axios';
 
 }
 
-export async function getRealizedProfit(filledOrdersObj){
-    console.log('in real profit method');
-    console.log(filledOrdersObj.length);
-    filledOrdersObj.reverse(); // orders are returned by API anti-chronologically
-    let df = new DataFrame(filledOrdersObj);
-    if (df.columns.size === 0){
-        return df;
+/**
+ * This method calculates realized profit using 
+ * weighted average gains/losses of buy and sell orders
+ * @param {*} buyOrders 
+ * @param {*} sellOrders 
+ */
+export async function getRealizedProfit(buyOrders, sellOrders){
+    console.log('realized profit');
+    
+    let buyDF = new DataFrame(buyOrders);
+    let sellDF = new DataFrame(sellOrders);
+    buyDF = await ordersToDF(buyDF);
+    sellDF = await ordersToDF(sellDF);
+
+    // console.log(buyDF.toString());
+    // console.log(sellDF.toString());
+    if (buyDF.columns.size === 0 || sellDF.columns.size === 0 ){
+        return null;
     }
-    
-    let positions = {};
-    let profits = {};
-    return ordersToDF(df)
-        .then((df) => {
-            for(const row of df){
-                let tick  = row.get('symbol');
-                let side = row.get('side');
-                
-                let quantity = Math.round(parseFloat(row.get('quantity')));
-                let price = parseFloat(row.get('average_price')).toFixed(2);
 
-                console.log(`${side} ${quantity} ${tick} @ ${price}`);
+    let weighted_avg = {};
+    let quantity_dict = {};
 
-                if(! (tick in profits)){
-                    profits[tick] = 0;
-                }
-                positions[tick] = [];
-                if(! (tick in positions)){
-                    positions[tick] = [];
-                }
-                
-                if (side == 'buy'){
-                    for(let i = 0; i < quantity; i++){
-                        positions[tick].push(price);
-                    }
-                    console.log(positions[tick]);
-                }
-                else{
-                    let spent = 0
-                    for (let i = 0; i < quantity; i++){
-                        if (positions[tick]){
-                            spent += positions[tick].pop();
-                        }
-                        else{
-                            break;
-                        }
-                    }
-                    profits[tick] += price * quantity - spent;
-                }
-            };
-            console.log(profits)
-            return profits
-        })
+    for(const row of await sellDF){
+        let tick  = row.get('symbol');
+        let quantity = parseFloat(row.get('quantity'));
+        let price = parseFloat(row.get('average_price')); 
+        // console.log(`Selling ${quantity} ${tick} @ ${price}`);
+        if (!(tick in weighted_avg)) {
+            weighted_avg[tick] = 0;
+            quantity_dict[tick] = 0;
+        }
         
-    
+        weighted_avg[tick] += price * quantity;
+        quantity_dict[tick] += quantity;
 
-    // console.log(df.toString());
+        // console.log(`updated: ${weighted_avg[tick]}`);
+    }
+
+    for(const row of await buyDF){
+        let tick  = row.get('symbol');
+        let quantity = parseFloat(row.get('quantity'));
+        let price = parseFloat(row.get('average_price')); 
+        // console.log(`Buying ${quantity} ${tick} @ ${price}`);
+
+        if(!(tick in weighted_avg) || quantity_dict[tick] === 0)  
+            continue; // sell orders have been depleted, remaining buys are for current position
+        
+        quantity = Math.min(quantity, quantity_dict[tick]);
+        quantity_dict[tick] -= quantity;
+        weighted_avg[tick] -= price * quantity;
+    }
+
+    return weighted_avg;
 }

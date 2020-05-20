@@ -13,23 +13,43 @@ export const Statistics = props => {
     const [cash, setCash] = useState('');
     const [totalInvested, setTotalInvested] = useState('');
     const [orders, setOrders] = useState([]);
-    // const [positions, setPositions] = useState([]);
+    const [buyOrders, setBuyOrders] = useState([]);
+    const [sellOrders, setSellOrders] = useState([]);
+    const [realizedProfit, setRealizedProfit] = useState([]);
+
+    const getOrderHistory = async (state=['filled'], side='', setFunc) => {
+        let history = await api.getOrderHistory(header, state, side);
+        setFunc(history);
+    }
 
     useEffect(() => {
-        analysis.getRealizedProfit(orders);
-
-    }, [orders]);
-
-
-
-    useEffect(() => {
-        const getOrderHistory = async () => {
-            let history = await api.getOrderHistory(header);
-            setOrders(history);
-        }
-        getOrderHistory();
+        getOrderHistory(['filled'], '', setOrders)
     }, []);
 
+    useEffect(() => {
+        getOrderHistory(['filled'], 'sell', setSellOrders);
+    }, [orders])
+
+
+    useEffect(() => {
+        getOrderHistory(['filled'], 'buy', setBuyOrders);;
+    }, [sellOrders])
+    
+    useEffect(() => {
+        const updateRealizedProfits = async () => {
+            let profits = await analysis.getRealizedProfit(buyOrders, sellOrders);
+            setRealizedProfit(profits);
+        };
+        updateRealizedProfits();
+    }, [buyOrders]);
+
+    function renderHistory(){
+        if (realizedProfit){
+            Object.entries(realizedProfit).map((element) => {
+                console.log(element);
+            })
+        }
+    }
 
 
     return (
@@ -72,10 +92,7 @@ export const Statistics = props => {
             </div>
 
             <div className="table-title text">History</div>
-            { orders && orders.map((order, idx) => {
-                        return <div>order {idx}</div>
-                    })
-            }
+            {renderHistory()}
             <div className='table'>
                 <div className='first row'>
                     <div className='cell text row-header'>Name</div>

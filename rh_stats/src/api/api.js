@@ -162,7 +162,7 @@ function reverseArrayInPlace(arr) {
 }       
 
 
-export const getOrderHistory = async (header, filled=true) => {
+export const getOrderHistory = async (header, state=['filled'], side='', limit=Number.MAX_SAFE_INTEGER) => {
     let headers = {...HEADERS, ...header};
     let payload = {
         headers: headers,
@@ -177,8 +177,11 @@ export const getOrderHistory = async (header, filled=true) => {
             return processRHObject(res).results;
         })
         .then(resData => {
-            if(filled){
-                resData = resData.filter(order => order['state'] === 'filled');
+            if(state.length !== 0){
+                resData = resData.filter(order => state.includes(order['state']));
+            }
+            if(side !== ''){
+                resData = resData.filter(order => order['side'] === side);
             }
             return resData;
         }));
@@ -192,13 +195,18 @@ export const getOrderHistory = async (header, filled=true) => {
         return processRHObject(res).results;
     })
     .then(resData => {
-        if(filled){
-            resData = resData.filter(order => order['state'] !== 'cancelled');
+        if(state.length !== 0){
+            resData = resData.filter(order => state.includes(order['state']));
         }
-
+        if(side !== ''){
+            resData = resData.filter(order => order['side'] === side);
+        }
         return resData;
     }));
-
+    
+    // orders are returned by API anti-chronologically
+    orders.reverse();
+    
     return orders;
 
 
