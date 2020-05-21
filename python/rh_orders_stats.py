@@ -84,6 +84,8 @@ def get_stats(filled_orders, positions_df):
 def get_all_stats():
     print('Pulling order history and positions')
     orders = get_filled_orders()
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
+        print(orders)
     positions_df = positions.positions_to_df()
 
     stats = get_stats(orders, positions_df)
