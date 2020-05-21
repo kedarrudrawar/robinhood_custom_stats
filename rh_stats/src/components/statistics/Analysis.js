@@ -27,7 +27,7 @@ async function getTickersFromInstrumentsDF(df){
 
 async function positionsToDF(positions){
     if(positions.length === 0){
-        return null;
+        return new DataFrame();
     }
 
     let df = new DataFrame(positions);
@@ -35,7 +35,6 @@ async function positionsToDF(positions){
     let tickerSeries = await getTickersFromInstrumentsDF(df);
     df = df.set('symbol', await tickerSeries);
    
-    console.log(df.toString());
     return df;
 }
 
@@ -49,7 +48,6 @@ async function filterOrdersDF(df)  {
     df = df.set('symbol', await tickerSeries);
 
     return df;
-
 }
 
 /**
@@ -59,8 +57,6 @@ async function filterOrdersDF(df)  {
  * @param {*} sellOrders 
  */
 export async function getRealizedProfit(buyOrders, sellOrders){
-    console.log('realized profit');
-    
     let buyDF = new DataFrame(buyOrders);
     let sellDF = new DataFrame(sellOrders);
     buyDF = await filterOrdersDF(buyDF);
@@ -103,6 +99,8 @@ export async function getRealizedProfit(buyOrders, sellOrders){
     return weighted_avg;
 }
 
-export async function getUnrealizedProfit(positions){
-    positionsToDF(positions);
+export async function getUnrealizedProfit(positions, currentPrices){
+    let positionsDF = await positionsToDF(positions);
+    console.log(await positionsDF.toString());
+    
 }

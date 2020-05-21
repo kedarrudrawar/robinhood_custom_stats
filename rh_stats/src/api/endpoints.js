@@ -13,3 +13,9 @@ export const ORDERS = BASE_PATH + 'orders/'
 
 // account details
 export const ACCOUNTS = BASE_PATH + 'accounts/'
+
+const QUOTES = BASE_PATH + 'quotes/';
+
+export const build_quote_url = (ticker) => {
+    return QUOTES + ticker + '/';
+}

@@ -109,6 +109,8 @@ function buildHeaders(header){
     };
 }
 
+// accounts
+
 export async function getAccountDetails(header){
     let payload = buildHeaders(header);
 
@@ -117,18 +119,13 @@ export async function getAccountDetails(header){
     .then(data => data.results)
 }
 
-
-
-
-
-
-
+// portfolio
 
 export function getPortfolio(header){
-    let data = buildHeaders(header);
-    return axios.get(urls.PORTFOLIOS, data)
+    let payload = buildHeaders(header);
+    return axios.get(urls.PORTFOLIOS, payload)
     .then(res => {
-        let data = processRHObject(res)['0'];
+        let data = processRHObject(res);
         return data;
     });
 }
@@ -152,6 +149,62 @@ export function getPositions(header, active=true){
     })
 }
 
+// instruments
+export const getInstrumentsFromOrders = async (header, orders) => {
+    let payload = buildHeaders(header);
+    let instrumentURLs = new Set(); // remove duplicate urls
+    for(const o of orders){
+        instrumentURLs.add(o['instrument']);
+    }
+
+    let orderPromises = [...instrumentURLs].map((instrumentURL) => {
+        return new Promise(async (resolve, reject) => {
+            try{
+                let res = await axios.get(instrumentURL, payload);
+                let data = processRHObject(await res);
+                resolve(await data);
+            }
+            catch(err) {
+                console.log(err);
+                reject(err);
+            }
+        })
+    });
+    return Promise.all(orderPromises);
+}
+
+export const getCurrentPricesFromInstruments = async (header, instruments) => {
+    let payload = buildHeaders(header);
+
+    let pricePromises = instruments.map(instrument => {
+        return new Promise(async (resolve, reject) => {
+            if(! instrument['tradeable']) 
+                reject(new Error('untradeable stock: ' + instrument['symbol']));
+            else {
+                let url = urls.build_quote_url(instrument['symbol']);
+                try{
+                    let res = await axios.get(url, payload);
+                    let data = processRHObject(res);
+                    let symbol = data['symbol'];
+                    let price = data['last_trade_price'];
+                    var out = {};
+                    out[symbol] = price;
+                    resolve(out);
+                }
+                catch(err){
+                    reject(err);
+                }
+            }
+        
+        });
+    });
+
+    const results = await Promise.all(pricePromises.map(p => p.catch(e => e)));
+    const validResults = results.filter(result => !(result instanceof Error));  
+    return validResults;
+}
+
+// orders
 
 const checkForMoreOrders = async (url, payload) => {
     return axios.get(url, payload)

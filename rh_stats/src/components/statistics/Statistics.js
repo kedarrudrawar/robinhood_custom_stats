@@ -17,52 +17,55 @@ export const Statistics = props => {
     // positions
     const [positions, setPositions] = useState([]);
     const [averageCost, setAverageCost] = useState([]);
-    const [unrealizedProfit, setUnrealizedProfit] = useState([]);
 
     // instruments
     const [instruments, setInstruments] = useState([]);
+    
+    // market data
+    const [currentPrices, setCurrentPrices] = useState([]);
 
     // order history 
-    const [orders, setOrders] = useState([]);
+    const [orders, setOrders] = useState([]); // list of objects
     const [buyOrders, setBuyOrders] = useState([]);
     const [sellOrders, setSellOrders] = useState([]);
+
+    // profits 
     const [realizedProfit, setRealizedProfit] = useState([]);
+    const [unrealizedProfit, setUnrealizedProfit] = useState([]);
 
 
+    // ----------------------------------------- raw account data -----------------------------------------
+
+    // total invested
     useEffect(() => {
-        const getCash = async () => {
+        const updateTotalInvested = async () => {
+            let inv = await api.getPortfolio(header);
+            let value = await inv['results'][0]['market_value'];
+            setTotalInvested(parseFloat(value).toFixed(2));
+        }
+        updateTotalInvested();
+    }, []);
+    
+    // cash
+    useEffect(() => {
+        const updateCash = async () => {
             let details = await api.getAccountDetails(header);
             let cashStr = await details[0]['portfolio_cash'];
-            setCash(parseFloat(cashStr));
+            setCash(parseFloat(cashStr).toFixed(2));
         }
-        getCash();
+        updateCash();
     }, []);
 
-
     // positions
-
     useEffect(() => {
         const getPositions = async () => {
             let pos = await api.getPositions(header);
             setPositions(pos);
-            console.log('setting positions');
         }
         getPositions();
     }, []);
 
-    useEffect(() => {
-        console.log('positions:');
-        console.log(positions);
-        const updateUnrealizedProfits = async () => {
-            let unreal = await analysis.getUnrealizedProfit(positions);
-            setUnrealizedProfit(unreal);
-        }
-        updateUnrealizedProfits();
-    }, [positions])
-
-
     // order history
-
     const getOrderHistory = async (state=['filled'], side='', setFunc) => {
         let history = await api.getOrderHistory(header, state, side);
         setFunc(history);
@@ -72,11 +75,39 @@ export const Statistics = props => {
         getOrderHistory(['filled'], '', setOrders)
     }, []);
 
+    // ----------------------------------------- market data -----------------------------------------
+
+    // instruments
+    useEffect(() => {
+        const updateInstruments = async () => {
+            let instr = Array.from(await api.getInstrumentsFromOrders(header, orders));
+            setInstruments(instr);
+        };
+        updateInstruments();
+    }, [orders]);
+
+    // currentPrices
+    useEffect(() => {
+        const updateCurrentPrices = async () => {
+            let currPrices = Array.from(await api.getCurrentPricesFromInstruments(header, instruments));
+            setCurrentPrices(currPrices);
+        }
+        updateCurrentPrices();
+    }, [instruments])
+
+    // useEffect(() => {
+    //     console.log('current prices');
+    //     console.log(currentPrices);
+    // }, [currentPrices]);
+
+    // ----------------------------------------- profit calculations -----------------------------------------
+
+    // sell orders
     useEffect(() => {
         getOrderHistory(['filled'], 'sell', setSellOrders);
     }, [orders])
 
-
+    // buy orders
     useEffect(() => {
         getOrderHistory(['filled'], 'buy', setBuyOrders);;
     }, [sellOrders])
@@ -88,6 +119,16 @@ export const Statistics = props => {
         };
         updateRealizedProfits();
     }, [buyOrders]);
+
+    useEffect(() => {
+        const updateUnrealizedProfits = async () => {
+            let unreal = await analysis.getUnrealizedProfit(positions);
+            setUnrealizedProfit(unreal);
+        }
+        updateUnrealizedProfits();
+    }, [positions])
+
+
 
     function renderHistory(){
         if (! realizedProfit) return <div></div>;
