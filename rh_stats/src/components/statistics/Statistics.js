@@ -16,9 +16,11 @@ export const Statistics = props => {
 
     // positions
     const [positions, setPositions] = useState([]);
-    const [averageCost, setAverageSell] = useState([]);
-    const [averageSell, setAverageCost] = useState([]);
+    const [averageCost, setAverageCost] = useState([]);
     const [unrealizedProfit, setUnrealizedProfit] = useState([]);
+
+    // instruments
+    const [instruments, setInstruments] = useState([]);
 
     // order history 
     const [orders, setOrders] = useState([]);
