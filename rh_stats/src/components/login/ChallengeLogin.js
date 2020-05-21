@@ -2,6 +2,6 @@ import React from 'react';
 
 
 
-export const Challenge_Login = () => {
+export const ChallengeLogin = () => {
     return <div></div>;
 }

@@ -2,14 +2,8 @@ import { Series, DataFrame } from 'pandas-js';
 import axios from 'axios';
 
 
- async function ordersToDF(df)  {
-    if(df.columns.size === 0){
-        return df;
-    }
-
-    df = df.get(['average_price', 'quantity', 'side', 'instrument'])
-
-    let tickerSeries = Promise.all(df.get('instrument').map(
+async function getTickersFromInstrumentsDF(df){
+    return Promise.all(df.get('instrument').map(
         async (url) => {
             let data, res;
             return new Promise(async (resolve, reject) => {
@@ -27,8 +21,31 @@ import axios from 'axios';
     )
     .then((tickers) => { 
         return new Series(tickers, 'tickers');
-    })
-    
+    });
+}
+
+
+async function positionsToDF(positions){
+    if(positions.length === 0){
+        return null;
+    }
+
+    let df = new DataFrame(positions);
+    df = df.get(['average_buy_price', 'quantity', 'instrument'])
+    let tickerSeries = await getTickersFromInstrumentsDF(df);
+    df = df.set('symbol', await tickerSeries);
+   
+    console.log(df.toString());
+    return df;
+}
+
+async function filterOrdersDF(df)  {
+    if(df.columns.size === 0){
+        return df;
+    }
+
+    df = df.get(['average_price', 'quantity', 'side', 'instrument'])
+    let tickerSeries = await getTickersFromInstrumentsDF(df);
     df = df.set('symbol', await tickerSeries);
 
     return df;
@@ -46,11 +63,9 @@ export async function getRealizedProfit(buyOrders, sellOrders){
     
     let buyDF = new DataFrame(buyOrders);
     let sellDF = new DataFrame(sellOrders);
-    buyDF = await ordersToDF(buyDF);
-    sellDF = await ordersToDF(sellDF);
+    buyDF = await filterOrdersDF(buyDF);
+    sellDF = await filterOrdersDF(sellDF);
 
-    // console.log(buyDF.toString());
-    // console.log(sellDF.toString());
     if (buyDF.columns.size === 0 || sellDF.columns.size === 0 ){
         return null;
     }
@@ -86,4 +101,8 @@ export async function getRealizedProfit(buyOrders, sellOrders){
     }
     
     return weighted_avg;
+}
+
+export async function getUnrealizedProfit(positions){
+    positionsToDF(positions);
 }

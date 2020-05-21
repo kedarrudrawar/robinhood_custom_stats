@@ -1,8 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import '../../UI/Login.css';
-import { Helmet } from 'react-helmet';
-import { Head } from '../html_head'
+import { Head } from '../misc/html_head'
 
 export const Login = props => {
     const [username, setUsername] = useState('');

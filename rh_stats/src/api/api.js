@@ -133,19 +133,15 @@ export function getPortfolio(header){
     });
 }
 
-export function getPositions(header, filtered=true){
+export function getPositions(header, active=true){
     let data = buildHeaders(header);
 
     return axios.get(urls.POSITIONS, data)
-    .then(res => {
-        let data = processRHObject(res);
-        return data;
-    })
+    .then(res => processRHObject(res).results)
     .then(data => {
-        if(filtered){
+        if(active){
             let filteredArr = [];
             for(let i = 0; i < data.length; i++){
-                console.log(data[i]['quantity']);
                 if (parseFloat(data[i]['quantity']) > 0){
                     filteredArr.push(data[i]);
                 }

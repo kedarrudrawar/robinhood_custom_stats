@@ -9,13 +9,13 @@ import {
 import {Login} from './components/login/Login';
 import { MFA_Login } from "./components/login/MFA_Login";
 import * as api from './api/api';
-import { Challenge_Login } from "./components/login/Challenge_Login";
-import { Statistics } from "./components/Statistics";
+import { ChallengeLogin } from "./components/login/ChallengeLogin";
+import { Statistics } from "./components/statistics/Statistics";
 
 
 const App = props => {
-  // const [bearerToken, setBearerToken] = useState(process.env.REACT_APP_BEARER);  
-  const [bearerToken, setBearerToken] = useState();  
+  const [bearerToken, setBearerToken] = useState(process.env.REACT_APP_BEARER);  
+  // const [bearerToken, setBearerToken] = useState();  
   // const [_refreshToken, setRefreshToken] = useState(process.env.REACT_APP_REFRESH);
   const [refreshToken, setRefreshToken] = useState();
   const [expiryTime, setExpiryTime] = useState();
@@ -105,7 +105,7 @@ const App = props => {
           <Route path='/challenge' 
             exact 
             render = {(props) => 
-              <Challenge_Login {...props}
+              <ChallengeLogin {...props}
                 onSubmit={handleChallengeSubmit}
               />}
             />

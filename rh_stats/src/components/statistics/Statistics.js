@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import '../UI/Statistics.css'
-import { Head } from './html_head'
-import * as api from '../api/api';
+import '../../UI/Statistics.css'
+import { Head } from '../misc/html_head'
+import * as api from '../../api/api';
 
 import * as analysis from './Analysis';
 
@@ -10,8 +10,17 @@ export const Statistics = props => {
         'Authorization': `Bearer ${props.bearer}`
     }
     
+    // account info
     const [cash, setCash] = useState('');
     const [totalInvested, setTotalInvested] = useState('');
+
+    // positions
+    const [positions, setPositions] = useState([]);
+    const [averageCost, setAverageSell] = useState([]);
+    const [averageSell, setAverageCost] = useState([]);
+    const [unrealizedProfit, setUnrealizedProfit] = useState([]);
+
+    // order history 
     const [orders, setOrders] = useState([]);
     const [buyOrders, setBuyOrders] = useState([]);
     const [sellOrders, setSellOrders] = useState([]);
@@ -21,13 +30,33 @@ export const Statistics = props => {
     useEffect(() => {
         const getCash = async () => {
             let details = await api.getAccountDetails(header);
-            console.log(await details);
             let cashStr = await details[0]['portfolio_cash'];
             setCash(parseFloat(cashStr));
         }
         getCash();
     }, []);
 
+
+    // positions
+
+    useEffect(() => {
+        const getPositions = async () => {
+            let pos = await api.getPositions(header);
+            setPositions(pos);
+            console.log('setting positions');
+        }
+        getPositions();
+    }, []);
+
+    useEffect(() => {
+        console.log('positions:');
+        console.log(positions);
+        const updateUnrealizedProfits = async () => {
+            let unreal = await analysis.getUnrealizedProfit(positions);
+            setUnrealizedProfit(unreal);
+        }
+        updateUnrealizedProfits();
+    }, [positions])
 
 
     // order history
@@ -123,25 +152,24 @@ export const Statistics = props => {
 
             <div className="table-title text">History</div>
             <div className='table'>
-                <div className='first row'>
+                {/* <div className='first row'>
                     <div className='cell text row-header'>Name</div>
                     <div className='cell text row-header'>Average Cost</div>
                     <div className='cell text row-header'>Average Sell</div>
                     <div className='cell text row-header'>Unrealized</div>
                     <div className='cell text row-header'>Realized</div>
                     <div className='cell text row-header'>Current Price</div>
+                </div> */}
+                <div className='first row'>
+                    <div className='cell text row-header'>Name</div>
+                    <div className='cell text row-header'>Holding</div>
+                    <div className='cell text row-header'>Average Cost</div>
+                    <div className='cell text row-header'>Unrealized</div>
+                    <div className='cell text row-header'>Realized</div>
+                    <div className='cell text row-header'>Current Price</div>
                 </div>
                 <hr/>
                 {renderHistory()}
-                {/* <div className='row'>
-                    <div className='cell text'>MSFT</div>
-                    <div className='cell text'>$162.92</div>
-                    <div className='cell text'>$164.92</div>
-                    <div className='cell text'>+$410.42</div>
-                    <div className='cell text'>+$4.00</div>
-                    <div className='cell text'>$185.63</div>
-                </div>
-                <hr/> */}
                 
             </div>
         </body>
