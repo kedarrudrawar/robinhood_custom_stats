@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import '../../UI/Statistics.css'
 import { Head } from '../misc/html_head'
 import * as api from '../../api/api';
+import * as utils from '../../utils';
 
 import * as analysis from './Analysis';
 import { DataFrame } from 'pandas-js/dist/core';
+import { Redirect, Route } from 'react-router-dom';
 
 const REALIZED_IDX = 5;
 const UNREALIZED_IDX = 7;
+const history_columns = ['Name', 'Holding', 'Average Cost', 'Unrealized Profit', 'Realized Profit', 'Current Price'];
 
 export const Statistics = props => {
     const header = {
@@ -101,7 +104,8 @@ export const Statistics = props => {
         let total = getTotal(realizedBoolean);
         let colorClass = total >= 0 ? 'positive' : 'negative';
         let className = 'data-row-value condensed ' + colorClass;
-        return <div className={className}>${parseFloat(total).toFixed(2)}</div>
+        let value = utils.beautifyPrice(parseFloat(total).toFixed(2));
+        return <div className={className}>${value}</div>
     }
 
 
@@ -110,26 +114,30 @@ export const Statistics = props => {
         if(!data) return <div></div>;
 
         return data.map(dataRow => {
-            let [symbol, average_buy_price, quantity, instrument, tradability, realizedProfit, currentPrice, unrealizedProfit] = dataRow;
-            realizedProfit = realizedProfit !== null ? 
-                        (realizedProfit > 0 ? '+$' + parseFloat(realizedProfit).toFixed(2) : '-$' + Math.abs(parseFloat(realizedProfit)).toFixed(2))
-                        : '-';
+            let [symbol, average_buy_price, quantity,,, realizedProfit, currentPrice, unrealizedProfit] = dataRow;
 
-            unrealizedProfit = unrealizedProfit !== null ? 
-                        (unrealizedProfit >= 0 ? '+$' + parseFloat(unrealizedProfit).toFixed(2) : '-$' + Math.abs(parseFloat(unrealizedProfit)).toFixed(2))
-                        : '-';                        
-
-
-
+            realizedProfit = utils.beautifyReturns(realizedProfit);
+            unrealizedProfit = utils.beautifyReturns(unrealizedProfit);
+                
+            const redirect = (symbol) => {
+                window.location.replace('http://robinhood.com/stocks/' + symbol);
+            }
             return (
                 <div>
                 <div className='row'>
                     <div className='cell text'>{symbol}</div>
                     <div className='cell text'>{quantity}</div>
-                    <div className='cell text'>{parseFloat(average_buy_price).toFixed(2)}</div>
+                    <div className='cell text'>${parseFloat(average_buy_price).toFixed(2)}</div>
                     <div className='cell text'>{unrealizedProfit}</div>
                     <div className='cell text'>{realizedProfit}</div>
-                    <div className='cell text'>{currentPrice !== null ? '$' + parseFloat(currentPrice).toFixed(2) : '-'}</div>
+                    <button onClick={() => redirect(symbol)} 
+                    target='_blank' 
+                    className='cell text'
+                    type='button'>
+                        {utils.beautifyPrice(currentPrice)}
+                    </button>
+
+                    {/* <Route */}
                 </div>
                 <hr/>
                 </div>
@@ -144,7 +152,7 @@ export const Statistics = props => {
             <div className="stats-header"> 
                 <div className="stats-box">
                     <div className="stats-box-title text">Total Investment</div>
-                    <div className="stats-box-value condensed">${totalInvested}</div>
+                    <div className="stats-box-value condensed">${utils.beautifyPrice(totalInvested)}</div>
                     <div className="stats-box-data-row">
                         <div className="data-row-categ text" >Realized Return</div>
                         {renderTotal(true)}
@@ -155,36 +163,17 @@ export const Statistics = props => {
                     </div>
                     <div className="stats-box-data-row">
                         <div className="data-row-categ text">Buying Power</div>
-                        <div className="data-row-value condensed">${cash}</div>
+                        <div className="data-row-value condensed">${utils.beautifyPrice(cash)}</div>
                     </div>
                 </div>
-                {/* <div className="stats-box">
-                    <div className="stats-box-title text">Cash</div>
-                    <div className="stats-box-value condensed">${cash}</div>
-                    <div className="stats-box-data-row">
-                        <div className="data-row-categ text">Interest Rate</div>
-                        <div className="data-row-value condensed fake">$2,899.31</div>
-                    </div>
-                    <div className="stats-box-data-row">
-                        <div className="data-row-categ text">Accruing Interest</div>
-                        <div className="data-row-value condensed positive fake">+$82 (+7.16%)</div>
-                    </div>
-                    <div className="stats-box-data-row">
-                        <div className="data-row-categ text">Lifetime Interest</div>
-                        <div className="data-row-value condensed negative fake">-$152.14 (-5.25%)</div>
-                    </div>
-                </div> */}
             </div>
 
             <div className="table-title text">History</div>
             <div className='table'>
                 <div className='first row'>
-                    <div className='cell text row-header'>Name</div>
-                    <div className='cell text row-header'>Holding</div>
-                    <div className='cell text row-header'>Average Cost</div>
-                    <div className='cell text row-header'>Unrealized</div>
-                    <div className='cell text row-header'>Realized</div>
-                    <div className='cell text row-header'>Current Price</div>
+                    {history_columns.map(elem => {
+                        return <div className='cell text row-header'>{elem}</div>;
+                    })}
                 </div>
                 <hr/>
                 {renderHistory()}

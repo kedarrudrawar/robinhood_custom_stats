@@ -78,9 +78,6 @@ export function oauth2_MFA(username, password, mfa_code){
             BEARER_TOKEN = res['access_token'];
             REFRESH_TOKEN = res['refresh_token'];
             EXPIRY_TIME = new Date().getTime() / 1000 + res['expires_in'];
-            // console.log(BEARER_TOKEN);
-            // console.log(REFRESH_TOKEN);
-            // console.log(EXPIRY_TIME);
             return [BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME];
         })
         .catch((err) => {
@@ -88,9 +85,6 @@ export function oauth2_MFA(username, password, mfa_code){
             console.log(err);
         });
 }
-
-// function oauth2_Challenge(){}
-
 
 
 /*************************************************/
@@ -347,7 +341,4 @@ export const getOrderHistory = async (header, state=['filled'], side='') => {
     orders.reverse();
     
     return orders;
-
-
-    
 }
