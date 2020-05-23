@@ -1,39 +1,23 @@
 import { Series, DataFrame } from 'pandas-js';
 import axios from 'axios';
+import * as api from '../../api/api';
 
 
-async function getTickersFromInstrumentsDF(df){
-    return Promise.all(df.get('instrument').map(
-        async (url) => {
-            let data, res;
-            return new Promise(async (resolve, reject) => {
-                try {
-                    res = await axios.get(url)
-                    data = await res.data;
-                    return resolve(data['symbol']);
-                }
-                catch(err) {
-                    console.log(err);
-                    return reject(err);
-                }
-            });
-        })
-    )
-    .then((tickers) => { 
-        return new Series(tickers, 'tickers');
-    });
-}
-
-
-async function positionsToDF(positions){
-    if(positions.length === 0){
+export async function positionsToDF(positions){
+    if(!positions || Array.from(positions).length === 0){
         return new DataFrame();
     }
 
+
     let df = new DataFrame(positions);
-    df = df.get(['average_buy_price', 'quantity', 'instrument'])
-    let tickerSeries = await getTickersFromInstrumentsDF(df);
+    // df = df.get(['average_buy_price', 'quantity', 'instrument'])
+    let tickerResponse = await api.getFieldFromInstrumentsDF(df, 'symbol');
+    let tickerSeries = new Series(tickerResponse, 'tickers');
+
+    let tradeableResponse = await api.getFieldFromInstrumentsDF(df, 'tradability');
+    let tradabilitySeries = new Series(tradeableResponse, 'tradability');
     df = df.set('symbol', await tickerSeries);
+    df = df.set('tradability', await tradabilitySeries);
    
     return df;
 }
@@ -44,11 +28,27 @@ async function filterOrdersDF(df)  {
     }
 
     df = df.get(['average_price', 'quantity', 'side', 'instrument'])
-    let tickerSeries = await getTickersFromInstrumentsDF(df);
-    df = df.set('symbol', await tickerSeries);
+    let tickerResponse = await api.getFieldFromInstrumentsDF(df, 'symbol');
+    let tickerSeries = new Series(tickerResponse, 'tickers');
+    df = df.set('symbol', tickerSeries);
 
     return df;
 }
+
+
+
+// ----------------------------------------- average buy -----------------------------------------
+export async function getAverageBuys(buyOrders){
+
+}
+
+
+
+
+
+
+
+// ----------------------------------------- profit calculations -----------------------------------------
 
 /**
  * This method calculates realized profit using 
@@ -95,12 +95,30 @@ export async function getRealizedProfit(buyOrders, sellOrders){
         quantity_dict[tick] -= quantity;
         weighted_avg[tick] -= price * quantity;
     }
+
+    let weightedObjArr = Object.keys(weighted_avg).map(key => {
+        return [key, weighted_avg[key]];
+    })
     
-    return weighted_avg;
+    return weightedObjArr;
 }
 
-export async function getUnrealizedProfit(positions, currentPrices){
-    let positionsDF = await positionsToDF(positions);
-    console.log(await positionsDF.toString());
-    
+
+
+/**
+ * Returns array of [symbol, unrealized profit]
+ * @param {DataFrame containing symbol, quantity, average buy price, and current price} df 
+ */
+export async function getUnrealizedProfit(df){
+    console.log("here");
+    let profit = [];
+    for(const row of df){
+        let symbol = row.get('symbol');
+        let quantity = row.get('quantity');
+        let average_price = row.get('average_buy_price');
+        let current_price = row.get('price');
+        profit.push([symbol, (current_price - average_price) * quantity]);
+    }
+    // console.log(profit);
+    return profit;
 }

@@ -75,13 +75,12 @@ export function oauth2_MFA(username, password, mfa_code){
     return axios.post(urls.OAUTH2, data)
         .then((response) => {
             let res = response.data;
-            console.log(res);
             BEARER_TOKEN = res['access_token'];
             REFRESH_TOKEN = res['refresh_token'];
             EXPIRY_TIME = new Date().getTime() / 1000 + res['expires_in'];
-            console.log(BEARER_TOKEN);
-            console.log(REFRESH_TOKEN);
-            console.log(EXPIRY_TIME);
+            // console.log(BEARER_TOKEN);
+            // console.log(REFRESH_TOKEN);
+            // console.log(EXPIRY_TIME);
             return [BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME];
         })
         .catch((err) => {
@@ -130,7 +129,7 @@ export function getPortfolio(header){
     });
 }
 
-export function getPositions(header, active=true){
+export function getPositions(header, active=false){
     let data = buildHeaders(header);
 
     return axios.get(urls.POSITIONS, data)
@@ -150,6 +149,27 @@ export function getPositions(header, active=true){
 }
 
 // instruments
+
+export const getAllInstruments = async (header) => {
+    let payload = buildHeaders(header);
+    let url = urls.INSTRUMENTS;
+    let nextOrdersLink = await checkForNext(url, payload);
+    
+    let instruments = [];
+
+    while(await nextOrdersLink !== null){
+        instruments = instruments.concat(await axios.get(url, payload)
+        .then(res => processRHObject(res).results ));
+
+        url = await nextOrdersLink;
+        nextOrdersLink = await checkForNext(url, payload);
+        console.log(nextOrdersLink);
+    }
+
+    return instruments;
+}
+
+
 export const getInstrumentsFromOrders = async (header, orders) => {
     let payload = buildHeaders(header);
     let instrumentURLs = new Set(); // remove duplicate urls
@@ -173,6 +193,67 @@ export const getInstrumentsFromOrders = async (header, orders) => {
     return Promise.all(orderPromises);
 }
 
+
+/**
+ * Returns Array of arrays: [symbol, price]
+ * @param {Object with Authorization header} header 
+ * @param {DataFrame containing instrument URL column} df 
+ */
+export async function getCurrentPricesFromInstrumentsDF(header, df){
+    let payload = buildHeaders(header);
+
+    let pricePromises = df.get('instrument').map(instrumentURL => { 
+        return new Promise(async (resolve, reject) => {
+            let res = await axios.get(instrumentURL, payload);
+            let data = processRHObject(res);
+            let symbol = await data['symbol'];
+            let tradeable = await data['tradeable']
+
+            if(! tradeable) 
+                reject(new Error('untradeable stock: ' + symbol));
+            else {
+                let quoteURL = urls.build_quote_url(symbol);
+                try{
+                    let res = await axios.get(quoteURL, payload);
+                    data = processRHObject(res);
+                    let price = data['last_trade_price'];
+                    let out = [symbol, price];
+                    resolve(out);
+                }
+                catch(err){
+                    reject(err);
+                }
+            }
+        
+        });
+    });
+
+    const results = await Promise.all(pricePromises.map(p => p.catch(e => e)));
+    const validResults = results.filter(result => !(result instanceof Error));  
+    return validResults; 
+}
+
+export async function getFieldFromInstrumentsDF(df, field){
+    return Promise.all(df.get('instrument').map(
+        async (url) => {
+            let data, res;
+            return new Promise(async (resolve, reject) => {
+                try {
+                    res = await axios.get(url)
+                    data = await res.data;
+                    return resolve(data[field]);
+                }
+                catch(err) {
+                    console.log(err);
+                    return reject(err);
+                }
+            });
+        })
+    );
+}
+
+
+
 export const getCurrentPricesFromInstruments = async (header, instruments) => {
     let payload = buildHeaders(header);
 
@@ -187,8 +268,8 @@ export const getCurrentPricesFromInstruments = async (header, instruments) => {
                     let data = processRHObject(res);
                     let symbol = data['symbol'];
                     let price = data['last_trade_price'];
-                    var out = {};
-                    out[symbol] = price;
+
+                    let out = [symbol, price];
                     resolve(out);
                 }
                 catch(err){
@@ -201,12 +282,13 @@ export const getCurrentPricesFromInstruments = async (header, instruments) => {
 
     const results = await Promise.all(pricePromises.map(p => p.catch(e => e)));
     const validResults = results.filter(result => !(result instanceof Error));  
+
     return validResults;
 }
 
 // orders
 
-const checkForMoreOrders = async (url, payload) => {
+const checkForNext = async (url, payload) => {
     return axios.get(url, payload)
     .then(res => {
         return processRHObject(res);
@@ -216,11 +298,17 @@ const checkForMoreOrders = async (url, payload) => {
     })
 }
 
-export const getOrderHistory = async (header, state=['filled'], side='', limit=Number.MAX_SAFE_INTEGER) => {
+/**
+ * Returns Array of order Objects
+ * @param {Object} header 
+ * @param {Array of states ('filled', 'cancelled')} state 
+ * @param {String ('buy', 'sell')} side 
+ */
+export const getOrderHistory = async (header, state=['filled'], side='') => {
     let payload = buildHeaders(header);
 
     let url = urls.ORDERS
-    let nextOrdersLink = await checkForMoreOrders(url, payload);
+    let nextOrdersLink = await checkForNext(url, payload);
     let orders = [];
     while(await nextOrdersLink !== null){
         orders = orders.concat(await axios.get(url, payload)
@@ -238,7 +326,7 @@ export const getOrderHistory = async (header, state=['filled'], side='', limit=N
         }));
 
         url = await nextOrdersLink;
-        nextOrdersLink = await checkForMoreOrders(url, payload);
+        nextOrdersLink = await checkForNext(url, payload);
     }
 
     orders = orders.concat(await axios.get(url, payload)
