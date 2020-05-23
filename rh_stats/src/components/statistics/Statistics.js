@@ -105,7 +105,7 @@ export const Statistics = props => {
         let colorClass = total >= 0 ? 'positive' : 'negative';
         let className = 'data-row-value condensed ' + colorClass;
         let value = utils.beautifyPrice(parseFloat(total).toFixed(2));
-        return <div className={className}>${value}</div>
+        return <div className={className}>{value}</div>
     }
 
 
@@ -119,25 +119,20 @@ export const Statistics = props => {
             realizedProfit = utils.beautifyReturns(realizedProfit);
             unrealizedProfit = utils.beautifyReturns(unrealizedProfit);
                 
-            const redirect = (symbol) => {
-                window.location.replace('http://robinhood.com/stocks/' + symbol);
-            }
             return (
                 <div>
                 <div className='row'>
                     <div className='cell text'>{symbol}</div>
                     <div className='cell text'>{quantity}</div>
-                    <div className='cell text'>${parseFloat(average_buy_price).toFixed(2)}</div>
+                    <div className='cell text'>{parseFloat(average_buy_price).toFixed(2)}</div>
                     <div className='cell text'>{unrealizedProfit}</div>
                     <div className='cell text'>{realizedProfit}</div>
-                    <button onClick={() => redirect(symbol)} 
+                    <button onClick={() => window.open('http://robinhood.com/stocks/' + symbol)} 
                     target='_blank' 
-                    className='cell text'
+                    className='text stock-redir-btn'
                     type='button'>
                         {utils.beautifyPrice(currentPrice)}
                     </button>
-
-                    {/* <Route */}
                 </div>
                 <hr/>
                 </div>
@@ -152,7 +147,7 @@ export const Statistics = props => {
             <div className="stats-header"> 
                 <div className="stats-box">
                     <div className="stats-box-title text">Total Investment</div>
-                    <div className="stats-box-value condensed">${utils.beautifyPrice(totalInvested)}</div>
+                    <div className="stats-box-value condensed">{utils.beautifyPrice(totalInvested)}</div>
                     <div className="stats-box-data-row">
                         <div className="data-row-categ text" >Realized Return</div>
                         {renderTotal(true)}
@@ -163,7 +158,7 @@ export const Statistics = props => {
                     </div>
                     <div className="stats-box-data-row">
                         <div className="data-row-categ text">Buying Power</div>
-                        <div className="data-row-value condensed">${utils.beautifyPrice(cash)}</div>
+                        <div className="data-row-value condensed">{utils.beautifyPrice(cash)}</div>
                     </div>
                 </div>
             </div>
