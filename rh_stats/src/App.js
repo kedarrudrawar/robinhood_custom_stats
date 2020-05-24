@@ -12,6 +12,7 @@ import { MFA_Login } from "./components/login/MFA_Login";
 import * as api from './api/api';
 import { ChallengeLogin } from "./components/login/ChallengeLogin";
 import { Statistics } from "./components/statistics/Statistics";
+import auth from './auth';
 
 const App = props => {
   // const [bearerToken, setBearerToken] = useState(process.env.REACT_APP_BEARER);  
@@ -24,45 +25,17 @@ const App = props => {
 
 
   const handleInitialSubmit = async (username, password) => {
-    setUsername(username);
-    setPassword(password);
+    auth.setCredentials(username, password);
     
     // TODO: Validate input
-    let data;
-    try {
-      data = await api.oauth2(username, password);
-      console.log(data);
-      if(api.isMFA(await data)){
-        return {
-          'isMFA': true,
-          'isChallenge': false,
-        };
-      }
-      else if (api.isChallenge(await data)){
-        return {
-          'isMFA': false,
-          'isChallenge': true,
-        };
-      }
-
-      return {
-        'isMFA': false,
-        'isChallenge': false,
-      }; 
-    }
-    catch(err) {
-      alert('invalid credentials');
-      return {
-        'isMFA': false,
-        'isChallenge': false,
-      };
-    }
+    return await auth.initialLogin();
   }
 
   
   const handleMFASubmit = async (mfa_code) => {
+    console.log('in here');
     try {
-      let data = await api.oauth2_MFA(username, password, mfa_code);
+      let data = await api.oauth2_MFA(auth.username, auth.password, mfa_code);
       let [bearer_token, refresh_token, expiry_time] = await data;
       setBearerToken(bearer_token);
       setRefreshToken(refresh_token);
