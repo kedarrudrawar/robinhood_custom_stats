@@ -1,7 +1,5 @@
 import * as urls from './endpoints';
-
-const axios = require('axios');
-
+import axios from 'axios';
 
 const CLIENT_ID = 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS';
 const { v4: uuidv4 } = require('uuid');

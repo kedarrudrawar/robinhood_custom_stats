@@ -1,5 +1,4 @@
 import { Series, DataFrame } from 'pandas-js';
-import axios from 'axios';
 import * as api from '../../api/api';
 
 
@@ -10,7 +9,6 @@ export async function positionsToDF(positions){
 
 
     let df = new DataFrame(positions);
-    // df = df.get(['average_buy_price', 'quantity', 'instrument'])
     let tickerResponse = await api.getFieldFromInstrumentsDF(df, 'symbol');
     let tickerSeries = new Series(tickerResponse, 'tickers');
 
@@ -22,30 +20,18 @@ export async function positionsToDF(positions){
     return df;
 }
 
-async function filterOrdersDF(df)  {
+async function filterOrdersDF(df, categories)  {
     if(df.columns.size === 0){
         return df;
     }
 
-    df = df.get(['average_price', 'quantity', 'side', 'instrument'])
+    df = df.get(categories);
     let tickerResponse = await api.getFieldFromInstrumentsDF(df, 'symbol');
     let tickerSeries = new Series(tickerResponse, 'tickers');
     df = df.set('symbol', tickerSeries);
 
     return df;
 }
-
-
-
-// ----------------------------------------- average buy -----------------------------------------
-export async function getAverageBuys(buyOrders){
-
-}
-
-
-
-
-
 
 
 // ----------------------------------------- profit calculations -----------------------------------------
@@ -59,8 +45,11 @@ export async function getAverageBuys(buyOrders){
 export async function getRealizedProfit(buyOrders, sellOrders){
     let buyDF = new DataFrame(buyOrders);
     let sellDF = new DataFrame(sellOrders);
-    buyDF = await filterOrdersDF(buyDF);
-    sellDF = await filterOrdersDF(sellDF);
+
+    let categories = ['average_price', 'quantity', 'side', 'instrument'];
+
+    buyDF = await filterOrdersDF(buyDF, categories);
+    sellDF = await filterOrdersDF(sellDF, categories);
 
     if (buyDF.columns.size === 0 || sellDF.columns.size === 0 ){
         return null;
@@ -69,6 +58,7 @@ export async function getRealizedProfit(buyOrders, sellOrders){
     let weighted_avg = {};
     let quantity_dict = {};
 
+    // calculate avg sell prices
     for(const row of await sellDF){
         let tick  = row.get('symbol');
         let quantity = parseFloat(row.get('quantity'));
@@ -83,6 +73,7 @@ export async function getRealizedProfit(buyOrders, sellOrders){
 
     }
 
+    // subtract weighted avg buy price from sell price
     for(const row of await buyDF){
         let tick  = row.get('symbol');
         let quantity = parseFloat(row.get('quantity'));

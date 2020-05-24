@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { Redirect, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 const MFA_Login = props => {
     const [mfa_code, setMFAcode] = useState('');

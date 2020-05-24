@@ -7,17 +7,18 @@ import Loading from '../misc/loading';
 
 import * as analysis from './Analysis';
 import { DataFrame } from 'pandas-js/dist/core';
-import auth from '../../auth/auth';
 
 const REALIZED_IDX = 4;
 const UNREALIZED_IDX = 3;
 const df_columns = ['symbol', 'quantity', 'average_buy_price', 'unrealized profit','realized profit', 'price', 'instrument', 'tradability'];
-const history_columns = ['Name', 'Holding', 'Average Cost', 'Unrealized Profit', 'Realized Profit', 'Dividend', 'Current Price'];
+const history_columns = ['Name', 'Holding', 'Average Cost', 'Unrealized Return', 'Realized Return', 'Dividend', 'Current Price'];
 
 export const Statistics = props => {
     // const header = {
     //     'Authorization': `Bearer ${auth.bearer_token}`
     // }
+
+
     const header = {
         'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
     }
@@ -26,8 +27,7 @@ export const Statistics = props => {
     const [totalInvested, setTotalInvested] = useState(0);
     const [cash, setCash] = useState(0);
     
-    const [loading, setLoading] = useState(true);
-    const [data, setData] = useState(null);
+    const [history, setHistory] = useState(null);
 
     // ----------------------------------------- raw account data -----------------------------------------
 
@@ -52,15 +52,15 @@ export const Statistics = props => {
     }, []);
 
 
-
+    // history
     useEffect(() => {
         const updateData = async () => {
             let merged;
             let pos = await api.getPositions(header, false);
             let positionsDF = await analysis.positionsToDF(pos);
             positionsDF = positionsDF.get(['symbol', 'average_buy_price', 'quantity', 'instrument', 'tradability']);
-            // console.log(positionsDF.toString());
 
+            // TODO: figure out how to eliminate watchlist positions 
             // realized profit
             let buyOrders = await api.getOrderHistory(header, ['filled'], 'buy');
             let sellOrders = await api.getOrderHistory(header, ['filled'], 'sell');
@@ -79,12 +79,11 @@ export const Statistics = props => {
             let unreal = await analysis.getUnrealizedProfit(merged);
             let unrealDF = new DataFrame(unreal);
             unrealDF.columns = ['symbol', 'unrealized profit'];
-            // console.log(unrealDF.toString());
             merged = merged.merge(unrealDF, ['symbol'], 'outer');
-            console.log(merged.toString());
+            // console.log(merged.toString());
 
             merged = merged.get(df_columns);
-            console.log(merged.toString());
+            // console.log(merged.toString());
 
             // store data as array of  rows (arrays)
             // data columns represented by history_columns
@@ -95,19 +94,19 @@ export const Statistics = props => {
                 dataRows.push(dataRow);
             }
 
-            dataRows.sort((a, b) => b[4] - a[4]);
+            dataRows.sort((a, b) => b[UNREALIZED_IDX] - a[UNREALIZED_IDX]); // sort by realized profit
 
-            setData(dataRows);
+            setHistory(dataRows);
         }
-        updateData()
-        .then(() => {setLoading(false)});
+        updateData();
+        // .then(() => {setLoading(false)});
     }, []);
 
     function getTotal(realizedBoolean){
         let idx = realizedBoolean ? REALIZED_IDX : UNREALIZED_IDX;
         let total = 0;
-        if(!data) return 0;
-        data.map(row => {
+        if(!history) return 0;
+        history.map(row => {
             total += row[idx];
         });
         return total;
@@ -127,13 +126,14 @@ export const Statistics = props => {
     }
 
     function renderHistory(){
-        if(!data) return <div></div>;
+        if(!history) return <div></div>;
 
-        return data.map(dataRow => {
-            let [symbol, quantity, average_buy_price,unrealizedProfit,realizedProfit, currentPrice, instrument, tradability] = dataRow;
+        return history.map(dataRow => {
+            let [symbol, quantity, average_buy_price,unrealReturn,realReturn, currentPrice, instrument, tradability] = dataRow;
 
-            realizedProfit = utils.beautifyReturns(realizedProfit);
-            unrealizedProfit = utils.beautifyReturns(unrealizedProfit);
+            quantity = quantity % 1 !== 0 ? parseFloat(quantity).toFixed(3) : parseInt(quantity);
+            realReturn = utils.beautifyReturns(realReturn);
+            unrealReturn = utils.beautifyReturns(unrealReturn);
                 
             return (
                 <div>
@@ -141,8 +141,8 @@ export const Statistics = props => {
                     <div className='cell text seven-col'>{symbol}</div>
                     <div className='cell text seven-col'>{quantity}</div>
                     <div className='cell text seven-col'>{utils.beautifyPrice(average_buy_price)}</div>
-                    <div className='cell text seven-col'>{unrealizedProfit}</div>
-                    <div className='cell text seven-col'>{realizedProfit}</div>
+                    <div className='cell text seven-col'>{unrealReturn}</div>
+                    <div className='cell text seven-col'>{realReturn}</div>
                     <div className='cell text seven-col'>-</div>
                     <div className='btn-container seven-col' >
                         <button onClick={() => window.open('http://robinhood.com/stocks/' + symbol)} 
@@ -162,46 +162,48 @@ export const Statistics = props => {
 
 
 
-    if(loading)
+    if(!history)
         return renderLoading();
 
-    return (
-        <div>
-        <Head />
-        <body>
-            <div className="stats-header"> 
-                <div className="stats-box">
-                    <div className="stats-box-title text">Total Investment</div>
-                    <div className="stats-box-value condensed">{utils.beautifyPrice(totalInvested)}</div>
-                    <div className="stats-box-data-row">
-                        <div className="data-row-categ text" >Realized Return</div>
-                        {renderTotal(true)}
+    return !history 
+        ? renderLoading() 
+        : (
+            <div>
+                <Head />
+                <body>
+                    <div className="stats-header"> 
+                        <div className="stats-box">
+                            <div className="stats-box-title text">Total Investment</div>
+                            <div className="stats-box-value condensed">{utils.beautifyPrice(totalInvested)}</div>
+                            <div className="stats-box-data-row">
+                                <div className="data-row-categ text" >Realized Return</div>
+                                {renderTotal(true)}
+                            </div>
+                            <div className="stats-box-data-row">
+                                <div className="data-row-categ text">Unrealized Return</div>
+                                {renderTotal(false)}
+                            </div>
+                            <div className="stats-box-data-row">
+                                <div className="data-row-categ text">Buying Power</div>
+                                <div className="data-row-value condensed">{utils.beautifyPrice(cash)}</div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="stats-box-data-row">
-                        <div className="data-row-categ text">Unrealized Return</div>
-                        {renderTotal(false)}
-                    </div>
-                    <div className="stats-box-data-row">
-                        <div className="data-row-categ text">Buying Power</div>
-                        <div className="data-row-value condensed">{utils.beautifyPrice(cash)}</div>
-                    </div>
-                </div>
-            </div>
 
-            <div className="table-title text">History</div>
-            <div className='table'>
-                <div className='row'>
-                    {history_columns.map(elem => {
-                        return <div className='cell text row-header seven-col'>{elem}</div>;
-                    })}
-                </div>
-                <hr/>
-                {renderHistory()}
-                
+                    <div className="table-title text">History</div>
+                    <div className='table'>
+                        <div className='row'>
+                            {history_columns.map(elem => {
+                                return <div className='cell text row-header seven-col'>{elem}</div>;
+                            })}
+                        </div>
+                        <hr/>
+                        {renderHistory()}
+                        
+                    </div>
+                </body>
             </div>
-        </body>
-        </div>
-    );
+        );
 
 
 }
