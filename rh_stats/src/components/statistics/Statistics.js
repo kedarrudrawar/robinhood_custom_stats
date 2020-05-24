@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import '../../UI/Statistics.css'
+import '../../UI/css/Statistics.css'
 import { Head } from '../misc/html_head'
 import * as api from '../../api/api';
 import * as utils from '../../utils';
+import Loading from '../misc/loading';
 
 import * as analysis from './Analysis';
 import { DataFrame } from 'pandas-js/dist/core';
-import { Redirect, Route } from 'react-router-dom';
 import auth from '../../auth/auth';
 
 const REALIZED_IDX = 4;
@@ -15,12 +15,12 @@ const df_columns = ['symbol', 'quantity', 'average_buy_price', 'unrealized profi
 const history_columns = ['Name', 'Holding', 'Average Cost', 'Unrealized Profit', 'Realized Profit', 'Dividend', 'Current Price'];
 
 export const Statistics = props => {
-    const header = {
-        'Authorization': `Bearer ${auth.bearer_token}`
-    }
     // const header = {
-    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    //     'Authorization': `Bearer ${auth.bearer_token}`
     // }
+    const header = {
+        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    }
 
     
     const [totalInvested, setTotalInvested] = useState(0);
@@ -98,10 +98,9 @@ export const Statistics = props => {
             dataRows.sort((a, b) => b[4] - a[4]);
 
             setData(dataRows);
-            setLoading(false);
         }
-
-        updateData();
+        updateData()
+        .then(() => {setLoading(false)});
     }, []);
 
     function getTotal(realizedBoolean){
@@ -123,7 +122,9 @@ export const Statistics = props => {
         return <div className={className}>{value}</div>
     }
 
-
+    function renderLoading(){
+        return <Loading/>;
+    }
 
     function renderHistory(){
         if(!data) return <div></div>;
@@ -142,7 +143,7 @@ export const Statistics = props => {
                     <div className='cell text seven-col'>{utils.beautifyPrice(average_buy_price)}</div>
                     <div className='cell text seven-col'>{unrealizedProfit}</div>
                     <div className='cell text seven-col'>{realizedProfit}</div>
-                    <div className='cell text seven-col'>{realizedProfit}</div>
+                    <div className='cell text seven-col'>-</div>
                     <div className='btn-container seven-col' >
                         <button onClick={() => window.open('http://robinhood.com/stocks/' + symbol)} 
                         target='_blank' 
@@ -159,9 +160,10 @@ export const Statistics = props => {
         });
     }
 
-    if(loading)
-        return <div>Loading</div>;
 
+
+    if(loading)
+        return renderLoading();
 
     return (
         <div>

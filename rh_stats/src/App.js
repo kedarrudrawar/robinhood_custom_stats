@@ -9,12 +9,9 @@ import {
 
 import { Login } from './components/login/Login';
 import MFA_Login from "./components/login/MFA_Login";
-import * as api from './api/api';
 import { ChallengeLogin } from "./components/login/ChallengeLogin";
 import { Statistics } from "./components/statistics/Statistics";
 import auth from './auth/auth';
-
-
 
 
 const ProtectedRoute = ({component: Component, ...rest}) => {

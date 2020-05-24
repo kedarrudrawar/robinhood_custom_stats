@@ -110,7 +110,6 @@ export async function getRealizedProfit(buyOrders, sellOrders){
  * @param {DataFrame containing symbol, quantity, average buy price, and current price} df 
  */
 export async function getUnrealizedProfit(df){
-    console.log("here");
     let profit = [];
     for(const row of df){
         let symbol = row.get('symbol');
