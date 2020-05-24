@@ -17,10 +17,10 @@ export const Login = props => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        props.onSubmit(username, password)
+        props.onSubmit(username, password) // store credentials in parent state
         .then((result) => {
             if(result.isMFA)
-                props.history.push('/MFA');
+                props.history.push('/MFA'); // redirect to correct page
             else if(result.isChallenge)
                 props.history.push('/challenge')
         });

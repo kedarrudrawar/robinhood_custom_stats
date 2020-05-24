@@ -8,8 +8,9 @@ import * as analysis from './Analysis';
 import { DataFrame } from 'pandas-js/dist/core';
 import { Redirect, Route } from 'react-router-dom';
 
-const REALIZED_IDX = 5;
-const UNREALIZED_IDX = 7;
+const REALIZED_IDX = 4;
+const UNREALIZED_IDX = 3;
+const df_columns = ['symbol', 'quantity', 'average_buy_price', 'unrealized profit','realized profit', 'price', 'instrument', 'tradability'];
 const history_columns = ['Name', 'Holding', 'Average Cost', 'Unrealized Profit', 'Realized Profit', 'Dividend', 'Current Price'];
 const columnWidth = {width : (100 / history_columns.length).toString() + '%'};
 
@@ -79,12 +80,18 @@ export const Statistics = props => {
             merged = merged.merge(unrealDF, ['symbol'], 'outer');
             console.log(merged.toString());
 
+            merged = merged.get(df_columns);
+            console.log(merged.toString());
+
             let dataRows = [];
             for(const row of merged){
                 let entryPair = Array.from(Object.values(row))[1].entries;
                 let dataRow = entryPair.map(pair => pair[1]);
                 dataRows.push(dataRow);
             }
+
+            dataRows.sort((a, b) => b[4] - a[4]);
+
             setData(dataRows);
         }
 
@@ -116,7 +123,7 @@ export const Statistics = props => {
         if(!data) return <div></div>;
 
         return data.map(dataRow => {
-            let [symbol, average_buy_price, quantity,,, realizedProfit, currentPrice, unrealizedProfit] = dataRow;
+            let [symbol, quantity, average_buy_price,unrealizedProfit,realizedProfit, currentPrice, instrument, tradability] = dataRow;
 
             realizedProfit = utils.beautifyReturns(realizedProfit);
             unrealizedProfit = utils.beautifyReturns(unrealizedProfit);

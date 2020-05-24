@@ -4,6 +4,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
+  ProtectedRoute
 } from "react-router-dom";
 
 import {Login} from './components/login/Login';
@@ -12,10 +13,9 @@ import * as api from './api/api';
 import { ChallengeLogin } from "./components/login/ChallengeLogin";
 import { Statistics } from "./components/statistics/Statistics";
 
-
 const App = props => {
-  const [bearerToken, setBearerToken] = useState(process.env.REACT_APP_BEARER);  
-  // const [bearerToken, setBearerToken] = useState();  
+  // const [bearerToken, setBearerToken] = useState(process.env.REACT_APP_BEARER);  
+  const [bearerToken, setBearerToken] = useState();  
   // const [_refreshToken, setRefreshToken] = useState(process.env.REACT_APP_REFRESH);
   const [refreshToken, setRefreshToken] = useState();
   const [expiryTime, setExpiryTime] = useState();
@@ -27,19 +27,18 @@ const App = props => {
     setUsername(username);
     setPassword(password);
     
-    // return false;
     // TODO: Validate input
-    return api.oauth2(username, password)
-    .then(data => {
+    let data;
+    try {
+      data = await api.oauth2(username, password);
       console.log(data);
-      if(api.isMFA(data)){
+      if(api.isMFA(await data)){
         return {
           'isMFA': true,
           'isChallenge': false,
         };
       }
-
-      else if(api.isChallenge(data)){
+      else if (api.isChallenge(await data)){
         return {
           'isMFA': false,
           'isChallenge': true,
@@ -49,36 +48,34 @@ const App = props => {
       return {
         'isMFA': false,
         'isChallenge': false,
-      };
-
-    })
-    .catch(err => {
+      }; 
+    }
+    catch(err) {
       alert('invalid credentials');
       return {
         'isMFA': false,
         'isChallenge': false,
       };
-    });
+    }
   }
 
   
-  const handleMFASubmit = (mfa_code) => {
-
-    return api.oauth2_MFA(username, password, mfa_code)
-    .then((data) => {
-      let [bearer_token, refresh_token, expiry_time] = data;
+  const handleMFASubmit = async (mfa_code) => {
+    try {
+      let data = await api.oauth2_MFA(username, password, mfa_code);
+      let [bearer_token, refresh_token, expiry_time] = await data;
       setBearerToken(bearer_token);
       setRefreshToken(refresh_token);
       setExpiryTime(expiry_time);
       setUsername('');
       setPassword('');
       return true;
-    })
-    .catch(e => {
-      console.log(e);
+    }
+    catch(err){
+      console.log(err);
       return false;
-    });
-  }
+    }
+  };
 
   const handleChallengeSubmit = (challenge_id) => {
     return false;
@@ -89,10 +86,15 @@ const App = props => {
     <Router>
       <div className="App">
         <Switch>
+
           <Route path={['/','/login']} 
-                exact 
-                render = {(props) => <Login {...props} onSubmit={handleInitialSubmit}/>}
-                />
+            exact 
+            render = {(props) => 
+              <Login {...props} 
+                onSubmit={handleInitialSubmit}
+              />}
+            />
+
           <Route path='/MFA' 
             exact 
             render = {(props) => 
@@ -102,6 +104,7 @@ const App = props => {
                 password={password}
               />}
             />
+
           <Route path='/challenge' 
             exact 
             render = {(props) => 
@@ -109,6 +112,7 @@ const App = props => {
                 onSubmit={handleChallengeSubmit}
               />}
             />
+
           <Route path='/stats' 
             render = {props => 
               <Statistics {...props}
