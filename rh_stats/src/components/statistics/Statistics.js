@@ -4,7 +4,7 @@ import { Head } from '../misc/html_head'
 import * as api from '../../api/api';
 import * as utils from '../../utils';
 import Loading from '../misc/loading';
-
+import auth from '../../auth/auth';
 import * as analysis from './Analysis';
 import { DataFrame } from 'pandas-js/dist/core';
 
@@ -14,14 +14,14 @@ const df_columns = ['symbol', 'quantity', 'average_buy_price', 'unrealized profi
 const history_columns = ['Name', 'Holding', 'Average Cost', 'Unrealized Return', 'Realized Return', 'Dividend', 'Current Price'];
 
 export const Statistics = props => {
-    // const header = {
-    //     'Authorization': `Bearer ${auth.bearer_token}`
-    // }
-
-
     const header = {
-        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+        'Authorization': `Bearer ${auth.bearer_token}`
     }
+
+
+    // const header = {
+    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    // }
 
     
     const [totalInvested, setTotalInvested] = useState(0);

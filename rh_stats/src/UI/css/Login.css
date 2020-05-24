@@ -8,8 +8,13 @@
 .Page {
     display: flex;
     align-items: center;
+    justify-content: center;
     /* border: 3px blue solid; */
     height: 100vh;
+}
+
+.mfa {
+    background-color: #F8F8F8;
 }
 
 .graphic {
@@ -26,6 +31,16 @@
     justify-content: center;
     width: 100vw;
     /* border: 3px orange solid; */
+}
+
+.mfa-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 454px;
+    padding: 20px 20px;
+    background-color: white;
+
 }
 
 .login-width {
@@ -61,12 +76,13 @@
 
 .small-title { 
     /* font-family: Roboto; */
+    font-family: IBM Plex Sans;
     font-style: normal;
-    font-weight: normal;
+    font-weight: bold;
     font-size: 16px;
-    line-height: 19px;
+    line-height: 21px;
     /* identical to box height */
-
+    
     /* 800 */
     color: #2D3748;
 }
@@ -85,9 +101,6 @@
     color: #1A202C;
 }
 
-.login-form {
-}
-
 .input-box {
     margin-top: 5px;
     width: 100%;
@@ -95,6 +108,7 @@
     border: 1px solid #E8E8E8;
     border-radius: 5px;
 }
+
 
 .input-text { 
     /* font-family: Roboto; */

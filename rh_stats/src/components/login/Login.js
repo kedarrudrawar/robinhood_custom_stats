@@ -35,7 +35,7 @@ export const Login = props => {
             <div className='login-container'>
                 <div className='login'>
                     <div className='header'>
-                        <div className='small-title login-contents'>Login</div>
+                        {/* <div className='small-title login-contents'>Login</div> */}
                         <div className='large-title login-contents '>Link your Robinhood Account</div>
                     </div>
 
