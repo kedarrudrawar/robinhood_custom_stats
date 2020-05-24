@@ -10,9 +10,11 @@ import { Redirect, Route } from 'react-router-dom';
 
 const REALIZED_IDX = 5;
 const UNREALIZED_IDX = 7;
-const history_columns = ['Name', 'Holding', 'Average Cost', 'Unrealized Profit', 'Realized Profit', 'Current Price'];
+const history_columns = ['Name', 'Holding', 'Average Cost', 'Unrealized Profit', 'Realized Profit', 'Dividend', 'Current Price'];
+const columnWidth = {width : (100 / history_columns.length).toString() + '%'};
 
 export const Statistics = props => {
+    console.log(columnWidth)
     const header = {
         'Authorization': `Bearer ${props.bearer}`
     }
@@ -122,17 +124,21 @@ export const Statistics = props => {
             return (
                 <div>
                 <div className='row'>
-                    <div className='cell text'>{symbol}</div>
-                    <div className='cell text'>{quantity}</div>
-                    <div className='cell text'>{parseFloat(average_buy_price).toFixed(2)}</div>
-                    <div className='cell text'>{unrealizedProfit}</div>
-                    <div className='cell text'>{realizedProfit}</div>
-                    <button onClick={() => window.open('http://robinhood.com/stocks/' + symbol)} 
-                    target='_blank' 
-                    className='text stock-redir-btn'
-                    type='button'>
-                        {utils.beautifyPrice(currentPrice)}
-                    </button>
+                    <div className='cell text seven-col'>{symbol}</div>
+                    <div className='cell text seven-col'>{quantity}</div>
+                    <div className='cell text seven-col'>{utils.beautifyPrice(average_buy_price)}</div>
+                    <div className='cell text seven-col'>{unrealizedProfit}</div>
+                    <div className='cell text seven-col'>{realizedProfit}</div>
+                    <div className='cell text seven-col'>{realizedProfit}</div>
+                    <div className='btn-container seven-col' >
+                        <button onClick={() => window.open('http://robinhood.com/stocks/' + symbol)} 
+                        target='_blank' 
+                        className='text stock-redir-btn'
+                        type='button'>
+                            {utils.beautifyPrice(currentPrice)}
+                        </button>
+                    </div>
+                    
                 </div>
                 <hr/>
                 </div>
@@ -165,9 +171,9 @@ export const Statistics = props => {
 
             <div className="table-title text">History</div>
             <div className='table'>
-                <div className='first row'>
+                <div className='row'>
                     {history_columns.map(elem => {
-                        return <div className='cell text row-header'>{elem}</div>;
+                        return <div className='cell text row-header seven-col'>{elem}</div>;
                     })}
                 </div>
                 <hr/>

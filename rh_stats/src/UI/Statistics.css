@@ -1,3 +1,7 @@
+:root {
+    column-width: 16.6%;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -100,15 +104,16 @@ body {
 .row {
     display: flex;
     flex-wrap: wrap;
-    margin: 0 10em 0 3em;
+    margin: 0 5em 0 3em;
 }
 
-.first {
+/* .first {
+    flex: 1 1 0;
     margin-left: 3.4em;    
-}
+} */
 
 hr {
-    margin: 0 10em 0 3em;
+    margin: 0 8em 0 3em;
     border: 1px solid #F4F4F5
 }
 
@@ -121,7 +126,6 @@ hr {
     display: flex;
     flex-grow: 1;
     flex-wrap: wrap;
-    width: 16.6%;
     
     padding: 2em 1.2em;
     overflow: hidden;
@@ -129,13 +133,46 @@ hr {
     /* border: solid 1px black; */
 }
 
+.row-header {
+    font-style: normal;
+    font-weight: 900;
+    font-size: 12px;
+    line-height: 16px;
+   
+    display: flex;
+    flex-grow: 1;
+    flex-wrap: wrap;
+
+    padding: 1.2em 1.5em;
+    overflow: hidden;
+    /* border: 1px solid blue; */
+}
+
+.btn-container {
+    display: flex;
+    flex-grow: 1;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    /* border: 1px black solid; */
+
+}
+
+.six-col {
+    width: 16.6%
+}
+
+.seven-col {
+    width: 14.28%;
+}
+
 .stock-redir-btn {
     display: flex;
-    margin-top: 7px;
-    padding: 1.5em 1em;
+    margin-left: 1.2em;
+    padding: 5px;
     color: black;
-    width: 16.6%;
-    height: 100%;
+    height: 30px;
 
     font-style: normal;
     font-weight: 400;
@@ -146,11 +183,7 @@ hr {
     border: 1px solid #222222;
 }
 
-.row-header {
-    font-style: normal;
-    font-weight: 900;
-    font-size: 12px;
-    line-height: 16px;
-    padding: 1.2em 1.2em;
+.stock-redir-btn:hover {
+    background-color: #00C804;
 }
 
