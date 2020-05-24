@@ -20,7 +20,7 @@ export const Login = props => {
         props.onSubmit(username, password) // store credentials in parent state
         .then((result) => {
             if(result.isMFA)
-                props.history.push('/MFA'); // redirect to correct page
+                props.history.push('/MFA'); // redirect to subsequent login page
             else if(result.isChallenge)
                 props.history.push('/challenge')
         });

@@ -1,26 +1,30 @@
 import React from 'react';
 import { useState } from 'react';
+import { Redirect, withRouter } from 'react-router-dom';
 
-export const MFA_Login = props => {
+const MFA_Login = props => {
     const [mfa_code, setMFAcode] = useState('');
 
     const changeMFA = (e) => {
         setMFAcode(e.target.value);
     }
 
-    return (
-        <form onSubmit={(e) => {
-            e.preventDefault();
+    const handleSubmit = (e) => {
+        e.preventDefault();
             props.onSubmit(mfa_code)
-            .then(success => {
-                if(success)
-                    props.history.replace('/stats');
-                else{
+            .then((success) => {
+                if(success){
+                    props.history.push('/stats');
+                }
+                else {
                     alert('Invalid MFA code');
-                    props.history.replace('/login');
                 }
             });
-        }} >
+            
+    }
+
+    return (
+        <form onSubmit={handleSubmit} >
             <label>2-Factor Code:
                 <input id="mfa_code" type="text" value={mfa_code} onChange={changeMFA}></input><br/>
             </label>
@@ -28,3 +32,5 @@ export const MFA_Login = props => {
         </form>
     );
 }
+
+export default withRouter(MFA_Login);

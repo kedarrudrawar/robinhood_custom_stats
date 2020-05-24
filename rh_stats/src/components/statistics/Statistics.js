@@ -7,19 +7,22 @@ import * as utils from '../../utils';
 import * as analysis from './Analysis';
 import { DataFrame } from 'pandas-js/dist/core';
 import { Redirect, Route } from 'react-router-dom';
-import auth from '../../auth';
+import auth from '../../auth/auth';
 
 const REALIZED_IDX = 4;
 const UNREALIZED_IDX = 3;
 const df_columns = ['symbol', 'quantity', 'average_buy_price', 'unrealized profit','realized profit', 'price', 'instrument', 'tradability'];
 const history_columns = ['Name', 'Holding', 'Average Cost', 'Unrealized Profit', 'Realized Profit', 'Dividend', 'Current Price'];
-const columnWidth = {width : (100 / history_columns.length).toString() + '%'};
 
 export const Statistics = props => {
     const header = {
         'Authorization': `Bearer ${auth.bearer_token}`
     }
-    console.log(header);
+    // const header = {
+    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    // }
+
+    
     const [totalInvested, setTotalInvested] = useState(0);
     const [cash, setCash] = useState(0);
     
@@ -83,6 +86,8 @@ export const Statistics = props => {
             merged = merged.get(df_columns);
             console.log(merged.toString());
 
+            // store data as array of  rows (arrays)
+            // data columns represented by history_columns
             let dataRows = [];
             for(const row of merged){
                 let entryPair = Array.from(Object.values(row))[1].entries;
@@ -93,6 +98,7 @@ export const Statistics = props => {
             dataRows.sort((a, b) => b[4] - a[4]);
 
             setData(dataRows);
+            setLoading(false);
         }
 
         updateData();
@@ -152,6 +158,10 @@ export const Statistics = props => {
             );
         });
     }
+
+    if(loading)
+        return <div>Loading</div>;
+
 
     return (
         <div>

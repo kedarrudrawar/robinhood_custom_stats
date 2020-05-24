@@ -1,4 +1,4 @@
-import * as api from './api/api';
+import * as api from '../api/api';
 
 class Auth{
     constructor(){
@@ -59,7 +59,9 @@ class Auth{
             this.bearer_token = bearer_token;
             this.refresh_token = refresh_token;
             this.expiry_time = expiry_time;
+
             this.resetCredentials();
+            this.login();
             return true;
         }
         catch(err){
@@ -68,9 +70,8 @@ class Auth{
         }
     }
 
-    login(cb) {
+    login() {
         this.authenticated = true;
-        cb();
     }
 
     logout(cb){
