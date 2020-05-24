@@ -5,6 +5,9 @@ class Auth{
         this.authenticated = false;
         this.username = '';
         this.password = '';
+        this.bearer_token = '';
+        this.refresh_token = '';
+        this.expiry_time = '';
     }
 
 
@@ -46,6 +49,22 @@ class Auth{
                 'isMFA': false,
                 'isChallenge': false,
         };
+        }
+    }
+
+    async loginMFA(mfa_code){
+        try {
+            let data = await api.oauth2_MFA(this.username, this.password, mfa_code);
+            let [bearer_token, refresh_token, expiry_time] = await data;
+            this.bearer_token = bearer_token;
+            this.refresh_token = refresh_token;
+            this.expiry_time = expiry_time;
+            this.resetCredentials();
+            return true;
+        }
+        catch(err){
+            console.log(err);
+            return false;
         }
     }
 

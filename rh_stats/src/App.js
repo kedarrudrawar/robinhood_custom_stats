@@ -33,21 +33,8 @@ const App = props => {
 
   
   const handleMFASubmit = async (mfa_code) => {
-    console.log('in here');
-    try {
-      let data = await api.oauth2_MFA(auth.username, auth.password, mfa_code);
-      let [bearer_token, refresh_token, expiry_time] = await data;
-      setBearerToken(bearer_token);
-      setRefreshToken(refresh_token);
-      setExpiryTime(expiry_time);
-      setUsername('');
-      setPassword('');
-      return true;
-    }
-    catch(err){
-      console.log(err);
-      return false;
-    }
+    return await auth.loginMFA(mfa_code);
+
   };
 
   const handleChallengeSubmit = (challenge_id) => {

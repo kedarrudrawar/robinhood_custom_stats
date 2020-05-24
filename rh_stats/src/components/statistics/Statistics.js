@@ -7,6 +7,7 @@ import * as utils from '../../utils';
 import * as analysis from './Analysis';
 import { DataFrame } from 'pandas-js/dist/core';
 import { Redirect, Route } from 'react-router-dom';
+import auth from '../../auth';
 
 const REALIZED_IDX = 4;
 const UNREALIZED_IDX = 3;
@@ -15,11 +16,10 @@ const history_columns = ['Name', 'Holding', 'Average Cost', 'Unrealized Profit',
 const columnWidth = {width : (100 / history_columns.length).toString() + '%'};
 
 export const Statistics = props => {
-    console.log(columnWidth)
     const header = {
-        'Authorization': `Bearer ${props.bearer}`
+        'Authorization': `Bearer ${auth.bearer_token}`
     }
-    
+    console.log(header);
     const [totalInvested, setTotalInvested] = useState(0);
     const [cash, setCash] = useState(0);
     
