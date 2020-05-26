@@ -3,11 +3,13 @@ export function numberWithCommas(num) {
 }
 
 export function beautifyReturns(num){
+    if(parseFloat(num) === 0) return '-';
+
     return num !== null ? 
         (num >= 0 ? '+$' + numberWithCommas(parseFloat(num).toFixed(2)) : 
-        '-$' + numberWithCommas(Math.abs(parseFloat(num)).toFixed(2))) : '';
+        '-$' + numberWithCommas(Math.abs(parseFloat(num)).toFixed(2))) : '-';
 }
 
 export function beautifyPrice(num){
-    return num !== null ? '$' + numberWithCommas((parseFloat(num).toFixed(2))) : '';
+    return num !== null ? '$' + numberWithCommas((parseFloat(num).toFixed(2))) : '-';
 }

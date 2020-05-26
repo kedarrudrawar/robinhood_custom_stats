@@ -8,7 +8,7 @@ import * as analysis from 'components/statistics/Analysis';
 import { DataFrame } from 'pandas-js/dist/core';
 
 const df_columns = ['symbol', 'quantity', 'average_buy_price', 'unrealized profit','realized profit', 'price', 'instrument', 'tradability', 'dividend'];
-const history_columns = ['Name', 'Holding', 'Average Cost', 'Unrealized Return', 'Realized Return', 'Dividend', 'Current Price'];
+const history_columns = ['Name', 'Holding', 'Average Cost', 'Unrealized Return', 'Realized Return', 'Earning Potential', 'Dividend', 'Current Price'];
 const REALIZED_IDX = df_columns.indexOf('realized profit');
 const UNREALIZED_IDX = df_columns.indexOf('unrealized profit');;
 
@@ -110,7 +110,6 @@ export const Statistics = props => {
             setHistory(dataRows);
         }
         updateData();
-        // .then(() => {setLoading(false)});
     }, []);
 
     function getTotal(realizedBoolean){
@@ -132,38 +131,45 @@ export const Statistics = props => {
         return <div className={className}>{value}</div>
     }
 
-    function renderLoading(){
-        return <Loading/>;
-    }
-
     function renderHistory(){
         if(!history) return <div></div>;
 
         return history.map((dataRow) => {
             let [symbol, quantity, average_buy_price,unrealReturn,realReturn, currentPrice, instrument, tradability, dividend] = dataRow;
 
+            average_buy_price = utils.beautifyPrice(average_buy_price);
             quantity = quantity % 1 !== 0 ? parseFloat(quantity).toFixed(3) : parseInt(quantity);
+            quantity = quantity === 0 ? '-' : quantity; // set to empty string if qty is 0
             realReturn = utils.beautifyReturns(realReturn);
             unrealReturn = utils.beautifyReturns(unrealReturn);
             dividend = utils.beautifyPrice(dividend);
                 
+            const renderPriceButton = () => {
+                if(tradability === 'tradable')
+                    return (
+                        <button onClick={() => window.open('http://robinhood.com/stocks/' + symbol)} 
+                        target='_blank' 
+                        className='text stock-redir-btn'
+                        type='button'>
+                            {utils.beautifyPrice(currentPrice)}
+                            <img class='arrow' src={require('UI/images/arrow.svg')}></img>
+                        </button>
+                    );
+                return '';
+            }
+
             return (
                 <div key={symbol}>
                     <div className='row'>
-                        <div className='cell text seven-col'>{symbol}</div>
-                        <div className='cell text seven-col'>{quantity}</div>
-                        <div className='cell text seven-col'>{utils.beautifyPrice(average_buy_price)}</div>
-                        <div className='cell text seven-col'>{unrealReturn}</div>
-                        <div className='cell text seven-col'>{realReturn}</div>
-                        <div className='cell text seven-col'>{dividend}</div>
-                        <div className='btn-container seven-col' >
-                            <button onClick={() => window.open('http://robinhood.com/stocks/' + symbol)} 
-                            target='_blank' 
-                            className='text stock-redir-btn'
-                            type='button'>
-                                {utils.beautifyPrice(currentPrice)}
-                                <img class='arrow' src={require('UI/images/arrow.svg')}></img>
-                            </button>
+                        <div className='cell text eight-col'>{symbol}</div>
+                        <div className='cell text eight-col'>{quantity}</div>
+                        <div className='cell text eight-col'>{average_buy_price}</div>
+                        <div className='cell text eight-col'>{unrealReturn}</div>
+                        <div className='cell text eight-col'>{realReturn}</div>
+                        <div className='cell text eight-col'>-</div>
+                        <div className='cell text eight-col'>{dividend}</div>
+                        <div className='btn-container eight-col' >
+                           {renderPriceButton()}
                         </div>
                         
                     </div>
@@ -174,12 +180,8 @@ export const Statistics = props => {
     }
 
 
-
-    if(!history)
-        return renderLoading();
-
     return !history 
-        ? renderLoading() 
+        ? <Loading />
         : (
             <div>
                 <Head />
@@ -207,7 +209,7 @@ export const Statistics = props => {
                     <div className='table'>
                         <div className='row'>
                             {history_columns.map((elem, idx) => {
-                                return <div key={idx} className='cell text row-header seven-col'>{elem}</div>;
+                                return <div key={idx} className='cell text row-header eight-col'>{elem}</div>;
                             })}
                         </div>
                         <hr/>

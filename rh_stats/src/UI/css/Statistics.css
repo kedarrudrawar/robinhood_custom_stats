@@ -167,6 +167,10 @@ hr {
     width: 14.28%;
 }
 
+.eight-col {
+    width: 12.5%;
+}
+
 .stock-redir-btn {
     display: flex;
     justify-content: center;
