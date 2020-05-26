@@ -57,15 +57,18 @@ export async function getRealizedProfit(buyOrders, sellOrders){
 
     let weighted_avg = {};
     let quantity_dict = {};
+    let instruments = {};
 
     // calculate avg sell prices
     for(const row of await sellDF){
         let tick  = row.get('symbol');
         let quantity = parseFloat(row.get('quantity'));
         let price = parseFloat(row.get('average_price')); 
+        let instrument = row.get('instrument');
         if (!(tick in weighted_avg)) {
             weighted_avg[tick] = 0;
             quantity_dict[tick] = 0;
+            instruments[tick] = instrument;
         }
         
         weighted_avg[tick] += price * quantity;
@@ -78,6 +81,7 @@ export async function getRealizedProfit(buyOrders, sellOrders){
         let tick  = row.get('symbol');
         let quantity = parseFloat(row.get('quantity'));
         let price = parseFloat(row.get('average_price')); 
+        let instrument = row.get('instrument');
 
         if(!(tick in weighted_avg) || quantity_dict[tick] === 0)  
             continue; // sell orders have been depleted, remaining buys are for current position
@@ -85,12 +89,14 @@ export async function getRealizedProfit(buyOrders, sellOrders){
         quantity = Math.min(quantity, quantity_dict[tick]);
         quantity_dict[tick] -= quantity;
         weighted_avg[tick] -= price * quantity;
+        instruments[tick] = instrument;
     }
 
     let weightedObjArr = Object.keys(weighted_avg).map(key => {
-        return [key, weighted_avg[key]];
+        return [key, weighted_avg[key], instruments[key]];
     })
-    
+
+
     return weightedObjArr;
 }
 

@@ -123,21 +123,10 @@ export function getPortfolio(header){
 
 export function getPositions(header, active=false){
     let data = buildHeaders(header);
-
-    return axios.get(urls.POSITIONS, data)
-    .then(res => processRHObject(res).results)
-    .then(data => {
-        if(active){
-            let filteredArr = [];
-            for(let i = 0; i < data.length; i++){
-                if (parseFloat(data[i]['quantity']) > 0){
-                    filteredArr.push(data[i]);
-                }
-            }
-            return filteredArr;
-        }
-        return data;
-    })
+    let url = active ? urls.POSITIONS_NON_ZERO : urls.POSITIONS;
+    return axios.get(url, data)
+    .then(res => processRHObject(res).results);
+    
 }
 
 // dividends

@@ -7,6 +7,7 @@ export const INSTRUMENTS = BASE_PATH + 'instruments/';
 
 // positions
 export const POSITIONS = BASE_PATH + 'positions/';
+export const POSITIONS_NON_ZERO = POSITIONS + '?nonzero=true';
 
 // portfolio
 export const PORTFOLIOS = BASE_PATH + 'portfolios/';

@@ -5,12 +5,16 @@ import * as api from 'api/api';
 import * as utils from 'utils';
 import Loading from 'components/misc/loading';
 import * as analysis from 'components/statistics/Analysis';
-import { DataFrame } from 'pandas-js/dist/core';
+import { DataFrame, Series } from 'pandas-js/dist/core';
 
-const df_columns = ['symbol', 'quantity', 'average_buy_price', 'unrealized profit','realized profit', 'price', 'instrument', 'tradability', 'dividend'];
-const history_columns = ['Name', 'Holding', 'Average Cost', 'Unrealized Return', 'Realized Return', 'Earning Potential', 'Dividend', 'Current Price'];
+// const df_columns = ['symbol', 'quantity', 'average_buy_price', 'unrealized profit','realized profit', 'price', 'instrument', 'tradability', 'dividend'];
+const df_columns = ['instrument', 'price', 'tradability', 'quantity','average_buy_price','dividend', 'realized profit', 'symbol', 'unrealized profit'];
+const history_columns = ['Name', 'Average Cost', 'Dividend', 'Realized Return', 'Unrealized Return', 'Earning Potential', 'Current Price'];
 const REALIZED_IDX = df_columns.indexOf('realized profit');
 const UNREALIZED_IDX = df_columns.indexOf('unrealized profit');;
+
+
+
 
 export const Statistics = props => {
     // const header = {
@@ -59,17 +63,17 @@ export const Statistics = props => {
             let merged;
 
             // ----- positions -----
-            let pos = await api.getPositions(header, false);
+            let pos = await api.getPositions(header, true);
             let positionsDF = await analysis.positionsToDF(pos);
-            positionsDF = positionsDF.get(['symbol', 'average_buy_price', 'quantity', 'instrument', 'tradability']);
-
+            positionsDF = positionsDF.get(['symbol', 'average_buy_price', 'quantity', 'instrument']);
+            
             // ----- realized profit -----
             let buyOrders = await api.getOrderHistory(header, ['filled'], 'buy');
             let sellOrders = await api.getOrderHistory(header, ['filled'], 'sell');
             let realProfit = await analysis.getRealizedProfit(buyOrders, sellOrders);
             let profitDF = new DataFrame(realProfit);
-            profitDF.columns = ['symbol', 'realized profit'];
-            merged = positionsDF.merge(profitDF, ['symbol'], 'outer');
+            profitDF.columns = ['symbol', 'realized profit', 'instrument'];
+            merged = positionsDF.merge(profitDF, ['symbol', 'instrument'], 'outer');
 
             let currentPrices = await api.getCurrentPricesFromInstrumentsDF(header, merged);
             let pricesDF = new DataFrame(currentPrices);
@@ -88,11 +92,15 @@ export const Statistics = props => {
             let divDF = analysis.dividendsToDF(div);
             merged = merged.merge(divDF, ['instrument'], 'outer');
 
-
+            // ----- tradability -----
+            let tradabilities = await api.getFieldFromInstrumentsDF(merged, 'tradability');
+            let tradeSeries = new Series(tradabilities, 'tradability');
+            merged = merged.set('tradability', tradeSeries);
 
 
             merged = merged.get(df_columns);
             console.log(merged.toString());
+
 
             // store data as array of  rows (arrays)
             // data columns represented by history_columns
@@ -131,14 +139,24 @@ export const Statistics = props => {
         if(!history) return <div></div>;
 
         return history.map((dataRow) => {
-            let [symbol, quantity, average_buy_price,unrealReturn,realReturn, currentPrice, instrument, tradability, dividend] = dataRow;
+
+            let symbol, quantity, average_buy_price,unrealReturn,realReturn, currentPrice, tradability, dividend;
+            symbol = dataRow[df_columns.indexOf('symbol')];
+            quantity = dataRow[df_columns.indexOf('quantity')];
+            average_buy_price = dataRow[df_columns.indexOf('average_buy_price')];
+            unrealReturn = dataRow[df_columns.indexOf('unrealized profit')];
+            realReturn = dataRow[df_columns.indexOf('realized profit')];
+            currentPrice = dataRow[df_columns.indexOf('price')];
+            tradability = dataRow[df_columns.indexOf('tradability')];
+            dividend = dataRow[df_columns.indexOf('dividend')];
+
+
 
             average_buy_price = utils.beautifyPrice(average_buy_price);
+
+            quantity = !quantity ? 0 : quantity;
             quantity = quantity % 1 !== 0 ? parseFloat(quantity).toFixed(3) : parseInt(quantity);
-            quantity = quantity === 0 ? '-' : quantity; // set to empty string if qty is 0
             
-            console.log('real return: ' + parseFloat(realReturn));
-            console.log(typeof(realReturn));
             let realReturnString = utils.beautifyReturns(realReturn);
             let realizedClass = ''; 
             if(parseFloat(realReturn))
@@ -153,30 +171,38 @@ export const Statistics = props => {
             dividend = utils.beautifyPrice(dividend);
                 
             const renderPriceButton = () => {
-                if(tradability === 'tradable')
-                    return (
-                        <button onClick={() => window.open('http://robinhood.com/stocks/' + symbol)} 
-                        target='_blank' 
-                        className='text stock-redir-btn'
-                        type='button'>
-                            {utils.beautifyPrice(currentPrice)}
-                            <img class='arrow' src={require('UI/images/arrow.svg')}></img>
-                        </button>
-                    );
-                return '';
+                if(tradability !== 'tradable')
+                    return null;
+                return (
+                    <button onClick={() => window.open('http://robinhood.com/stocks/' + symbol)} 
+                    target='_blank' 
+                    className='text stock-redir-btn'
+                    type='button'>
+                        {utils.beautifyPrice(currentPrice)}
+                        <img className='arrow' src={require('UI/images/arrow.svg')}></img>
+                    </button>
+                );
             }
 
             return (
                 <div key={symbol}>
                     <div className='row'>
-                        <div className='cell text eight-col'>{symbol}</div>
-                        <div className='cell text eight-col'>{quantity}</div>
-                        <div className='cell text eight-col'>{average_buy_price}</div>
-                        <div className={`cell text eight-col ${unrealizedClass}`}><strong>{unrealReturnString}</strong></div>
-                        <div className={`cell text eight-col ${realizedClass}`}><strong>{realReturnString}</strong></div>
-                        <div className='cell text eight-col'>-</div>
-                        <div className='cell text eight-col'>{dividend}</div>
-                        <div className='btn-container eight-col' >
+                        <div className='value-container seven-col cell'>
+                            <div className='text' >{symbol}</div>
+                            <div style={{fontFamily: "IBM Plex Sans Condensed",
+                                        fontSize: '12px',
+                                        lineHeight: '16px',
+                                        textDecorationLine: 'underline',
+                                        color: '#747384'}}>
+                                {quantity} shares
+                            </div>
+                        </div>
+                        <div className='cell text seven-col'>{average_buy_price}</div>
+                        <div className='cell text seven-col'>{dividend}</div>
+                        <div className={`cell text seven-col ${realizedClass}`}><strong>{realReturnString}</strong></div>
+                        <div className={`cell text seven-col ${unrealizedClass}`}><strong>{unrealReturnString}</strong></div>
+                        <div className='cell text seven-col'>-</div>
+                        <div className='btn-container seven-col' >
                            {renderPriceButton()}
                         </div>
                         
@@ -217,7 +243,7 @@ export const Statistics = props => {
                     <div className='table'>
                         <div className='row'>
                             {history_columns.map((elem, idx) => {
-                                return <div key={idx} className='cell text row-header eight-col'>{elem}</div>;
+                                return <div key={idx} className='cell text row-header seven-col'>{elem}</div>;
                             })}
                         </div>
                         <hr/>
