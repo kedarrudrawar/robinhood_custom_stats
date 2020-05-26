@@ -107,7 +107,8 @@ export async function getUnrealizedProfit(df){
         let quantity = row.get('quantity');
         let average_price = row.get('average_buy_price');
         let current_price = row.get('price');
-        profit.push([symbol, (current_price - average_price) * quantity]);
+        let currProfit = (current_price - average_price) * quantity;
+        profit.push([symbol, currProfit]);
     }
     // console.log(profit);
     return profit;

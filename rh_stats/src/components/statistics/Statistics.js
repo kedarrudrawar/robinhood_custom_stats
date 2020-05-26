@@ -69,7 +69,6 @@ export const Statistics = props => {
             let realProfit = await analysis.getRealizedProfit(buyOrders, sellOrders);
             let profitDF = new DataFrame(realProfit);
             profitDF.columns = ['symbol', 'realized profit'];
-
             merged = positionsDF.merge(profitDF, ['symbol'], 'outer');
 
             let currentPrices = await api.getCurrentPricesFromInstrumentsDF(header, merged);
@@ -88,9 +87,6 @@ export const Statistics = props => {
             let div = await api.getDividends(header, ['paid', 'reinvested']);
             let divDF = analysis.dividendsToDF(div);
             merged = merged.merge(divDF, ['instrument'], 'outer');
-
-
-
 
 
 
@@ -140,8 +136,20 @@ export const Statistics = props => {
             average_buy_price = utils.beautifyPrice(average_buy_price);
             quantity = quantity % 1 !== 0 ? parseFloat(quantity).toFixed(3) : parseInt(quantity);
             quantity = quantity === 0 ? '-' : quantity; // set to empty string if qty is 0
-            realReturn = utils.beautifyReturns(realReturn);
-            unrealReturn = utils.beautifyReturns(unrealReturn);
+            
+            console.log('real return: ' + parseFloat(realReturn));
+            console.log(typeof(realReturn));
+            let realReturnString = utils.beautifyReturns(realReturn);
+            let realizedClass = ''; 
+            if(parseFloat(realReturn))
+                realizedClass = parseFloat(realReturn) > 0 ? 'positive' : 'negative';
+           
+
+            let unrealReturnString = utils.beautifyReturns(unrealReturn);
+            let unrealizedClass = ''; 
+            if(parseFloat(unrealReturn))
+                unrealizedClass = parseFloat(unrealReturn) > 0 ? 'positive' : 'negative';
+            
             dividend = utils.beautifyPrice(dividend);
                 
             const renderPriceButton = () => {
@@ -164,8 +172,8 @@ export const Statistics = props => {
                         <div className='cell text eight-col'>{symbol}</div>
                         <div className='cell text eight-col'>{quantity}</div>
                         <div className='cell text eight-col'>{average_buy_price}</div>
-                        <div className='cell text eight-col'>{unrealReturn}</div>
-                        <div className='cell text eight-col'>{realReturn}</div>
+                        <div className={`cell text eight-col ${unrealizedClass}`}><strong>{unrealReturnString}</strong></div>
+                        <div className={`cell text eight-col ${realizedClass}`}><strong>{realReturnString}</strong></div>
                         <div className='cell text eight-col'>-</div>
                         <div className='cell text eight-col'>{dividend}</div>
                         <div className='btn-container eight-col' >
