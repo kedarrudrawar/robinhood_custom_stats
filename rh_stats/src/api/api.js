@@ -140,27 +140,41 @@ export function getPositions(header, active=false){
     })
 }
 
-// instruments
-
-export const getAllInstruments = async (header) => {
-    let payload = buildHeaders(header);
-    let url = urls.INSTRUMENTS;
-    let nextOrdersLink = await checkForNext(url, payload);
+// dividends
+export const getDividends = async (auth_header, states) => {
+    let payload = buildHeaders(auth_header);
+    let url = urls.DIVIDENDS;
+    let nextDivsLink = await checkForNext(url, payload);
     
-    let instruments = [];
+    let dividends = [];
+    while(await nextDivsLink !== null){
+        dividends = dividends.concat(await axios.get(url, payload)
+        .then(response => processRHObject(response).results)
+        .then(data => {
+            return data.filter((dividendObj) => states.includes(dividendObj['state']));
+        }));
 
-    while(await nextOrdersLink !== null){
-        instruments = instruments.concat(await axios.get(url, payload)
-        .then(res => processRHObject(res).results ));
-
-        url = await nextOrdersLink;
-        nextOrdersLink = await checkForNext(url, payload);
-        console.log(nextOrdersLink);
+        url = await nextDivsLink;
+        nextDivsLink = await checkForNext(url, payload);
+        console.log(nextDivsLink);
     }
 
-    return instruments;
+    dividends = dividends.concat(await axios.get(url, payload)
+    .then(res => processRHObject(res).results )
+    .then(data => {
+        return data.filter((dividendObj) => states.includes(dividendObj['state']));
+    }));
+
+
+    return dividends;
+    
 }
 
+
+
+
+
+// instruments
 
 export const getInstrumentsFromOrders = async (header, orders) => {
     let payload = buildHeaders(header);
@@ -302,30 +316,8 @@ export const getOrderHistory = async (header, state=['filled'], side='') => {
     let url = urls.ORDERS
     let nextOrdersLink = await checkForNext(url, payload);
     let orders = [];
-    while(await nextOrdersLink !== null){
-        orders = orders.concat(await axios.get(url, payload)
-        .then(res => {
-            return processRHObject(res).results;
-        })
-        .then(resData => {
-            if(state.length !== 0){
-                resData = resData.filter(order => state.includes(order['state']));
-            }
-            if(side !== ''){
-                resData = resData.filter(order => order['side'] === side);
-            }
-            return resData;
-        }));
 
-        url = await nextOrdersLink;
-        nextOrdersLink = await checkForNext(url, payload);
-    }
-
-    orders = orders.concat(await axios.get(url, payload)
-    .then(res => {
-        return processRHObject(res).results;
-    })
-    .then(resData => {
+    const filter = (resData) => {
         if(state.length !== 0){
             resData = resData.filter(order => state.includes(order['state']));
         }
@@ -333,8 +325,30 @@ export const getOrderHistory = async (header, state=['filled'], side='') => {
             resData = resData.filter(order => order['side'] === side);
         }
         return resData;
+    }
+
+    while(await nextOrdersLink !== null){
+        orders = orders.concat(await axios.get(url, payload)
+        .then(res => {
+            return processRHObject(res).results;
+        })
+        .then(resData => {
+            return filter(resData);
+        }));
+
+        url = await nextOrdersLink;
+        nextOrdersLink = await checkForNext(url, payload);
+    }
+
+    // request final time
+    orders = orders.concat(await axios.get(url, payload)
+    .then(res => {
+        return processRHObject(res).results;
+    })
+    .then(resData => {
+        return filter(resData);
     }));
-    
+
     // orders are returned by API anti-chronologically
     orders.reverse();
     

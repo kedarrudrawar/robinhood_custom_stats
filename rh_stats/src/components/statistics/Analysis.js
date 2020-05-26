@@ -112,3 +112,13 @@ export async function getUnrealizedProfit(df){
     // console.log(profit);
     return profit;
 }
+
+export function dividendsToDF(dividendsRes){
+    let arr = Array.from(dividendsRes).map(div => {
+        return [div['instrument'], div['amount'], div['rate']];
+    })
+    let df = new DataFrame(arr);
+    df.columns = ['instrument', 'dividend', 'dividend rate'];
+
+    return df;
+}
