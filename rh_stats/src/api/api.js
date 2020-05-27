@@ -136,14 +136,14 @@ export const getDividends = async (auth_header, states) => {
     let nextDivsLink = await checkForNext(url, payload);
     
     let dividends = [];
-    while(await nextDivsLink !== null){
+    while(nextDivsLink !== null){
         dividends = dividends.concat(await axios.get(url, payload)
         .then(response => processRHObject(response).results)
         .then(data => {
             return data.filter((dividendObj) => states.includes(dividendObj['state']));
         }));
 
-        url = await nextDivsLink;
+        url = nextDivsLink;
         nextDivsLink = await checkForNext(url, payload);
         console.log(nextDivsLink);
     }
@@ -304,6 +304,7 @@ export const getOrderHistory = async (header, state=['filled'], side='') => {
 
     let url = urls.ORDERS
     let nextOrdersLink = await checkForNext(url, payload);
+    let nextExists = nextOrdersLink !== null;
     let orders = [];
 
     const filter = (resData) => {
@@ -316,7 +317,8 @@ export const getOrderHistory = async (header, state=['filled'], side='') => {
         return resData;
     }
 
-    while(await nextOrdersLink !== null){
+    while(nextExists){
+        nextExists = nextOrdersLink !== null;
         orders = orders.concat(await axios.get(url, payload)
         .then(res => {
             return processRHObject(res).results;
@@ -324,19 +326,11 @@ export const getOrderHistory = async (header, state=['filled'], side='') => {
         .then(resData => {
             return filter(resData);
         }));
-
-        url = await nextOrdersLink;
-        nextOrdersLink = await checkForNext(url, payload);
+        if(nextExists){
+            url = await nextOrdersLink;
+            nextOrdersLink = await checkForNext(url, payload);
+        }
     }
-
-    // request final time
-    orders = orders.concat(await axios.get(url, payload)
-    .then(res => {
-        return processRHObject(res).results;
-    })
-    .then(resData => {
-        return filter(resData);
-    }));
 
     // orders are returned by API anti-chronologically
     orders.reverse();
