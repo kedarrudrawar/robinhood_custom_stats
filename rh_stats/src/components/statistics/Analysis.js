@@ -1,5 +1,5 @@
 import { Series, DataFrame } from 'pandas-js';
-import * as api from './api/api';
+import * as api from '../../api/api';
 
 
 export async function positionsToDF(positions){

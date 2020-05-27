@@ -1,4 +1,4 @@
-import * as urls from './api/endpoints';
+import * as urls from './endpoints';
 import axios from 'axios';
 
 const CLIENT_ID = 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS';

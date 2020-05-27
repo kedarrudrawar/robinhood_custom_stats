@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import './UI/css/Statistics.css'
-import { Head } from './components/misc/html_head'
-import * as api from './api/api';
-import * as utils from './utils';
-import auth from './auth/auth';
-import Loading from './components/misc/loading';
-import * as analysis from './components/statistics/Analysis';
+import '../../UI/css/Statistics.css'
+import { Head } from '../misc/html_head'
+import * as api from '../../api/api'
+import * as utils from '../../utils';
+import auth from '../../auth/auth';
+import Loading from '../misc/loading';
+import * as analysis from './Analysis';
 import { DataFrame, Series } from 'pandas-js/dist/core';
 
 const df_columns = ['instrument', 'price', 'tradability', 'quantity','average_buy_price','dividend', 'realized profit', 'symbol', 'unrealized profit'];
@@ -316,7 +316,7 @@ export const Statistics = props => {
                     className='text stock-redir-btn'
                     type='button'>
                         {utils.beautifyPrice(currentPrice)}
-                        <img className='arrow' src={require('UI/images/arrow.svg')}></img>
+                        <img className='arrow' src={require('../../UI/images/arrow.svg')}></img>
                     </button>
                 );
             }
