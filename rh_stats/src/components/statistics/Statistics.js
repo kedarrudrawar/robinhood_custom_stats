@@ -186,22 +186,7 @@ export const Statistics = props => {
     function renderHistory(){
         if(!history) return <div></div>;
 
-
-
-
         return history.map((dataRow) => {
-
-            // let symbol, quantity, average_buy_price,unrealReturn,realReturn, currentPrice, tradability, dividend;
-            // symbol = dataRow[df_columns.indexOf('symbol')];
-            // quantity = dataRow[df_columns.indexOf('quantity')];
-            // average_buy_price = dataRow[df_columns.indexOf('average_buy_price')];
-            // unrealReturn = dataRow[df_columns.indexOf('unrealized profit')];
-            // realReturn = dataRow[df_columns.indexOf('realized profit')];
-            // currentPrice = dataRow[df_columns.indexOf('price')];
-            // tradability = dataRow[df_columns.indexOf('tradability')];
-            // dividend = dataRow[df_columns.indexOf('dividend')];
-    
-
             for(let i = 0; i < history_columns2.length; i++){
                 let obj = {...history_columns2[i]};
                 if(obj.df_column_name){
@@ -220,10 +205,6 @@ export const Statistics = props => {
             dividend_obj_idx = findFunc('dividend'),
             averageCost_obj_idx = findFunc('average_buy_price'),
             earningPotential_obj_idx = findFunc('earning potential');
-
-
-
-
 
 
             // render for symbol
@@ -363,16 +344,20 @@ export const Statistics = props => {
                         </div>
                     </div>
 
-                    <div className="table-title text">History</div>
-                    <div className='table'>
-                        <div className='row'>
-                            {history_columns.map((elem, idx) => {
-                                return <div key={idx} className={`cell text row-header ${columnClass}`}>{elem}</div>;
-                            })}
+                    <div className='bottom-container'>
+                        <div className='history-container'>
+                            <div className="table-title text">History</div>
+                            <div className='table'>
+                                <div className='row'>
+                                    {history_columns.map((elem, idx) => {
+                                        return <div key={idx} className={`cell text row-header ${columnClass}`}>{elem}</div>;
+                                    })}
+                                </div>
+                                <hr/>
+                                {renderHistory()}
+                                
+                            </div>
                         </div>
-                        <hr/>
-                        {renderHistory()}
-                        
                     </div>
                 </body>
             </div>

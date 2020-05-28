@@ -56,7 +56,7 @@ describe('Get realized profit -- analysis', () => {
         realProfit = await analysis.getRealizedProfit(buyOrders, sellOrders);
         await expect(realProfit[0]).toHaveLength(3);
     });
-    
+
     it('should return expected profit for full buy/sell orders', async () => {
         realProfit = await analysis.getRealizedProfit(buyOrders, sellOrders);
         let receivedProfit = Number(parseFloat(await realProfit[0][1]).toFixed(2));
@@ -64,7 +64,10 @@ describe('Get realized profit -- analysis', () => {
         await expect(receivedProfit).toEqual(expectedProfit);
     });
 
-    it('should throw error')
+  
+    it('should throw error', () => {
+        expect(false).toBeTruthy();
+    });
 
 
 
