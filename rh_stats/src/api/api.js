@@ -121,6 +121,11 @@ export function getPortfolio(header){
     });
 }
 
+/**
+ * 
+ * @param {object - contains bearer authorization token} header 
+ * @param {boolean - true for only active positions, false for all} active 
+ */
 export function getPositions(header, active=false){
     let data = buildHeaders(header);
     let url = active ? urls.POSITIONS_NON_ZERO : urls.POSITIONS;
