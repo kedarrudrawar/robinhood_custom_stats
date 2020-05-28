@@ -341,8 +341,8 @@ export const Statistics = props => {
                 <body>
                     <div className="stats-header"> 
                         <div className="stats-box">
-                            <div className="stats-box-title text">Total Investment</div>
-                            <div className="stats-box-value condensed">{utils.beautifyPrice(totalInvested)}</div>
+                            <div className="stats-box-title text">Total Portfolio</div>
+                            <div className="stats-box-value condensed">{utils.beautifyPrice(parseFloat(totalInvested) + parseFloat(cash))}</div>
                             <div className="stats-box-data-row">
                                 <div className="data-row-categ text" >Realized Return</div>
                                 {renderTotal(true)}
@@ -354,6 +354,11 @@ export const Statistics = props => {
                             <div className="stats-box-data-row">
                                 <div className="data-row-categ text">Buying Power</div>
                                 <div className="data-row-value condensed">{utils.beautifyPrice(cash)}</div>
+                            </div>
+                            <div className="stats-box-data-row">
+                                <div className="data-row-categ text">Total Investment</div>
+                                <div className="data-row-value condensed">{utils.beautifyPrice(totalInvested)}</div>
+                                
                             </div>
                         </div>
                     </div>

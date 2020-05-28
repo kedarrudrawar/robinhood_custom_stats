@@ -1,6 +1,4 @@
 import * as analysis from './Analysis';
-import { DataFrame } from 'pandas-js/dist/core';
-import axios from 'axios';
 import * as test_vars from './test-variables';
 
 jest.mock('axios');
@@ -27,6 +25,9 @@ let positions;
 let fullPositions;
 let buyOrders;
 let sellOrders;
+
+let emptyBuyOrders;
+let emptySellOrders;
 
 beforeAll(() => {
     positions = test_vars.positions;
@@ -55,10 +56,16 @@ describe('Get realized profit -- analysis', () => {
         realProfit = await analysis.getRealizedProfit(buyOrders, sellOrders);
         await expect(realProfit[0]).toHaveLength(3);
     });
-    it('should return expected profit', async () => {
+    
+    it('should return expected profit for full buy/sell orders', async () => {
         realProfit = await analysis.getRealizedProfit(buyOrders, sellOrders);
         let receivedProfit = Number(parseFloat(await realProfit[0][1]).toFixed(2));
         let expectedProfit = Number((5 * (29.36 - 26)).toFixed(2));
         await expect(receivedProfit).toEqual(expectedProfit);
     });
+
+    it('should throw error')
+
+
+
 });
