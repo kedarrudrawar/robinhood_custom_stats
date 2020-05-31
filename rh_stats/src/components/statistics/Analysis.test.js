@@ -50,7 +50,6 @@ describe('positions to DF', () => {
                 expect(row.get(key)).toEqual(fullPositions[key]);
             }
         }
-
     });
 });
 

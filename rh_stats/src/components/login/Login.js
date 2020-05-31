@@ -59,7 +59,7 @@ export const Login = props => {
                                 onChange={changePassword}>
                             </input><br/>
                         </label><br/>
-                        <button type="submit" className='login-btn login-btn-text login-contents'> Login</button>
+                        <button type="submit" className='login-btn login-btn-text'>Login</button>
                     </form>
                     <div class='note login-contents '>We do not store your Robinhood credentials.</div>
                     </div>
