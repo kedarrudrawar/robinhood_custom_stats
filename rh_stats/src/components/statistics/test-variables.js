@@ -24,7 +24,7 @@ export const fullPositions = {...positions[0],
     "tradability": "tradable", 
 };
 
-export const buyOrders = [
+export const singleBuyOrder = [
     // buy 15 MRNA at $26
     {
         "id": "ae07ba70-0bb6-468f-9ef6-e08c543ac415",
@@ -83,7 +83,7 @@ export const buyOrders = [
        
 ];
 
-export const sellOrders = [
+export const singleSellOrder = [
     // sell 5 MRNA at $29.36
     {
         "id": "99a63304-adc1-49de-aa0f-3c14f871bdb9",
@@ -140,3 +140,338 @@ export const sellOrders = [
     },
 
 ];
+
+export const multipleBuyOrders = [
+    ...singleBuyOrder, 
+    // buy 3 FANG @  32.91
+    {
+        "id": "2d5e4d72-df78-4335-a3cb-a4a1fac00787",
+        "ref_id": "B3207B6A-46F0-41F3-84F5-DCD359074F38",
+        "url": "https://api.robinhood.com/orders/2d5e4d72-df78-4335-a3cb-a4a1fac00787/",
+        "account": "https://api.robinhood.com/accounts/925501777/",
+        "position": "https://api.robinhood.com/positions/925501777/00815789-becf-4d44-8733-032d602a33d8/",
+        "cancel": null,
+        "instrument": "https://api.robinhood.com/instruments/00815789-becf-4d44-8733-032d602a33d8/",
+        "cumulative_quantity": "3.00000000",
+        "average_price": "32.91330000",
+        "fees": "0.00",
+        "state": "filled",
+        "type": "market",
+        "side": "buy",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "price": "34.58000000",
+        "stop_price": null,
+        "quantity": "3.00000000",
+        "reject_reason": null,
+        "created_at": "2020-04-07T19:04:05.755685Z",
+        "updated_at": "2020-04-07T19:04:06.330907Z",
+        "last_transaction_at": "2020-04-07T19:04:05.849000Z",
+        "executions": [
+            {
+                "price": "32.91490000",
+                "quantity": "3.00000000",
+                "settlement_date": "2020-04-09",
+                "timestamp": "2020-04-07T19:04:05.849000Z",
+                "id": "23586925-a125-411c-bad9-48725d6e9f34"
+            }
+        ],
+        "extended_hours": false,
+        "override_dtbp_checks": false,
+        "override_day_trade_checks": false,
+        "response_category": null,
+        "stop_triggered_at": null,
+        "last_trail_price": null,
+        "last_trail_price_updated_at": null,
+        "dollar_based_amount": null,
+        "drip_dividend_id": null,
+        "total_notional": {
+            "amount": "103.74",
+            "currency_code": "USD",
+            "currency_id": "1072fc76-1862-41ab-82c2-485837590762"
+        },
+        "executed_notional": {
+            "amount": "98.74",
+            "currency_code": "USD",
+            "currency_id": "1072fc76-1862-41ab-82c2-485837590762"
+        },
+        "investment_schedule_id": null
+    },
+
+    // buy 1 NEE @ $237.00
+    {
+        "id": "7ea76211-3cfc-472c-8d66-824ae91f8040",
+        "ref_id": "2AB22D12-5489-4A82-9ACA-4169E8BE9730",
+        "url": "https://api.robinhood.com/orders/7ea76211-3cfc-472c-8d66-824ae91f8040/",
+        "account": "https://api.robinhood.com/accounts/925501777/",
+        "position": "https://api.robinhood.com/positions/925501777/68bae46a-c0a5-4cda-86a9-1d2460b0b7d3/",
+        "cancel": null,
+        "instrument": "https://api.robinhood.com/instruments/68bae46a-c0a5-4cda-86a9-1d2460b0b7d3/",
+        "cumulative_quantity": "1.00000000",
+        "average_price": "237.00000000",
+        "fees": "0.00",
+        "state": "filled",
+        "type": "limit",
+        "side": "buy",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "price": "237.00000000",
+        "stop_price": null,
+        "quantity": "1.00000000",
+        "reject_reason": null,
+        "created_at": "2020-04-24T16:29:07.739507Z",
+        "updated_at": "2020-04-24T16:34:49.442914Z",
+        "last_transaction_at": "2020-04-24T16:34:49.020000Z",
+        "executions": [
+            {
+                "price": "237.00000000",
+                "quantity": "1.00000000",
+                "settlement_date": "2020-04-28",
+                "timestamp": "2020-04-24T16:34:49.020000Z",
+                "id": "c6596c5b-4d2a-4ed0-b05b-7231a343c98f"
+            }
+        ],
+        "extended_hours": false,
+        "override_dtbp_checks": false,
+        "override_day_trade_checks": false,
+        "response_category": null,
+        "stop_triggered_at": null,
+        "last_trail_price": null,
+        "last_trail_price_updated_at": null,
+        "dollar_based_amount": null,
+        "drip_dividend_id": null,
+        "total_notional": {
+            "amount": "237.00",
+            "currency_code": "USD",
+            "currency_id": "1072fc76-1862-41ab-82c2-485837590762"
+        },
+        "executed_notional": {
+            "amount": "237.00",
+            "currency_code": "USD",
+            "currency_id": "1072fc76-1862-41ab-82c2-485837590762"
+        },
+        "investment_schedule_id": null
+    },
+     
+    // buy 1 NEE @ $203.29
+    {
+        "id": "2cd09ca9-6c48-413f-97e0-a80359e1c459",
+        "ref_id": "29C44E6E-1F12-4654-99CF-AE1F602519D6",
+        "url": "https://api.robinhood.com/orders/2cd09ca9-6c48-413f-97e0-a80359e1c459/",
+        "account": "https://api.robinhood.com/accounts/925501777/",
+        "position": "https://api.robinhood.com/positions/925501777/68bae46a-c0a5-4cda-86a9-1d2460b0b7d3/",
+        "cancel": null,
+        "instrument": "https://api.robinhood.com/instruments/68bae46a-c0a5-4cda-86a9-1d2460b0b7d3/",
+        "cumulative_quantity": "1.00000000",
+        "average_price": "203.29000000",
+        "fees": "0.00",
+        "state": "filled",
+        "type": "market",
+        "side": "buy",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "price": "213.40000000",
+        "stop_price": null,
+        "quantity": "1.00000000",
+        "reject_reason": null,
+        "created_at": "2020-03-16T19:34:14.027358Z",
+        "updated_at": "2020-03-16T19:34:14.607578Z",
+        "last_transaction_at": "2020-03-16T19:34:14.146000Z",
+        "executions": [
+            {
+                "price": "203.28730000",
+                "quantity": "1.00000000",
+                "settlement_date": "2020-03-18",
+                "timestamp": "2020-03-16T19:34:14.146000Z",
+                "id": "8ffc4ac1-8538-40db-bbfe-ba9ebd49f247"
+            }
+        ],
+        "extended_hours": false,
+        "override_dtbp_checks": false,
+        "override_day_trade_checks": false,
+        "response_category": null,
+        "stop_triggered_at": null,
+        "last_trail_price": null,
+        "last_trail_price_updated_at": null,
+        "dollar_based_amount": null,
+        "drip_dividend_id": null,
+        "total_notional": {
+            "amount": "213.40",
+            "currency_code": "USD",
+            "currency_id": "1072fc76-1862-41ab-82c2-485837590762"
+        },
+        "executed_notional": {
+            "amount": "203.29",
+            "currency_code": "USD",
+            "currency_id": "1072fc76-1862-41ab-82c2-485837590762"
+        },
+        "investment_schedule_id": null
+    },
+
+    // buy 0.00106700 AMZN @ $1780.6935
+    {
+        "id": "0645d156-ba33-48cd-a85b-4552be708f6a",
+        "ref_id": "89A76B18-42EB-4034-B2BF-18A4C0F864F8",
+        "url": "https://api.robinhood.com/orders/0645d156-ba33-48cd-a85b-4552be708f6a/",
+        "account": "https://api.robinhood.com/accounts/925501777/",
+        "position": "https://api.robinhood.com/positions/925501777/c0bb3aec-bd1e-471e-a4f0-ca011cbec711/",
+        "cancel": null,
+        "instrument": "https://api.robinhood.com/instruments/c0bb3aec-bd1e-471e-a4f0-ca011cbec711/",
+        "cumulative_quantity": "0.00106700",
+        "average_price": "1780.69350000",
+        "fees": "0.00",
+        "state": "filled",
+        "type": "market",
+        "side": "buy",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "price": "1872.66000000",
+        "stop_price": null,
+        "quantity": "0.00106700",
+        "reject_reason": null,
+        "created_at": "2019-12-18T21:57:18.381285Z",
+        "updated_at": "2019-12-19T14:30:52.837825Z",
+        "last_transaction_at": "2019-12-19T14:30:08.861445Z",
+        "executions": [
+            {
+                "price": "1780.01000000",
+                "quantity": "0.00106700",
+                "settlement_date": "2019-12-23",
+                "timestamp": "2019-12-19T14:30:08.861445Z",
+                "id": "c0a59454-9ad8-448c-8e2e-ab04c4178a06"
+            }
+        ],
+        "extended_hours": false,
+        "override_dtbp_checks": false,
+        "override_day_trade_checks": false,
+        "response_category": null,
+        "stop_triggered_at": null,
+        "last_trail_price": null,
+        "last_trail_price_updated_at": null,
+        "dollar_based_amount": {
+            "amount": "2.00000000",
+            "currency_code": "USD",
+            "currency_id": "1072fc76-1862-41ab-82c2-485837590762"
+        },
+        "drip_dividend_id": null,
+        "total_notional": {
+            "amount": "2.00",
+            "currency_code": "USD",
+            "currency_id": "1072fc76-1862-41ab-82c2-485837590762"
+        },
+        "executed_notional": {
+            "amount": "1.90",
+            "currency_code": "USD",
+            "currency_id": "1072fc76-1862-41ab-82c2-485837590762"
+        },
+        "investment_schedule_id": null
+    },
+
+
+]
+
+export const multipleSellOrders = [
+    ...singleSellOrder, 
+    // 2 NEE @ $236.96
+    {
+        "id": "92041639-071d-4784-8e51-0e2c8ba2bd2f",
+        "ref_id": "FC3FF229-6F62-40E7-AB2A-0F733855E39E",
+        "url": "https://api.robinhood.com/orders/92041639-071d-4784-8e51-0e2c8ba2bd2f/",
+        "account": "https://api.robinhood.com/accounts/925501777/",
+        "position": "https://api.robinhood.com/positions/925501777/68bae46a-c0a5-4cda-86a9-1d2460b0b7d3/",
+        "cancel": null,
+        "instrument": "https://api.robinhood.com/instruments/68bae46a-c0a5-4cda-86a9-1d2460b0b7d3/",
+        "cumulative_quantity": "2.00000000",
+        "average_price": "236.96000000",
+        "fees": "0.00",
+        "state": "filled",
+        "type": "market",
+        "side": "sell",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "price": null,
+        "stop_price": null,
+        "quantity": "2.00000000",
+        "reject_reason": null,
+        "created_at": "2020-05-26T14:56:40.081581Z",
+        "updated_at": "2020-05-26T14:56:40.795808Z",
+        "last_transaction_at": "2020-05-26T14:56:40.373000Z",
+        "executions": [
+            {
+                "price": "236.95940000",
+                "quantity": "2.00000000",
+                "settlement_date": "2020-05-28",
+                "timestamp": "2020-05-26T14:56:40.371000Z",
+                "id": "e3bf5673-2939-4434-9bd0-608b6f12f8d6"
+            }
+        ],
+        "extended_hours": false,
+        "override_dtbp_checks": false,
+        "override_day_trade_checks": false,
+        "response_category": null,
+        "stop_triggered_at": null,
+        "last_trail_price": null,
+        "last_trail_price_updated_at": null,
+        "dollar_based_amount": null,
+        "drip_dividend_id": null,
+        "total_notional": null,
+        "executed_notional": {
+            "amount": "473.92",
+            "currency_code": "USD",
+            "currency_id": "1072fc76-1862-41ab-82c2-485837590762"
+        },
+        "investment_schedule_id": null
+    }, 
+
+    // 2 FANG @ $44.01
+    {
+        "id": "1276000a-ffc9-43d4-8813-17db50b2f558",
+        "ref_id": "9A922E4B-BC4B-4C18-A6DE-4EF38B2208E4",
+        "url": "https://api.robinhood.com/orders/1276000a-ffc9-43d4-8813-17db50b2f558/",
+        "account": "https://api.robinhood.com/accounts/925501777/",
+        "position": "https://api.robinhood.com/positions/925501777/00815789-becf-4d44-8733-032d602a33d8/",
+        "cancel": null,
+        "instrument": "https://api.robinhood.com/instruments/00815789-becf-4d44-8733-032d602a33d8/",
+        "cumulative_quantity": "2.00000000",
+        "average_price": "44.00500000",
+        "fees": "0.00",
+        "state": "filled",
+        "type": "market",
+        "side": "sell",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "price": null,
+        "stop_price": null,
+        "quantity": "2.00000000",
+        "reject_reason": null,
+        "created_at": "2020-04-29T19:55:03.861321Z",
+        "updated_at": "2020-04-29T19:55:04.419559Z",
+        "last_transaction_at": "2020-04-29T19:55:03.955000Z",
+        "executions": [
+            {
+                "price": "44.00600000",
+                "quantity": "2.00000000",
+                "settlement_date": "2020-05-01",
+                "timestamp": "2020-04-29T19:55:03.946000Z",
+                "id": "be5b4d48-6baa-4d55-996e-4d12c198ac3b"
+            }
+        ],
+        "extended_hours": false,
+        "override_dtbp_checks": false,
+        "override_day_trade_checks": false,
+        "response_category": null,
+        "stop_triggered_at": null,
+        "last_trail_price": null,
+        "last_trail_price_updated_at": null,
+        "dollar_based_amount": null,
+        "drip_dividend_id": null,
+        "total_notional": null,
+        "executed_notional": {
+            "amount": "88.01",
+            "currency_code": "USD",
+            "currency_id": "1072fc76-1862-41ab-82c2-485837590762"
+        },
+        "investment_schedule_id": null
+    },
+];
+

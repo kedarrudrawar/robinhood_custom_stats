@@ -51,10 +51,6 @@ export async function getRealizedProfit(buyOrders, sellOrders){
     buyDF = await filterOrdersDF(buyDF, categories);
     sellDF = await filterOrdersDF(sellDF, categories);
 
-    if (buyDF.columns.size === 0 || sellDF.columns.size === 0 ){
-        return null;
-    }
-
     let weighted_avg = {};
     let quantity_dict = {};
     let instruments = {};
@@ -91,7 +87,6 @@ export async function getRealizedProfit(buyOrders, sellOrders){
         weighted_avg[tick] -= price * quantity;
         instruments[tick] = instrument;
     }
-
     let weightedObjArr = Object.keys(weighted_avg).map(key => {
         return [key, weighted_avg[key], instruments[key]];
     })

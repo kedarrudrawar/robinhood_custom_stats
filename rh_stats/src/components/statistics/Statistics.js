@@ -346,7 +346,8 @@ export const Statistics = props => {
 
                     <div className='bottom-container'>
                         <div className='history-container'>
-                            <div className="table-title text">History</div>
+                            <div className="history-header updated-stats">Updated at:</div>
+                            <div className="history-header table-title text">History</div>
                             <div className='table'>
                                 <div className='row'>
                                     {history_columns.map((elem, idx) => {
