@@ -57,14 +57,14 @@ const UNREALIZED_IDX = df_columns.indexOf('unrealized profit');
 
 
 export const Statistics = props => {
-    // const header = {
-    //     'Authorization': `Bearer ${auth.bearer_token}`
-    // }
-
-
     const header = {
-        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+        'Authorization': `Bearer ${auth.bearer_token}`
     }
+
+
+    // const header = {
+    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    // }
 
     
     const [totalInvested, setTotalInvested] = useState(0);
