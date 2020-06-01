@@ -22,7 +22,7 @@ export const BODY = {
     'challenge_type': 'email',
 }
 
-export function oauth2(username, password){
+export async function oauth2(username, password){
     let data = {
         headers: HEADERS,
     }
@@ -30,15 +30,15 @@ export function oauth2(username, password){
     data['username'] = username;
     data['password'] = password;
 
-    return axios.post(urls.OAUTH2, data)
-        .then((response) => {
-            let res = response.data;
-            return res;
-        })
-        .catch((err) => {
-            console.log("got an error yall");
-            console.log(err);
-        });
+    try {
+        const response = await axios.post(urls.OAUTH2, data);
+        let res = response.data;
+        return res;
+    }
+    catch (err) {
+        console.log("got an error yall");
+        console.log(err);
+    }
 }
 
 export function isMFA(responseData){
@@ -57,7 +57,7 @@ export function getChallenge(){
 
 }
 
-export function oauth2_MFA(username, password, mfa_code){
+export async function oauth2_MFA(username, password, mfa_code){
     let BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME;
     let data = {
         headers: HEADERS,
@@ -67,18 +67,18 @@ export function oauth2_MFA(username, password, mfa_code){
     data['password'] = password;
     data['mfa_code'] = mfa_code;
 
-    return axios.post(urls.OAUTH2, data)
-        .then((response) => {
-            let res = response.data;
-            BEARER_TOKEN = res['access_token'];
-            REFRESH_TOKEN = res['refresh_token'];
-            EXPIRY_TIME = new Date().getTime() / 1000 + res['expires_in'];
-            return [BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME];
-        })
-        .catch((err) => {
-            console.log("got an error yall");
-            console.log(err);
-        });
+    try {
+        const response = await axios.post(urls.OAUTH2, data);
+        let res = response.data;
+        BEARER_TOKEN = res['access_token'];
+        REFRESH_TOKEN = res['refresh_token'];
+        EXPIRY_TIME = new Date().getTime() / 1000 + res['expires_in'];
+        return [BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME];
+    }
+    catch (err) {
+        console.log("got an error yall");
+        console.log(err);
+    }
 }
 
 
@@ -123,11 +123,11 @@ export function getPortfolio(header){
  * @param {object - contains bearer authorization token} header 
  * @param {boolean - true for only active positions, false for all} active 
  */
-export function getPositions(header, active=false){
+export async function getPositions(header, active=false){
     let data = buildHeaders(header);
     let url = active ? urls.POSITIONS_NON_ZERO : urls.POSITIONS;
-    return axios.get(url, data)
-    .then(res => processRHObject(res).results);
+    const res = await axios.get(url, data);
+    return processRHObject(res).results;
     
 }
 
@@ -148,13 +148,10 @@ export const getDividends = async (auth_header, states) => {
         url = nextDivsLink;
         nextDivsLink = await checkForNext(url, payload);
     }
-
-    dividends = dividends.concat(await axios.get(url, payload)
-    .then(res => processRHObject(res).results )
-    .then(data => {
-        return data.filter((dividendObj) => states.includes(dividendObj['state']));
-    }));
-
+    
+    let res = await axios.get(url, payload);
+    let data = processRHObject(res).results;
+    dividends = dividends.concat(data.filter((dividendObj) => states.includes(dividendObj['state'])));
 
     return dividends;
     
@@ -305,7 +302,7 @@ export const getOrderHistory = async (header, state=['filled'], side='') => {
 
     let url = urls.ORDERS
     let nextOrdersLink = await checkForNext(url, payload);
-    let nextExists = nextOrdersLink !== null;
+    let nextExists = true; 
     let orders = [];
 
     const filter = (resData) => {
@@ -332,7 +329,7 @@ export const getOrderHistory = async (header, state=['filled'], side='') => {
             nextOrdersLink = await checkForNext(url, payload);
         }
     }
-
+    
     // orders are returned by API anti-chronologically
     orders.reverse();
     

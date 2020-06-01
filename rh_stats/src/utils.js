@@ -17,3 +17,10 @@ export function beautifyPrice(num){
 export function zeroesArray(length) {
     return Array.apply(null, Array(length)).map(() => 0);
 }
+
+export const numDict = {
+    6: 'six',
+    7: 'seven',
+    8: 'eight',
+    9: 'nine'
+};

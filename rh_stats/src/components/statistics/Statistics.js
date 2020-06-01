@@ -12,10 +12,6 @@ const df_columns = ['instrument', 'price', 'tradability', 'quantity','average_bu
 const history_columns = ['Name', 'Average Cost', 'Dividend', 'Realized Return', 'Unrealized Return', 'Current Price'];
 const all_fields = [...history_columns, 'Tradability', 'Quantity'];
 
-
-
-
-
 let keyword_mapping = {
     'Name': 'symbol',
     'Average Cost': 'average_buy_price',
@@ -28,7 +24,14 @@ let keyword_mapping = {
     'Quantity': 'quantity',
 };
 
-let history_columns2 = all_fields.map((element) => (
+/**
+ * stores each category
+ *  - how to render
+ *  - category name for display
+ *  - category lookup name in DF
+ *  - data = value for each row (gets overriden while filling in table)
+ */
+let history_spec = all_fields.map((element) => (
     {
         render: () => {},
         display_column_name: element,
@@ -38,20 +41,13 @@ let history_columns2 = all_fields.map((element) => (
 
 ))
 
+const findIdx = (df_column_name) => history_spec.findIndex((object) => object.df_column_name === df_column_name);   
 
-
-const numDict = {
-    6: 'six',
-    7: 'seven',
-    8: 'eight',
-    9: 'nine'
-};
-const columnClass = numDict[history_columns.length] + '-col';
+const columnClass = utils.numDict[history_columns.length] + '-col';
 
 
 
-const REALIZED_IDX = df_columns.indexOf('realized profit');
-const UNREALIZED_IDX = df_columns.indexOf('unrealized profit');
+
 
 
 
@@ -65,7 +61,6 @@ export const Statistics = props => {
     // const header = {
     //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
     // }
-
     
     const [totalInvested, setTotalInvested] = useState(0);
     const [cash, setCash] = useState(0);
@@ -97,8 +92,6 @@ export const Statistics = props => {
 
     // history
     useEffect(() => {
-        
-        // TODO: figure out how to eliminate watchlist positions 
         const updateData = async () => {
             let merged;
 
@@ -107,12 +100,12 @@ export const Statistics = props => {
             let positionsDF = await analysis.positionsToDF(pos);
             positionsDF = positionsDF.get(['symbol', 'average_buy_price', 'quantity', 'instrument']);
             merged = positionsDF;
-            // console.log(merged.toString());
             
             // ----- realized profit -----
             let buyOrders = await api.getOrderHistory(header, ['filled'], 'buy');
             let sellOrders = await api.getOrderHistory(header, ['filled'], 'sell');
             let realProfit = await analysis.getRealizedProfit(buyOrders, sellOrders);
+            
             let profitDF = new DataFrame(realProfit);
             if(profitDF.length){
                 profitDF.columns = ['symbol', 'realized profit', 'instrument'];
@@ -121,7 +114,6 @@ export const Statistics = props => {
             else {
                 merged = merged.set('realized profit', utils.zeroesArray(merged.length));
             }
-            
 
             let currentPrices = await api.getCurrentPricesFromInstrumentsDF(header, merged);
             let pricesDF = new DataFrame(currentPrices);
@@ -150,9 +142,14 @@ export const Statistics = props => {
             let tradeSeries = new Series(tradabilities, 'tradability');
             merged = merged.set('tradability', tradeSeries);
 
+            // ----- symbols -----
+            let symbols = await api.getFieldFromInstrumentsDF(merged, 'symbol');
+            let symbolSeries = new Series(symbols, 'symbol');
+            merged = merged.set('symbol', symbolSeries);
+
+
             // console.log(merged.toString());
             merged = merged.get(df_columns);
-            // console.log(merged.toString());
 
 
             // store data as array of  rows (arrays)
@@ -163,13 +160,7 @@ export const Statistics = props => {
                 dataRows.push(dataRow);
             }
 
-            let index = df_columns.indexOf('realized profit');
-            let ascending = false;
-            dataRows.sort((a, b) => {
-                if (b[index] < a[index])
-                    return ascending ? 1 : -1;
-                return ascending ? -1 : 1;
-            });
+            dataRows = sortColumns(dataRows, 'symbol');
             
 
             setHistory(dataRows);
@@ -177,9 +168,22 @@ export const Statistics = props => {
         updateData();
     }, []);
 
+    const sortColumns = (dataRows, category) => {
+        let index = df_columns.indexOf(category);
+        let ascending = true;
+        dataRows.sort((a, b) => {
+            if (b[index] < a[index])
+                return ascending ? 1 : -1;
+            return ascending ? -1 : 1;
+        });
+        return dataRows;
+    }
 
     
     function getTotal(realizedBoolean){
+        const REALIZED_IDX = df_columns.indexOf('realized profit');
+        const UNREALIZED_IDX = df_columns.indexOf('unrealized profit');
+
         let idx = realizedBoolean ? REALIZED_IDX : UNREALIZED_IDX;
         let total = 0;
         if(!history) return 0;
@@ -198,129 +202,132 @@ export const Statistics = props => {
         return <div className={className}>{value}</div>
     }
 
+    function populateHistorySpec(){
+        let symbol_obj_idx = findIdx('symbol'),
+        quantity_obj_idx = findIdx('quantity'),
+        currentPrice_obj_idx = findIdx('price'),
+        tradability_obj_idx = findIdx('tradability'),
+        realized_obj_idx = findIdx('realized profit'),
+        unrealized_obj_idx = findIdx('unrealized profit'),
+        dividend_obj_idx = findIdx('dividend'),
+        averageCost_obj_idx = findIdx('average_buy_price'),
+        earningPotential_obj_idx = findIdx('earning potential');
+
+
+        // render for symbol
+        if(history_spec[symbol_obj_idx]){
+            let quantity = history_spec[quantity_obj_idx].data || '0';
+            if(quantity !== '0')
+                quantity = quantity % 1 !== 0 ? parseFloat(quantity).toFixed(3) : parseInt(quantity);
+        
+            
+            history_spec[symbol_obj_idx].render = () => (
+                <div className={`value-container ${columnClass} cell`}>
+                    <div className='text' >{history_spec[symbol_obj_idx].data}</div>
+                    <div style={{fontSize: '12px',
+                                lineHeight: '16px',
+                                textDecorationLine: 'underline',
+                                color: '#747384'}}>
+                        {quantity} shares
+                    </div>
+                </div>
+            );
+        }
+            
+        // render for current price
+        const renderPriceButton = (symbol, tradability, currentPrice) => {
+            if(tradability !== 'tradable')
+                return null;
+            return (
+                <button onClick={() => window.open('http://robinhood.com/stocks/' + symbol)} 
+                target='_blank' 
+                className='text stock-redir-btn'
+                type='button'>
+                    {utils.beautifyPrice(currentPrice)}
+                    <img className='arrow' src={require('../../UI/images/arrow.svg')}></img>
+                </button>
+            );
+        }
+
+
+        if(history_spec[currentPrice_obj_idx]){
+            let symbol = history_spec[symbol_obj_idx].data;
+            history_spec[currentPrice_obj_idx].render = () => {
+                let tradability = history_spec[tradability_obj_idx].data;
+                let currentPrice = history_spec[currentPrice_obj_idx].data;
+                return (
+                    <div className={`btn-container ${columnClass}`}>
+                            {renderPriceButton(symbol, tradability, currentPrice)}
+                    </div>
+                );
+            };
+        }
+
+        // render for returns
+        // realized
+        if(history_spec[realized_obj_idx])
+            history_spec[realized_obj_idx].render = () => {
+                let data = history_spec[realized_obj_idx].data;
+
+                let realReturnString = utils.beautifyReturns(data);
+                let realizedClass = ''; 
+                if(parseFloat(data))
+                    realizedClass = parseFloat(data) > 0 ? 'positive' : 'negative';
+            
+                return <div className={`cell text ${columnClass} ${realizedClass}`}>{realReturnString}</div>;
+            };
+        // unrealized
+        if(history_spec[unrealized_obj_idx])
+            history_spec[unrealized_obj_idx].render = () => {
+                let data = history_spec[unrealized_obj_idx].data;
+
+                let unrealReturnString = utils.beautifyReturns(data);
+                let unrealizedClass = ''; 
+                if(parseFloat(data))
+                    unrealizedClass = parseFloat(data) > 0 ? 'positive' : 'negative';
+            
+                return <div className={`cell text ${columnClass} ${unrealizedClass}`}>{unrealReturnString}</div>;
+            };
+
+        // render dividend
+        if(history_spec[dividend_obj_idx])
+            history_spec[dividend_obj_idx].render = () => {
+                return <div className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_spec[dividend_obj_idx].data)}</div>;
+            };
+
+
+        // average cost
+        if(history_spec[averageCost_obj_idx])
+            history_spec[averageCost_obj_idx].render = () => {
+                return <div className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_spec[averageCost_obj_idx].data)}</div>;
+            };
+
+        // earnings potential
+        if(history_spec[earningPotential_obj_idx])
+            history_spec[earningPotential_obj_idx].render = () => {
+                return <div className={`cell text ${columnClass}`}> ask</div>
+            };
+    }
+
     function renderHistory(){
         if(!history) return <div></div>;
 
         return history.map((dataRow) => {
-            for(let i = 0; i < history_columns2.length; i++){
-                let obj = {...history_columns2[i]};
+            for(let i = 0; i < history_spec.length; i++){
+                let obj = {...history_spec[i]};
                 if(obj.df_column_name){
-                    history_columns2[i].data = dataRow[df_columns.indexOf(obj.df_column_name)];
+                    history_spec[i].data = dataRow[df_columns.indexOf(obj.df_column_name)];
                 }
             }
 
-            const findFunc = (df_column_name) => history_columns2.findIndex((object) => object.df_column_name === df_column_name);   
+            populateHistorySpec();
 
-            let symbol_obj_idx = findFunc('symbol'),
-            quantity_obj_idx = findFunc('quantity'),
-            currentPrice_obj_idx = findFunc('price'),
-            tradability_obj_idx = findFunc('tradability'),
-            realized_obj_idx = findFunc('realized profit'),
-            unrealized_obj_idx = findFunc('unrealized profit'),
-            dividend_obj_idx = findFunc('dividend'),
-            averageCost_obj_idx = findFunc('average_buy_price'),
-            earningPotential_obj_idx = findFunc('earning potential');
-
-
-            // render for symbol
-            if(history_columns2[symbol_obj_idx]){
-                let quantity = history_columns2[quantity_obj_idx].data || '0';
-                if(quantity !== '0')
-                    quantity = quantity % 1 !== 0 ? parseFloat(quantity).toFixed(3) : parseInt(quantity);
             
-                
-                history_columns2[symbol_obj_idx].render = () => (
-                    <div className={`value-container ${columnClass} cell`}>
-                        <div className='text' >{history_columns2[symbol_obj_idx].data}</div>
-                        <div style={{fontSize: '12px',
-                                    lineHeight: '16px',
-                                    textDecorationLine: 'underline',
-                                    color: '#747384'}}>
-                            {quantity} shares
-                        </div>
-                    </div>
-                );
-            }
-                
-            // render for current price
-            if(history_columns2[currentPrice_obj_idx]){
-                let symbol = history_columns2[symbol_obj_idx].data;
-                history_columns2[currentPrice_obj_idx].render = () => {
-                    let tradability = history_columns2[tradability_obj_idx].data;
-                    let currentPrice = history_columns2[currentPrice_obj_idx].data;
-                    return (
-                        <div className={`btn-container ${columnClass}`}>
-                                {renderPriceButton(symbol, tradability, currentPrice)}
-                        </div>
-                    );
-                };
-            }
-
-            // render for returns
-            // realized
-            if(history_columns2[realized_obj_idx])
-                history_columns2[realized_obj_idx].render = () => {
-                    let data = history_columns2[realized_obj_idx].data;
-
-                    let realReturnString = utils.beautifyReturns(data);
-                    let realizedClass = ''; 
-                    if(parseFloat(data))
-                        realizedClass = parseFloat(data) > 0 ? 'positive' : 'negative';
-                
-                    return <div className={`cell text ${columnClass} ${realizedClass}`}>{realReturnString}</div>;
-                };
-            // unrealized
-            if(history_columns2[unrealized_obj_idx])
-                history_columns2[unrealized_obj_idx].render = () => {
-                    let data = history_columns2[unrealized_obj_idx].data;
-
-                    let unrealReturnString = utils.beautifyReturns(data);
-                    let unrealizedClass = ''; 
-                    if(parseFloat(data))
-                        unrealizedClass = parseFloat(data) > 0 ? 'positive' : 'negative';
-                
-                    return <div className={`cell text ${columnClass} ${unrealizedClass}`}>{unrealReturnString}</div>;
-                };
-
-            // render dividend
-            if(history_columns2[dividend_obj_idx])
-                history_columns2[dividend_obj_idx].render = () => {
-                    return <div className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_columns2[dividend_obj_idx].data)}</div>;
-                };
-
-
-            // average cost
-            if(history_columns2[averageCost_obj_idx])
-                history_columns2[averageCost_obj_idx].render = () => {
-                    return <div className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_columns2[averageCost_obj_idx].data)}</div>;
-                };
-
-            // earnings potential
-            if(history_columns2[earningPotential_obj_idx])
-                history_columns2[earningPotential_obj_idx].render = () => {
-                    return <div className={`cell text ${columnClass}`}> ask</div>
-                };
-
-
-                
-            const renderPriceButton = (symbol, tradability, currentPrice) => {
-                if(tradability !== 'tradable')
-                    return null;
-                return (
-                    <button onClick={() => window.open('http://robinhood.com/stocks/' + symbol)} 
-                    target='_blank' 
-                    className='text stock-redir-btn'
-                    type='button'>
-                        {utils.beautifyPrice(currentPrice)}
-                        <img className='arrow' src={require('../../UI/images/arrow.svg')}></img>
-                    </button>
-                );
-            }
 
             return (
-                <div key={history_columns2[symbol_obj_idx].data}>
+                <div key={history_spec[findIdx('symbol')].data}>
                     <div className='row'>
-                        {history_columns2.map((obj) => obj.render())}                        
+                        {history_spec.map((obj) => obj.render())}                        
                     </div>
                     <hr/>
                 </div>
