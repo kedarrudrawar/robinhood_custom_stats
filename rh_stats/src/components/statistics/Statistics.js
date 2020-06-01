@@ -41,16 +41,15 @@ let history_spec = all_fields.map((element) => (
 
 ))
 
-const findIdx = (df_column_name) => history_spec.findIndex((object) => object.df_column_name === df_column_name);   
+// ----------------------------------------- helpers -----------------------------------------
+
+const findIdx = (df_column_name) => {
+    history_spec.findIndex((object) => {
+        object.df_column_name === df_column_name;
+    });
+};   
 
 const columnClass = utils.numDict[history_columns.length] + '-col';
-
-
-
-
-
-
-
 
 export const Statistics = props => {
     // const header = {
