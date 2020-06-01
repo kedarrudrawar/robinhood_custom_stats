@@ -31,7 +31,7 @@ let keyword_mapping = {
  *  - category lookup name in DF
  *  - data = value for each row (gets overriden while filling in table)
  */
-let history_spec = all_fields.map((element) => (
+let history_specs = all_fields.map((element) => (
     {
         render: () => {},
         display_column_name: element,
@@ -43,28 +43,37 @@ let history_spec = all_fields.map((element) => (
 
 // ----------------------------------------- helpers -----------------------------------------
 
-const findIdx = (df_column_name) => {
-    return history_spec.findIndex((object) => {
+const findIdxByDFColumnName = (df_column_name) => {
+    return history_specs.findIndex((object) => {
         return object.df_column_name === df_column_name;
+    });
+};   
+
+const findIdxByDisplayColumnName = (display_column_name) => {
+    return history_specs.findIndex((object) => {
+        return object.display_column_name === display_column_name;
     });
 };   
 
 const columnClass = utils.numDict[history_columns.length] + '-col';
 
 export const Statistics = props => {
-    const header = {
-        'Authorization': `Bearer ${auth.bearer_token}`
-    }
-
-
     // const header = {
-    //     'Authorization': `Bearer ${process.env.REACT_APP}`
+    //     'Authorization': `Bearer ${auth.bearer_token}`
     // }
+
+
+    const header = {
+        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    }
     
     const [totalInvested, setTotalInvested] = useState(0);
     const [cash, setCash] = useState(0);
     
+    const [historyDF, setHistoryDF] = useState(null);
+
     const [history, setHistory] = useState(null);
+    const [sortedBy, setSortedBy] = useState('symbol');
 
     // ----------------------------------------- raw account data -----------------------------------------
 
@@ -149,22 +158,29 @@ export const Statistics = props => {
 
             // console.log(merged.toString());
             merged = merged.get(df_columns);
+            setHistoryDF(merged);
+        }
+        updateData();
+    }, []);
 
-
+    useEffect(() => {
             // store data as array of  rows (arrays)
             // data columns represented by history_columns
+            if(!historyDF)
+                return;
+                
             let dataRows = [];
-            for(const row of merged){
+            for(const row of historyDF){
                 let dataRow = df_columns.map((col) => row.get(col));              
                 dataRows.push(dataRow);
             }
 
-            dataRows = sortColumns(dataRows, 'symbol');
-            
+            dataRows = sortColumns(dataRows, sortedBy);
             setHistory(dataRows);
-        }
-        updateData();
-    }, []);
+    }, [historyDF, sortedBy]);
+
+
+
 
     const sortColumns = (dataRows, category) => {
         let index = df_columns.indexOf(category);
@@ -201,27 +217,27 @@ export const Statistics = props => {
     }
 
     function populateHistorySpec(){
-        let symbol_obj_idx = findIdx('symbol'),
-        quantity_obj_idx = findIdx('quantity'),
-        currentPrice_obj_idx = findIdx('price'),
-        tradability_obj_idx = findIdx('tradability'),
-        realized_obj_idx = findIdx('realized profit'),
-        unrealized_obj_idx = findIdx('unrealized profit'),
-        dividend_obj_idx = findIdx('dividend'),
-        averageCost_obj_idx = findIdx('average_buy_price'),
-        earningPotential_obj_idx = findIdx('earning potential');
+        let symbol_obj_idx = findIdxByDFColumnName('symbol'),
+        quantity_obj_idx = findIdxByDFColumnName('quantity'),
+        currentPrice_obj_idx = findIdxByDFColumnName('price'),
+        tradability_obj_idx = findIdxByDFColumnName('tradability'),
+        realized_obj_idx = findIdxByDFColumnName('realized profit'),
+        unrealized_obj_idx = findIdxByDFColumnName('unrealized profit'),
+        dividend_obj_idx = findIdxByDFColumnName('dividend'),
+        averageCost_obj_idx = findIdxByDFColumnName('average_buy_price'),
+        earningPotential_obj_idx = findIdxByDFColumnName('earning potential');
 
 
         // render for symbol
-        if(history_spec[symbol_obj_idx]){
-            let quantity = history_spec[quantity_obj_idx].data || '0';
+        if(history_specs[symbol_obj_idx]){
+            let quantity = history_specs[quantity_obj_idx].data || '0';
             if(quantity !== '0')
                 quantity = quantity % 1 !== 0 ? parseFloat(quantity).toFixed(3) : parseInt(quantity);
         
             
-            history_spec[symbol_obj_idx].render = () => (
+            history_specs[symbol_obj_idx].render = () => (
                 <div className={`value-container ${columnClass} cell`}>
-                    <div className='text' >{history_spec[symbol_obj_idx].data}</div>
+                    <div className='text' >{history_specs[symbol_obj_idx].data}</div>
                     <div style={{fontSize: '12px',
                                 lineHeight: '16px',
                                 textDecorationLine: 'underline',
@@ -248,11 +264,11 @@ export const Statistics = props => {
         }
 
 
-        if(history_spec[currentPrice_obj_idx]){
-            let symbol = history_spec[symbol_obj_idx].data;
-            history_spec[currentPrice_obj_idx].render = () => {
-                let tradability = history_spec[tradability_obj_idx].data;
-                let currentPrice = history_spec[currentPrice_obj_idx].data;
+        if(history_specs[currentPrice_obj_idx]){
+            let symbol = history_specs[symbol_obj_idx].data;
+            history_specs[currentPrice_obj_idx].render = () => {
+                let tradability = history_specs[tradability_obj_idx].data;
+                let currentPrice = history_specs[currentPrice_obj_idx].data;
                 return (
                     <div className={`btn-container ${columnClass}`}>
                             {renderPriceButton(symbol, tradability, currentPrice)}
@@ -263,9 +279,9 @@ export const Statistics = props => {
 
         // render for returns
         // realized
-        if(history_spec[realized_obj_idx])
-            history_spec[realized_obj_idx].render = () => {
-                let data = history_spec[realized_obj_idx].data;
+        if(history_specs[realized_obj_idx])
+            history_specs[realized_obj_idx].render = () => {
+                let data = history_specs[realized_obj_idx].data;
 
                 let realReturnString = utils.beautifyReturns(data);
                 let realizedClass = ''; 
@@ -275,9 +291,9 @@ export const Statistics = props => {
                 return <div className={`cell text ${columnClass} ${realizedClass}`}>{realReturnString}</div>;
             };
         // unrealized
-        if(history_spec[unrealized_obj_idx])
-            history_spec[unrealized_obj_idx].render = () => {
-                let data = history_spec[unrealized_obj_idx].data;
+        if(history_specs[unrealized_obj_idx])
+            history_specs[unrealized_obj_idx].render = () => {
+                let data = history_specs[unrealized_obj_idx].data;
 
                 let unrealReturnString = utils.beautifyReturns(data);
                 let unrealizedClass = ''; 
@@ -288,21 +304,21 @@ export const Statistics = props => {
             };
 
         // render dividend
-        if(history_spec[dividend_obj_idx])
-            history_spec[dividend_obj_idx].render = () => {
-                return <div className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_spec[dividend_obj_idx].data)}</div>;
+        if(history_specs[dividend_obj_idx])
+            history_specs[dividend_obj_idx].render = () => {
+                return <div className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_specs[dividend_obj_idx].data)}</div>;
             };
 
 
         // average cost
-        if(history_spec[averageCost_obj_idx])
-            history_spec[averageCost_obj_idx].render = () => {
-                return <div className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_spec[averageCost_obj_idx].data)}</div>;
+        if(history_specs[averageCost_obj_idx])
+            history_specs[averageCost_obj_idx].render = () => {
+                return <div className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_specs[averageCost_obj_idx].data)}</div>;
             };
 
         // earnings potential
-        if(history_spec[earningPotential_obj_idx])
-            history_spec[earningPotential_obj_idx].render = () => {
+        if(history_specs[earningPotential_obj_idx])
+            history_specs[earningPotential_obj_idx].render = () => {
                 return <div className={`cell text ${columnClass}`}> ask</div>
             };
     }
@@ -311,21 +327,19 @@ export const Statistics = props => {
         if(!history) return <div></div>;
 
         return history.map((dataRow) => {
-            for(let i = 0; i < history_spec.length; i++){
-                let obj = {...history_spec[i]};
+            for(let i = 0; i < history_specs.length; i++){
+                let obj = {...history_specs[i]};
                 if(obj.df_column_name){
-                    history_spec[i].data = dataRow[df_columns.indexOf(obj.df_column_name)];
+                    history_specs[i].data = dataRow[df_columns.indexOf(obj.df_column_name)];
                 }
             }
 
             populateHistorySpec();
 
-            
-
             return (
-                <div key={history_spec[findIdx('symbol')].data}>
+                <div key={history_specs[findIdxByDFColumnName('symbol')].data}>
                     <div className='row'>
-                        {history_spec.map((obj) => obj.render())}                        
+                        {history_specs.map((obj) => obj.render())}                        
                     </div>
                     <hr/>
                 </div>
@@ -333,6 +347,11 @@ export const Statistics = props => {
         });
     }
 
+    function sortDataByCategory(elem){
+        let idx = findIdxByDisplayColumnName(elem);
+        let df_col_name = history_specs[idx].df_column_name;
+        setSortedBy(df_col_name);
+    }
 
     return !history 
         ? <Loading />
@@ -371,7 +390,14 @@ export const Statistics = props => {
                             <div className='table'>
                                 <div className='row'>
                                     {history_columns.map((elem, idx) => {
-                                        return <div key={idx} className={`cell text row-header ${columnClass}`}>{elem}</div>;
+                                        return (
+                                            <button 
+                                                key={idx} 
+                                                onClick={() => sortDataByCategory(elem)}
+                                                className={`cell text row-header ${columnClass}`}
+                                                    >{elem}
+                                            </button>
+                                        );
                                     })}
                                 </div>
                                 <hr/>

@@ -166,6 +166,9 @@ hr {
     padding: 1.2em 0;
     overflow: hidden;
     /* border: 1px solid blue; */
+
+    border: 0;
+    background-color: white;
 }
 
 .btn-container {
