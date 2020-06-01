@@ -475,3 +475,71 @@ export const multipleSellOrders = [
     },
 ];
 
+
+// 1 AMAT dividend
+export const singleDividend = [
+    {
+        "id": "806640f4-60b0-5e78-a5ed-16bfcffe19d3",
+        "url": "https://api.robinhood.com/dividends/806640f4-60b0-5e78-a5ed-16bfcffe19d3/",
+        "account": "https://api.robinhood.com/accounts/925501777/",
+        "instrument": "https://api.robinhood.com/instruments/18006bfb-cbad-4326-8348-738c94ea47fa/",
+        "amount": "2.20",
+        "rate": "0.2200000000",
+        "position": "10.00000000",
+        "withholding": "0.00",
+        "record_date": "2020-05-21",
+        "payable_date": "2020-06-11",
+        "paid_at": null,
+        "state": "pending",
+        "nra_withholding": "0",
+        "drip_enabled": true
+    },
+]
+
+export const multipleDividends = [
+    ...singleDividend,
+    {
+        "id": "d64633db-4326-5857-896c-6a3a64a94dd2",
+        "url": "https://api.robinhood.com/dividends/d64633db-4326-5857-896c-6a3a64a94dd2/",
+        "account": "https://api.robinhood.com/accounts/925501777/",
+        "instrument": "https://api.robinhood.com/instruments/50810c35-d215-4866-9758-0ada4ac79ffa/",
+        "amount": "2.55",
+        "rate": "0.5100000000",
+        "position": "5.00000000",
+        "withholding": "0.00",
+        "record_date": "2020-05-21",
+        "payable_date": "2020-06-11",
+        "paid_at": null,
+        "state": "pending",
+        "nra_withholding": "0",
+        "drip_enabled": true
+    },
+    {
+        "id": "be1b32ef-cb48-5518-9e02-06cf7515125b",
+        "url": "https://api.robinhood.com/dividends/be1b32ef-cb48-5518-9e02-06cf7515125b/",
+        "account": "https://api.robinhood.com/accounts/925501777/",
+        "instrument": "https://api.robinhood.com/instruments/124133a3-cf48-45f4-a014-934529fdfd7b/",
+        "amount": "1.80",
+        "rate": "0.9000000000",
+        "position": "2.00000000",
+        "withholding": "0.00",
+        "record_date": "2020-05-18",
+        "payable_date": "2020-06-01",
+        "paid_at": null,
+        "state": "pending",
+        "nra_withholding": "0",
+        "drip_enabled": true
+    },
+]
+
+// 3 identical AMAT dividends 
+export const duplicateDividends = [
+    ...singleDividend,
+    ...singleDividend,
+    ...singleDividend
+];
+
+export const manyDividends = [
+    ...duplicateDividends,
+    ...multipleDividends
+];

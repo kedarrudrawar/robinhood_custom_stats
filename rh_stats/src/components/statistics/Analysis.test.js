@@ -11,6 +11,9 @@ jest.mock('../../api/api', () => ({
             "https://api.robinhood.com/instruments/68bae46a-c0a5-4cda-86a9-1d2460b0b7d3/": 'NEE',
             "https://api.robinhood.com/instruments/00815789-becf-4d44-8733-032d602a33d8/": 'FANG',
             "https://api.robinhood.com/instruments/c0bb3aec-bd1e-471e-a4f0-ca011cbec711/": 'AMZN',
+            "https://api.robinhood.com/instruments/18006bfb-cbad-4326-8348-738c94ea47fa/": 'AMAT',
+            "https://api.robinhood.com/instruments/00815789-becf-4d44-8733-032d602a33d8/": 'FANG',
+            "https://api.robinhood.com/instruments/450dfc6d-5510-4d40-abfb-f633b7d9be3e/": 'AAPL',
         };
         let out = [];
         for(const row of df){
@@ -95,3 +98,34 @@ describe('Get realized profit -- analysis', () => {
 
 
 });
+
+describe('dividends to DF -- analysis', () => {
+    it('should handle multiple dividends from same company', async () => {
+        let df = analysis.dividendsToDF(test_vars.duplicateDividends);
+        let expected_instr = test_vars.singleDividend[0]['instrument'];
+        let expected_div = (2.20 * 3).toFixed(2);
+        let received_instr = df.get('instrument').values.get(0);
+        let received_div = parseFloat(df.get('dividend').values.get(0)).toFixed(2);
+        expect(received_instr).toEqual(expected_instr);
+        expect(received_div).toEqual(expected_div);
+    });
+
+    it('should handle dividends from different companies', async () => {
+        let df = analysis.dividendsToDF(test_vars.multipleDividends);
+        let expected_instrs = [];
+        let expected_divs = [];
+        for(const dividend of test_vars.multipleDividends){
+            expected_instrs.push(dividend['instrument']);
+            expected_divs.push(parseFloat(dividend['amount']));
+        }
+        let i = 0;
+        for(const row of df){
+            let received_instr = row.get('instrument');
+            let received_div = row.get('dividend');
+            expect(received_instr).toEqual(expected_instrs[i]);
+            expect(received_div).toEqual(expected_divs[i]);
+
+            i += 1;
+        }
+    })
+})
