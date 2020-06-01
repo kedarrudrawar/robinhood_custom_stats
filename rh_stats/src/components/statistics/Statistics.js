@@ -73,7 +73,9 @@ export const Statistics = props => {
     const [historyDF, setHistoryDF] = useState(null);
 
     const [history, setHistory] = useState(null);
+
     const [sortedBy, setSortedBy] = useState('symbol');
+    const [ascending, setAscending] = useState(true);
 
     // ----------------------------------------- raw account data -----------------------------------------
 
@@ -163,29 +165,43 @@ export const Statistics = props => {
         updateData();
     }, []);
 
+    // convert history_df to history array
     useEffect(() => {
-            // store data as array of  rows (arrays)
+            // store data as array of rows (arrays)
             // data columns represented by history_columns
             if(!historyDF)
                 return;
-                
+
             let dataRows = [];
             for(const row of historyDF){
-                let dataRow = df_columns.map((col) => row.get(col));              
+                let dataRow = df_columns.map((col) => {
+                    let val = row.get(col);
+                    if(parseFloat(val))
+                        val = parseFloat(row.get(col));
+                    return val;
+                });   
                 dataRows.push(dataRow);
             }
 
             dataRows = sortColumns(dataRows, sortedBy);
             setHistory(dataRows);
-    }, [historyDF, sortedBy]);
+    }, [historyDF, sortedBy, ascending]);
 
 
 
 
     const sortColumns = (dataRows, category) => {
         let index = df_columns.indexOf(category);
-        let ascending = true;
         dataRows.sort((a, b) => {
+            if(!a && !b)
+                return 0;
+
+            if(!a[index])
+                return Number.MAX_SAFE_INTEGER;
+
+            if(!b[index])
+                return Number.MIN_SAFE_INTEGER;
+
             if (b[index] < a[index])
                 return ascending ? 1 : -1;
             return ascending ? -1 : 1;
@@ -350,6 +366,11 @@ export const Statistics = props => {
     function sortDataByCategory(elem){
         let idx = findIdxByDisplayColumnName(elem);
         let df_col_name = history_specs[idx].df_column_name;
+        if(sortedBy === df_col_name){
+            setAscending(!ascending);
+        }
+        else
+            setAscending(true);
         setSortedBy(df_col_name);
     }
 
