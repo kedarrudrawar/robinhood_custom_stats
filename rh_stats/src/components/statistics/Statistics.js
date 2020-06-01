@@ -44,8 +44,8 @@ let history_spec = all_fields.map((element) => (
 // ----------------------------------------- helpers -----------------------------------------
 
 const findIdx = (df_column_name) => {
-    history_spec.findIndex((object) => {
-        object.df_column_name === df_column_name;
+    return history_spec.findIndex((object) => {
+        return object.df_column_name === df_column_name;
     });
 };   
 
@@ -58,7 +58,7 @@ export const Statistics = props => {
 
 
     const header = {
-        'Authorization': `Bearer ${process.env.REACT_APP_BEARER_ARMIN}`
+        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
     }
     
     const [totalInvested, setTotalInvested] = useState(0);
@@ -161,7 +161,6 @@ export const Statistics = props => {
 
             dataRows = sortColumns(dataRows, 'symbol');
             
-
             setHistory(dataRows);
         }
         updateData();

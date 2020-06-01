@@ -15,15 +15,13 @@ export const Login = props => {
         setPassword(event.target.value);
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        props.onSubmit(username, password) // store credentials in parent state
-        .then((result) => {
-            if(result.isMFA)
-                props.history.push('/MFA'); // redirect to subsequent login page
-            else if(result.isChallenge)
-                props.history.push('/challenge')
-        });
+        let result = await props.onSubmit(username, password) // store credentials in parent state
+        if(result.isMFA)
+            props.history.push('/MFA'); // redirect to subsequent login page
+        else if(result.isChallenge)
+            props.history.push('/challenge')
     };
 
 

@@ -102,20 +102,18 @@ function buildHeaders(header){
 export async function getAccountDetails(header){
     let payload = buildHeaders(header);
 
-    return axios.get(urls.ACCOUNTS, payload)
-    .then(res => processRHObject(res))
-    .then(data => data.results)
+    let res = await axios.get(urls.ACCOUNTS, payload);
+    let data = processRHObject(res);
+    return data.results;
 }
 
 // portfolio
 
-export function getPortfolio(header){
+export async function getPortfolio(header){
     let payload = buildHeaders(header);
-    return axios.get(urls.PORTFOLIOS, payload)
-    .then(res => {
-        let data = processRHObject(res);
-        return data;
-    });
+    const res = await axios.get(urls.PORTFOLIOS, payload);
+    let data = processRHObject(res);
+    return data;
 }
 
 /**
@@ -136,22 +134,22 @@ export const getDividends = async (auth_header, states) => {
     let payload = buildHeaders(auth_header);
     let url = urls.DIVIDENDS;
     let nextDivsLink = await checkForNext(url, payload);
+    let nextExists = true; 
     
     let dividends = [];
-    while(nextDivsLink !== null){
-        dividends = dividends.concat(await axios.get(url, payload)
-        .then(response => processRHObject(response).results)
-        .then(data => {
-            return data.filter((dividendObj) => states.includes(dividendObj['state']));
-        }));
+    let res, data, filtered;
+    while(nextExists){
+        nextExists = nextDivsLink !== null;
+        res = await axios.get(url, payload);
+        data = processRHObject(res).results;
+        filtered = data.filter((dividendObj) => states.includes(dividendObj['state']));
+        dividends = dividends.concat(filtered)
 
-        url = nextDivsLink;
-        nextDivsLink = await checkForNext(url, payload);
+        if(nextExists){
+            url = nextDivsLink;
+            nextDivsLink = await checkForNext(url, payload);
+        }
     }
-    
-    let res = await axios.get(url, payload);
-    let data = processRHObject(res).results;
-    dividends = dividends.concat(data.filter((dividendObj) => states.includes(dividendObj['state'])));
 
     return dividends;
     
@@ -282,13 +280,10 @@ export const getCurrentPricesFromInstruments = async (header, instruments) => {
 // orders
 
 const checkForNext = async (url, payload) => {
-    return axios.get(url, payload)
-    .then(res => {
-        return processRHObject(res);
-    })
-    .then(processedRes => {
-        return processedRes.next;
-    })
+    let res = await axios.get(url, payload);
+    let data = processRHObject(res);
+    let next = data.next;
+    return next
 }
 
 /**
@@ -304,28 +299,27 @@ export const getOrderHistory = async (header, state=['filled'], side='') => {
     let nextOrdersLink = await checkForNext(url, payload);
     let nextExists = true; 
     let orders = [];
+    let res, data, filtered;
 
     const filter = (resData) => {
-        if(state.length !== 0){
+        if(state.length !== 0)
             resData = resData.filter(order => state.includes(order['state']));
-        }
-        if(side !== ''){
+        if(side !== '')
             resData = resData.filter(order => order['side'] === side);
-        }
+        
         return resData;
     }
 
     while(nextExists){
         nextExists = nextOrdersLink !== null;
-        orders = orders.concat(await axios.get(url, payload)
-        .then(res => {
-            return processRHObject(res).results;
-        })
-        .then(resData => {
-            return filter(resData);
-        }));
+
+        res = await axios.get(url, payload);
+        data = processRHObject(res).results;
+        filtered = filter(data);
+        orders = orders.concat(filtered);
+
         if(nextExists){
-            url = await nextOrdersLink;
+            url = nextOrdersLink;
             nextOrdersLink = await checkForNext(url, payload);
         }
     }

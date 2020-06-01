@@ -10,18 +10,14 @@ const MFA_Login = props => {
         setMFAcode(e.target.value);
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-            props.onSubmit(mfa_code)
-            .then((success) => {
-                if(success){
-                    props.history.push('/stats');
-                }
-                else {
-                    alert('Invalid MFA code');
-                }
-            });
-            
+        let success = await props.onSubmit(mfa_code);
+        if(success)
+            props.history.push('/stats');
+        else 
+            alert('Invalid MFA code');
+        
     }
 
     return (
