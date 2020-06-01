@@ -335,7 +335,7 @@ export const Statistics = props => {
         // earnings potential
         if(history_specs[earningPotential_obj_idx])
             history_specs[earningPotential_obj_idx].render = () => {
-                return <div className={`cell text ${columnClass}`}> ask</div>
+                return <div className={`cell text ${columnClass}`}>-</div>
             };
     }
 
