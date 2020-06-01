@@ -25,7 +25,6 @@ class Auth{
         let data;
         try {
             data = await api.oauth2(this.username, this.password);
-            console.log(data);
             if(api.isMFA(await data)){
                 return {
                 'isMFA': true,

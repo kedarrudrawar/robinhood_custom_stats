@@ -30,7 +30,6 @@ export function oauth2(username, password){
     data['username'] = username;
     data['password'] = password;
 
-    console.log('making request');
     return axios.post(urls.OAUTH2, data)
         .then((response) => {
             let res = response.data;
@@ -59,8 +58,6 @@ export function getChallenge(){
 }
 
 export function oauth2_MFA(username, password, mfa_code){
-    console.log('calling MFA request');
-
     let BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME;
     let data = {
         headers: HEADERS,
@@ -150,7 +147,6 @@ export const getDividends = async (auth_header, states) => {
 
         url = nextDivsLink;
         nextDivsLink = await checkForNext(url, payload);
-        console.log(nextDivsLink);
     }
 
     dividends = dividends.concat(await axios.get(url, payload)

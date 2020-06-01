@@ -107,7 +107,7 @@ export const Statistics = props => {
             let positionsDF = await analysis.positionsToDF(pos);
             positionsDF = positionsDF.get(['symbol', 'average_buy_price', 'quantity', 'instrument']);
             merged = positionsDF;
-            console.log(merged.toString());
+            // console.log(merged.toString());
             
             // ----- realized profit -----
             let buyOrders = await api.getOrderHistory(header, ['filled'], 'buy');
@@ -150,9 +150,9 @@ export const Statistics = props => {
             let tradeSeries = new Series(tradabilities, 'tradability');
             merged = merged.set('tradability', tradeSeries);
 
-            console.log(merged.toString());
+            // console.log(merged.toString());
             merged = merged.get(df_columns);
-            console.log(merged.toString());
+            // console.log(merged.toString());
 
 
             // store data as array of  rows (arrays)

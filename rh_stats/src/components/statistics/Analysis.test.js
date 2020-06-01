@@ -89,7 +89,6 @@ describe('Get realized profit -- analysis', () => {
             'FANG': (2*44.00 - 2 * 32.91).toFixed(2),
         }
         for(const arr of realProfit){
-            console.log(arr[0]);
             await expect(arr[1].toFixed(2)).toEqual(expectedProfit[arr[0]]);
         }
     });
