@@ -13,3 +13,7 @@ export function beautifyReturns(num){
 export function beautifyPrice(num){
     return num !== null ? '$' + numberWithCommas((parseFloat(num).toFixed(2))) : '-';
 }
+
+export function zeroesArray(length) {
+    return Array.apply(null, Array(length)).map(() => 0);
+}

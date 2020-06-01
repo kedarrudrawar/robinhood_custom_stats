@@ -103,17 +103,25 @@ export const Statistics = props => {
             let merged;
 
             // ----- positions -----
-            let pos = await api.getPositions(header, true);
+            let pos = await api.getPositions(header, true); // active positions
             let positionsDF = await analysis.positionsToDF(pos);
             positionsDF = positionsDF.get(['symbol', 'average_buy_price', 'quantity', 'instrument']);
+            merged = positionsDF;
+            console.log(merged.toString());
             
             // ----- realized profit -----
             let buyOrders = await api.getOrderHistory(header, ['filled'], 'buy');
             let sellOrders = await api.getOrderHistory(header, ['filled'], 'sell');
             let realProfit = await analysis.getRealizedProfit(buyOrders, sellOrders);
             let profitDF = new DataFrame(realProfit);
-            profitDF.columns = ['symbol', 'realized profit', 'instrument'];
-            merged = positionsDF.merge(profitDF, ['symbol', 'instrument'], 'outer');
+            if(profitDF.length){
+                profitDF.columns = ['symbol', 'realized profit', 'instrument'];
+                merged = positionsDF.merge(profitDF, ['symbol', 'instrument'], 'outer');
+            }
+            else {
+                merged = merged.set('realized profit', utils.zeroesArray(merged.length));
+            }
+            
 
             let currentPrices = await api.getCurrentPricesFromInstrumentsDF(header, merged);
             let pricesDF = new DataFrame(currentPrices);
@@ -129,15 +137,20 @@ export const Statistics = props => {
 
             // ----- dividends -----
             let div = await api.getDividends(header, ['paid', 'reinvested']);
-            let divDF = analysis.dividendsToDF(div);
-            merged = merged.merge(divDF, ['instrument'], 'outer');
+            if(div.length){
+                let divDF = analysis.dividendsToDF(div);
+                merged = merged.merge(divDF, ['instrument'], 'outer');
+            }
+            else{
+                merged = merged.set('dividend', utils.zeroesArray(utils.zeroesArray(merged.length)));
+            }
 
             // ----- tradability -----
             let tradabilities = await api.getFieldFromInstrumentsDF(merged, 'tradability');
             let tradeSeries = new Series(tradabilities, 'tradability');
             merged = merged.set('tradability', tradeSeries);
 
-
+            console.log(merged.toString());
             merged = merged.get(df_columns);
             console.log(merged.toString());
 
@@ -164,6 +177,8 @@ export const Statistics = props => {
         updateData();
     }, []);
 
+
+    
     function getTotal(realizedBoolean){
         let idx = realizedBoolean ? REALIZED_IDX : UNREALIZED_IDX;
         let total = 0;
