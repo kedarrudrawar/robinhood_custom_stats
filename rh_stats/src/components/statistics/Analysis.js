@@ -117,8 +117,7 @@ export async function getUnrealizedProfit(df){
 
 export function dividendsToDF(dividendsRes){
     let dividends = {};
-    Array.from(dividendsRes).map(div => {
-        // return [div['instrument'], div['amount'], div['rate']];
+    Array.from(dividendsRes).map(div => { 
         if (dividends.hasOwnProperty(div['instrument']))
             dividends[div['instrument']] += parseFloat(div['amount'])
         else

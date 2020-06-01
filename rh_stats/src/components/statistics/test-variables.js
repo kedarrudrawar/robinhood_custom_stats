@@ -498,6 +498,7 @@ export const singleDividend = [
 
 export const multipleDividends = [
     ...singleDividend,
+    // MSFT dividend - 2.55
     {
         "id": "d64633db-4326-5857-896c-6a3a64a94dd2",
         "url": "https://api.robinhood.com/dividends/d64633db-4326-5857-896c-6a3a64a94dd2/",
@@ -514,6 +515,7 @@ export const multipleDividends = [
         "nra_withholding": "0",
         "drip_enabled": true
     },
+    // PSX dividend - 1.80
     {
         "id": "be1b32ef-cb48-5518-9e02-06cf7515125b",
         "url": "https://api.robinhood.com/dividends/be1b32ef-cb48-5518-9e02-06cf7515125b/",
@@ -539,6 +541,7 @@ export const duplicateDividends = [
     ...singleDividend
 ];
 
+// duplicate + different dividends
 export const manyDividends = [
     ...duplicateDividends,
     ...multipleDividends
