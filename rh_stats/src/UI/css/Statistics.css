@@ -171,6 +171,18 @@ hr {
     background-color: white;
 }
 
+.history-column-btn:hover {
+    cursor: pointer;
+    transition: 0.3s ease;
+
+    color: gray;
+}
+
+.history-column-btn:focus {
+    cursor: pointer;
+    outline: none;
+}
+
 .btn-container {
     display: flex;
     flex-grow: 1;
@@ -184,11 +196,8 @@ hr {
 
 .value-container {
     display: flex;
-    /* flex-grow: 1; */
-    /* flex-wrap: wrap; */
     flex-direction: column;
     justify-content: center;
-    /* align-items: center; */
     /* border: 1px red solid; */
 }
 
@@ -196,9 +205,7 @@ hr {
 .stock-redir-btn {
     display: flex;
     justify-content: center;
-    /* margin-left: 1.2em; */
     align-items: center;
-    /* padding-left:12px; */
     padding: 8px 0 8px 12px;
     color: black;
     background-color: white;
@@ -213,7 +220,15 @@ hr {
 }
 
 .stock-redir-btn:hover {
-    background-color: #00C804;
+    background-color:  #00C804;
+    transition: all 0.1s ease;
+    color: white;
+    border: 1px solid white;
+}
+
+.stock-redir-btn:hover .arrow path{
+    transition: all 0.1s ease;
+    fill: white;
 }
 
 .arrow {
@@ -221,7 +236,6 @@ hr {
     align-items: center;
     margin: 0 12px 0 6px;
 }
-
 
 .six-col {
     width: 16.6%

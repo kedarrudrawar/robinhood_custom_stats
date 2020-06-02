@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../../UI/css/Statistics.css'
+import {ReactComponent as ArrowIcon} from '../../UI/images/arrow.svg';
 import { Head } from '../misc/html_head'
 import * as api from '../../api/api'
 import * as utils from '../../utils';
@@ -58,14 +59,14 @@ const findIdxByDisplayColumnName = (display_column_name) => {
 const columnClass = utils.numDict[history_columns.length] + '-col';
 
 export const Statistics = props => {
-    const header = {
-        'Authorization': `Bearer ${auth.bearer_token}`
-    }
-
-
     // const header = {
-    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    //     'Authorization': `Bearer ${auth.bearer_token}`
     // }
+
+
+    const header = {
+        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    }
     
     const [totalInvested, setTotalInvested] = useState(0);
     const [cash, setCash] = useState(0);
@@ -268,13 +269,15 @@ export const Statistics = props => {
         const renderPriceButton = (symbol, tradability, currentPrice) => {
             if(tradability !== 'tradable')
                 return null;
+
             return (
                 <button onClick={() => window.open('http://robinhood.com/stocks/' + symbol)} 
                 target='_blank' 
                 className='text stock-redir-btn'
                 type='button'>
                     {utils.beautifyPrice(currentPrice)}
-                    <img className='arrow' src={require('../../UI/images/arrow.svg')}></img>
+                    <ArrowIcon className='arrow' /> 
+                    {/* <img className='arrow' src={require('../../UI/images/arrow.svg')}></img> */}
                 </button>
             );
         }
@@ -415,7 +418,8 @@ export const Statistics = props => {
                                             <button 
                                                 key={idx} 
                                                 onClick={() => sortDataByCategory(elem)}
-                                                className={`cell text row-header ${columnClass}`}
+
+                                                className={`cell text row-header history-column-btn ${columnClass}`}
                                                     >{elem}
                                             </button>
                                         );
