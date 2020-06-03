@@ -1,5 +1,6 @@
 import * as urls from './endpoints';
 import axios from 'axios';
+import qs from 'qs';
 
 const CLIENT_ID = 'c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS';
 const { v4: uuidv4 } = require('uuid');
@@ -21,13 +22,15 @@ export const BODY = {
     'device_token': uuidv4(),
 }
 
-export async function oauth2(username, password){
+export async function oauth2(username, password, challenge_type=''){
     let data = {
         headers: HEADERS,
     }
     Object.assign(data, BODY);
     data['username'] = username;
     data['password'] = password;
+    if(challenge_type)
+        data['challenge_type'] = challenge_type;
     
     try {
         const response = await axios.post(urls.OAUTH2, data);
@@ -37,6 +40,10 @@ export async function oauth2(username, password){
         return err.response.data;
     }
 }
+
+
+
+
 
 export function isMFA(responseData){
     return 'mfa_required' in responseData;
@@ -83,8 +90,38 @@ export async function oauth2_MFA(username, password, mfa_code){
 
 // ----------------- Challenge ------------------
 
-export async function oauth2Challenge(username, password, challenge_id){
-    let BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME;
+export async function oauth2Challenge(username, password, challenge_type, challenge_id){
+    let headers = {
+        headers: {...HEADERS,
+            'x-robinhood-challenge-response-id': challenge_id,
+        }
+    };
+    let payload = { ...BODY};
+    payload['username'] = username;
+    payload['password'] = password;
+    payload['challenge_type'] = challenge_type;
+    
+    console.log('making request for token after challenge');
+    console.log("headers:");
+    console.log(headers);
+
+    try {
+        console.log("making request");
+        const response = await axios.post(urls.OAUTH2, qs.stringify(payload), headers);
+        let data = response.data;
+        let BEARER_TOKEN = data['access_token'];
+        let REFRESH_TOKEN = data['refresh_token'];
+        let EXPIRY_TIME = new Date().getTime() / 1000 + data['expires_in'];
+        return [BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME];
+    }
+    catch (err) {
+        console.log("request failed???");
+        console.log(err);
+        return [,,,];
+    }
+}
+
+export async function respondToChallenge(username, password, challenge_id, challengeCode){
     let payload = {
         headers: HEADERS,
     }
@@ -92,37 +129,39 @@ export async function oauth2Challenge(username, password, challenge_id){
     Object.assign(payload, BODY);
     payload['username'] = username;
     payload['password'] = password;
-
+    payload['response'] = challengeCode;
     try {
         const response = await axios.post(url, payload);
         let data = response.data;
-        BEARER_TOKEN = data['access_token'];
-        REFRESH_TOKEN = data['refresh_token'];
-        EXPIRY_TIME = new Date().getTime() / 1000 + data['expires_in'];
-        return [BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME];
+        let status = data['status'];
+        if(status === 'validated')
+            return true;
+        return false;
     }
     catch(err){
+        console.log("Failed Challenge Request");
         console.log(err);
     }
 }
 
 export async function oauth2ChallengeTypeInput(username, password, challenge_type){
-    let data = {
+    let payload = {
         headers: HEADERS,
     }
-    Object.assign(data, BODY);
-    data['username'] = username;
-    data['password'] = password;
-    data['challenge_type'] = challenge_type;
+    Object.assign(payload, BODY);
+    payload['username'] = username;
+    payload['password'] = password;
+    payload['challenge_type'] = challenge_type;
     
     try{
-        let response = await axios.post(urls.OAUTH2, data);
+        let response = await axios.post(urls.OAUTH2, payload);
         let data = response.data;
         return data.challenge.id;
     }
     catch(err){
-        alert('Error');
-        console.log(err);
+        // alert('Error');
+        let data = err.response.data;
+        return data.challenge.id;
     }
 }
 

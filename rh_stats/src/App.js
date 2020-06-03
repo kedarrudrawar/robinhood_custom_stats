@@ -38,8 +38,8 @@ const App = props => {
         return success;
     };
 
-    const handleChallengeSubmit = async (challenge_id) => {
-        let success = await auth.loginChallenge(challenge_id);
+    const handleChallengeSubmit = async (challenge_id, challenge_code, challenge_type) => {
+        let success = await auth.loginChallenge(challenge_id, challenge_code, challenge_type);
         return success;
     }
 

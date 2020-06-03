@@ -10,7 +10,8 @@ import * as api from '../../api/api';
 
 export const ChallengeLogin = props => {
     const [challengeCode, setChallengeCode] = useState('');
-    const [challengeType, setChallengeType] = useState(null);
+    const [challengeType, setChallengeType] = useState('');
+    const [challengeID, setChallengeID] = useState('');
 
     const changeChallenge = (e) => {
         setChallengeCode(e.target.value);
@@ -18,21 +19,23 @@ export const ChallengeLogin = props => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        let challengeID = await props.onSubmit(challengeCode);
-        if(challengeID !== undefined){
-            let success = await auth.loginChallenge();
-            if(success)
-                props.history.push('/stats');
-            else 
-                alert('Invalid code');
-        };
+        let success = await props.onSubmit(challengeID, challengeCode, challengeType);
+        if(success)
+            props.history.push('/stats');
+        else 
+            alert('Invalid code');
     }
 
+    // once type has been inputted, request with type to get challenge ID
     useEffect(() => {
-        if(challengeType){
-            // api.oauth2ChallengeTypeInput(auth.username, auth.password, challengeType);
-            console.log('making request with:' + `${auth.username}, ${challengeType}`);
+        const inputChallengeType = async () => {
+            if(challengeType){
+                let challenge_id = await api.oauth2ChallengeTypeInput(auth.username, auth.password, challengeType);
+                console.log(challenge_id);
+                setChallengeID(challenge_id);
+            }
         }
+        inputChallengeType();
     }, [challengeType]);
 
     if(challengeType){
