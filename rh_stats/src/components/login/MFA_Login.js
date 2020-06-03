@@ -1,7 +1,8 @@
 import React from 'react';
 import { useState } from 'react';
 import { withRouter } from 'react-router-dom';
-import { Head } from '../misc/html_head'
+import { Head } from '../misc/html_head';
+import '../../UI/css/Login.css';
 
 const MFA_Login = props => {
     const [mfa_code, setMFAcode] = useState('');
@@ -17,13 +18,12 @@ const MFA_Login = props => {
             props.history.push('/stats');
         else 
             alert('Invalid MFA code');
-        
     }
 
     return (
         <div>
             <Head/>
-            <div className='Page mfa'>
+            <div className='Page gray-bg'>
                 <div className='login-container mfa-container'>
                     <form onSubmit={handleSubmit}>
                         <label className='small-title login-contents'>Authentication Code</label>
@@ -34,7 +34,7 @@ const MFA_Login = props => {
                             value={mfa_code}
                             onChange={changeMFA}
                             ></input>
-                        <button className='login-btn login-btn-text login-contents' type='submit'>Log in</button>
+                        <button className='login-btn login-btn-text login-contents' type='submit'>Login</button>
                     </form>
                     <div className='note'>Check your app for 2-FA code</div>
                 </div>
@@ -42,21 +42,6 @@ const MFA_Login = props => {
         </div>
     );
 
-
-
-
-
-
-
-
-
-    //     <form onSubmit={handleSubmit} >
-    //         <label>2-Factor Code:
-    //             <input id="mfa_code" type="text" value={mfa_code} onChange={changeMFA}></input><br/>
-    //         </label>
-    //         <input type="submit"/>
-    //     </form>
-    // );
 }
 
 export default withRouter(MFA_Login);

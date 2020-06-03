@@ -17,11 +17,15 @@ export const Login = props => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        let result = await props.onSubmit(username, password) // store credentials in parent state
+        let result = await props.onSubmit(username, password) // store credentials in parent state (App.handleInitialSubmit)
         if(result.isMFA)
             props.history.push('/MFA'); // redirect to subsequent login page
-        else if(result.isChallenge)
+        else if(result.isChallenge){
             props.history.push('/challenge')
+        }
+        else {
+            props.history.push('/stats');
+        }
     };
 
 
@@ -59,7 +63,7 @@ export const Login = props => {
                         </label><br/>
                         <button type="submit" className='login-btn login-btn-text'>Login</button>
                     </form>
-                    <div class='note login-contents '>We do not store your Robinhood credentials.</div>
+                    <div className='note login-contents '>We do not store your Robinhood credentials.</div>
                     </div>
                 </div>
             </div>

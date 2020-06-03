@@ -16,10 +16,9 @@ export const BODY = {
     'username': '',
     'grant_type': 'password',
     'client_id': CLIENT_ID,
-    'expires_in': '734000',
+    'expires_in': '86400',
     'scope': 'internal',
     'device_token': uuidv4(),
-    'challenge_type': 'email',
 }
 
 export async function oauth2(username, password){
@@ -29,15 +28,13 @@ export async function oauth2(username, password){
     Object.assign(data, BODY);
     data['username'] = username;
     data['password'] = password;
-
+    
     try {
         const response = await axios.post(urls.OAUTH2, data);
-        let res = response.data;
-        return res;
+        return response.data;
     }
     catch (err) {
-        console.log("got an error yall");
-        console.log(err);
+        return err.response.data;
     }
 }
 
@@ -46,7 +43,7 @@ export function isMFA(responseData){
 }
 
 export function isChallenge(responseData){
-    return 'challenge' in responseData;
+    return 'accept_challenge_types' in responseData;
 }
 
 export function getMFA(){
@@ -57,26 +54,74 @@ export function getChallenge(){
 
 }
 
+
+// ----------------- MFA ------------------
+
 export async function oauth2_MFA(username, password, mfa_code){
     let BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME;
+    let payload = {
+        headers: HEADERS,
+    }
+    Object.assign(payload, BODY);
+    payload['username'] = username;
+    payload['password'] = password;
+    payload['mfa_code'] = mfa_code;
+
+    try {
+        const response = await axios.post(urls.OAUTH2, payload);
+        let data = response.data;
+        BEARER_TOKEN = data['access_token'];
+        REFRESH_TOKEN = data['refresh_token'];
+        EXPIRY_TIME = new Date().getTime() / 1000 + data['expires_in'];
+        return [BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME];
+    }
+    catch (err) {
+        console.log("got an error yall");
+        console.log(err);
+    }
+}
+
+// ----------------- Challenge ------------------
+
+export async function oauth2Challenge(username, password, challenge_id){
+    let BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME;
+    let payload = {
+        headers: HEADERS,
+    }
+    let url = urls.build_challenge(challenge_id);
+    Object.assign(payload, BODY);
+    payload['username'] = username;
+    payload['password'] = password;
+
+    try {
+        const response = await axios.post(url, payload);
+        let data = response.data;
+        BEARER_TOKEN = data['access_token'];
+        REFRESH_TOKEN = data['refresh_token'];
+        EXPIRY_TIME = new Date().getTime() / 1000 + data['expires_in'];
+        return [BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME];
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
+export async function oauth2ChallengeTypeInput(username, password, challenge_type){
     let data = {
         headers: HEADERS,
     }
     Object.assign(data, BODY);
     data['username'] = username;
     data['password'] = password;
-    data['mfa_code'] = mfa_code;
-
-    try {
-        const response = await axios.post(urls.OAUTH2, data);
-        let res = response.data;
-        BEARER_TOKEN = res['access_token'];
-        REFRESH_TOKEN = res['refresh_token'];
-        EXPIRY_TIME = new Date().getTime() / 1000 + res['expires_in'];
-        return [BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME];
+    data['challenge_type'] = challenge_type;
+    
+    try{
+        let response = await axios.post(urls.OAUTH2, data);
+        let data = response.data;
+        return data.challenge.id;
     }
-    catch (err) {
-        console.log("got an error yall");
+    catch(err){
+        alert('Error');
         console.log(err);
     }
 }

@@ -29,25 +29,21 @@ const App = props => {
         auth.setCredentials(username, password);
 
         // TODO: Validate input
-        return await auth.initialLogin();
+        return await auth.initialLogin(); // gets returned to <Login>'s handleSubmit 
     }
 
 
     const handleMFASubmit = async (mfa_code) => {
         let success = await auth.loginMFA(mfa_code);
-
         return success;
-
     };
 
-    const handleChallengeSubmit = (challenge_id) => {
-        return false;
+    const handleChallengeSubmit = async (challenge_id) => {
+        let success = await auth.loginChallenge(challenge_id);
+        return success;
     }
 
-
     return (
-        // <Router>
-        // <div className="App">
         <Switch>
 
             <Route path={['/', '/login']}

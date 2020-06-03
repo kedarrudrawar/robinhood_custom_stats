@@ -25,3 +25,13 @@ export const DIVIDENDS = BASE_PATH + 'dividends/';
 export const build_quote_url = (ticker) => {
     return QUOTES + ticker + '/';
 }
+
+    /** Build challenge response url.
+    Args:
+        challenge_id: the id of the challenge passed in the oauth request flow.
+    Returns:
+        The constructed URL with the challenge_id embedded in teh url path.
+    */
+export const build_challenge = (challenge_id) => {
+    return `${BASE_PATH}challenge/${challenge_id}/respond/`
+}

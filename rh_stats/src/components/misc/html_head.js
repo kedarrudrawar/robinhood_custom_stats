@@ -6,10 +6,6 @@ export const Head = () => {
         <Helmet>
             <meta charset="UTF-8" />
             <title>Portfolio Statistics</title>
-            <link rel="stylesheet"
-                href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans"/>
-            <link rel="stylesheet"
-                href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed"/>
         </Helmet>
     );
 };

@@ -1,3 +1,6 @@
+@import url("https://fonts.googleapis.com/css?family=IBM+Plex+Sans");
+@import url("https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed");
+
 * {
     margin: 0;
     padding: 0;
@@ -13,7 +16,7 @@
     height: 100vh;
 }
 
-.mfa {
+.gray-bg {
     background-color: #F8F8F8;
 }
 
@@ -76,9 +79,8 @@
 
 .small-title { 
     /* font-family: Roboto; */
-    font-family: IBM Plex Sans;
+    /* font-family: IBM Plex Sans; */
     font-style: normal;
-    font-weight: bold;
     font-size: 16px;
     line-height: 21px;
     /* identical to box height */
@@ -94,10 +96,6 @@
     font-size: 30px;
     line-height: 35px;
 
-    /* letter-spacing: 0.025em; */
-
-    /* 900 */
-
     color: #1A202C;
 }
 
@@ -111,7 +109,6 @@
 
 
 .input-text { 
-    /* font-family: Roboto; */
     padding-left: 10px;
     font-style: normal;
     font-weight: normal;
@@ -137,7 +134,6 @@
 }
     
 .login-btn-text{
-    /* font-family: Roboto; */
     font-style: normal;
     font-weight: bold;
     font-size: 16px;
@@ -146,7 +142,6 @@
 }
 
 .note {
-    /* font-family: Roboto; */
     font-style: normal;
     font-weight: normal;
     font-size: 16px;
@@ -156,5 +151,20 @@
     justify-content: center;
 
     color: #AAAAAA;
+}
 
+
+.challenge-type-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    height: 50px;
+    width: 100%;
+    margin-top: 30px;
+    margin-bottom: 8px;
+    border: 0;
+    background-color: #00C804;
+
+    border-radius: 5px;
 }
