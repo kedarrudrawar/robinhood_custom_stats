@@ -100,13 +100,8 @@ export async function oauth2Challenge(username, password, challenge_type, challe
     payload['username'] = username;
     payload['password'] = password;
     payload['challenge_type'] = challenge_type;
-    
-    console.log('making request for token after challenge');
-    console.log("headers:");
-    console.log(headers);
 
     try {
-        console.log("making request");
         const response = await axios.post(urls.OAUTH2, qs.stringify(payload), headers);
         let data = response.data;
         let BEARER_TOKEN = data['access_token'];
@@ -115,8 +110,8 @@ export async function oauth2Challenge(username, password, challenge_type, challe
         return [BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME];
     }
     catch (err) {
-        console.log("request failed???");
         console.log(err);
+        alert('Invalid code. Please go back and try again.');
         return [,,,];
     }
 }
