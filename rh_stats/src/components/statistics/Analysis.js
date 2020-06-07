@@ -98,7 +98,7 @@ export async function getRealizedProfit(buyOrders, sellOrders){
 
 
 /**
- * Returns array of [symbol, unrealized profit]
+ * Returns array of [symbol, unrealized profit, percent unrealized profit]
  * @param {DataFrame containing symbol, quantity, average buy price, and current price} df 
  */
 export async function getUnrealizedProfit(df){
@@ -108,10 +108,10 @@ export async function getUnrealizedProfit(df){
         let quantity = row.get('quantity');
         let average_price = row.get('average_buy_price');
         let current_price = row.get('price');
-        let currProfit = (current_price - average_price) * quantity;
-        profit.push([symbol, currProfit]);
+        let currReturn = (current_price - average_price) * quantity;
+        let percentReturn = (quantity && average_price > 0) ? (current_price - average_price) / average_price * 100 : 0.00;
+        profit.push([symbol, currReturn, percentReturn]);
     }
-    // console.log(profit);
     return profit;
 }
 

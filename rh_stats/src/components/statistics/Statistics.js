@@ -9,9 +9,9 @@ import Loading from '../misc/loading';
 import * as analysis from './Analysis';
 import { DataFrame, Series } from 'pandas-js/dist/core';
 
-const df_columns = ['instrument', 'price', 'tradability', 'quantity','average_buy_price','dividend', 'realized profit', 'symbol', 'unrealized profit'];
+const df_columns = ['instrument', 'price', 'tradability', 'quantity','average_buy_price','dividend', 'realized profit', 'symbol', 'unrealized profit', 'percent unrealized profit'];
 const history_columns = ['Name', 'Average Cost', 'Dividend', 'Realized Return', 'Unrealized Return', 'Current Price'];
-const all_fields = [...history_columns, 'Tradability', 'Quantity'];
+const all_fields = [...history_columns, 'Tradability', 'Quantity', 'Unrealized Percent Return'];
 
 let keyword_mapping = {
     'Name': 'symbol',
@@ -19,6 +19,7 @@ let keyword_mapping = {
     'Dividend': 'dividend',
     'Realized Return': 'realized profit',
     'Unrealized Return': 'unrealized profit',
+    'Unrealized Percent Return': 'percent unrealized profit',
     'Earning Potential': 'earning potential',
     'Current Price': 'price',
     'Tradability': 'tradability',
@@ -59,14 +60,14 @@ const findIdxByDisplayColumnName = (display_column_name) => {
 const columnClass = utils.numDict[history_columns.length] + '-col';
 
 export const Statistics = props => {
-    const header = {
-        'Authorization': `Bearer ${auth.bearer_token}`
-    }
-
-
     // const header = {
-    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    //     'Authorization': `Bearer ${auth.bearer_token}`
     // }
+
+
+    const header = {
+        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    }
     
     const [totalInvested, setTotalInvested] = useState(0);
     const [cash, setCash] = useState(0);
@@ -134,7 +135,7 @@ export const Statistics = props => {
             // ----- unrealized profit -----
             let unreal = await analysis.getUnrealizedProfit(merged);
             let unrealDF = new DataFrame(unreal);
-            unrealDF.columns = ['symbol', 'unrealized profit'];
+            unrealDF.columns = ['symbol', 'unrealized profit', 'percent unrealized profit'];
             merged = merged.merge(unrealDF, ['symbol'], 'outer');
             // console.log(merged.toString());
 
@@ -159,7 +160,7 @@ export const Statistics = props => {
             merged = merged.set('symbol', symbolSeries);
 
 
-            // console.log(merged.toString());
+            console.log(merged.toString());
             merged = merged.get(df_columns);
             setHistoryDF(merged);
         }
@@ -233,13 +234,14 @@ export const Statistics = props => {
         return <div className={className}>{value}</div>
     }
 
-    function populateHistorySpec(){
+    function populateHistorySpecRender(){
         let symbol_obj_idx = findIdxByDFColumnName('symbol'),
         quantity_obj_idx = findIdxByDFColumnName('quantity'),
         currentPrice_obj_idx = findIdxByDFColumnName('price'),
         tradability_obj_idx = findIdxByDFColumnName('tradability'),
         realized_obj_idx = findIdxByDFColumnName('realized profit'),
         unrealized_obj_idx = findIdxByDFColumnName('unrealized profit'),
+        unrealized_percent_obj_idx = findIdxByDFColumnName('percent unrealized profit'),
         dividend_obj_idx = findIdxByDFColumnName('dividend'),
         averageCost_obj_idx = findIdxByDFColumnName('average_buy_price'),
         earningPotential_obj_idx = findIdxByDFColumnName('earning potential');
@@ -312,12 +314,15 @@ export const Statistics = props => {
         // unrealized
         if(history_specs[unrealized_obj_idx])
             history_specs[unrealized_obj_idx].render = () => {
-                let data = history_specs[unrealized_obj_idx].data;
+                let returns = history_specs[unrealized_obj_idx].data;
+                let percent_returns = history_specs[unrealized_percent_obj_idx].data;
 
-                let unrealReturnString = utils.beautifyReturns(data);
+                let unrealReturnString = `${utils.beautifyReturns(returns)}`
+                if(unrealReturnString !== '-')
+                    unrealReturnString += ` (${percent_returns >= 0 ? '+' : ''}${parseFloat(percent_returns).toFixed(2)}%)`;
                 let unrealizedClass = ''; 
-                if(parseFloat(data))
-                    unrealizedClass = parseFloat(data) > 0 ? 'positive' : 'negative';
+                if(parseFloat(returns))
+                    unrealizedClass = parseFloat(returns) > 0 ? 'positive' : 'negative';
             
                 return <div className={`cell text ${columnClass} ${unrealizedClass}`}>{unrealReturnString}</div>;
             };
@@ -350,10 +355,13 @@ export const Statistics = props => {
                 let obj = {...history_specs[i]};
                 if(obj.df_column_name){
                     history_specs[i].data = dataRow[df_columns.indexOf(obj.df_column_name)];
+                    console.log(obj.df_column_name);
+                    console.log(df_columns.indexOf(obj.df_column_name));
+                    console.log(history_specs[i].data);
                 }
             }
 
-            populateHistorySpec();
+            populateHistorySpecRender();
 
             return (
                 <div key={history_specs[findIdxByDFColumnName('symbol')].data}>
