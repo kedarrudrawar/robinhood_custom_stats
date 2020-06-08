@@ -10,7 +10,7 @@ import * as analysis from './Analysis';
 import { DataFrame, Series } from 'pandas-js/dist/core';
 
 const df_columns = ['instrument', 'price', 'tradability', 'quantity','average_buy_price','dividend', 'realized profit', 'symbol', 'unrealized profit', 'percent unrealized profit', 'equity'];
-const history_columns = ['Name', 'Average Cost', 'Dividend', 'Equity', 'Realized Return', 'Unrealized Return', 'Current Price'];
+const history_columns = ['Name', 'Average Cost', 'Equity', 'Dividend', 'Realized Return', 'Unrealized Return', 'Current Price'];
 const all_fields = [...history_columns, 'Tradability', 'Quantity', 'Unrealized Percent Return'];
 
 let keyword_mapping = {
