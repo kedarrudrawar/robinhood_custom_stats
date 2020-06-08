@@ -96,6 +96,10 @@ export async function getRealizedProfit(buyOrders, sellOrders){
 }
 
 
+const getFieldsFromRow = (fields, row) => {
+    return fields.map(field => row.get(field));
+}
+
 
 /**
  * Returns array of [symbol, unrealized profit, percent unrealized profit]
@@ -133,3 +137,14 @@ export function dividendsToDF(dividendsRes){
 
     return df;
 }
+
+
+export function getEquities(df){
+    let equities = [];
+    for(const row of df){
+        let [symbol, current_price, quantity] = getFieldsFromRow(['symbol', 'price', 'quantity'], row);
+        equities.push([symbol, parseFloat(current_price) * parseFloat(quantity)]);
+    }
+    return equities;
+}
+

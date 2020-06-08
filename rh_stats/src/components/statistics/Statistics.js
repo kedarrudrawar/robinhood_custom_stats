@@ -9,14 +9,15 @@ import Loading from '../misc/loading';
 import * as analysis from './Analysis';
 import { DataFrame, Series } from 'pandas-js/dist/core';
 
-const df_columns = ['instrument', 'price', 'tradability', 'quantity','average_buy_price','dividend', 'realized profit', 'symbol', 'unrealized profit', 'percent unrealized profit'];
-const history_columns = ['Name', 'Average Cost', 'Dividend', 'Realized Return', 'Unrealized Return', 'Current Price'];
+const df_columns = ['instrument', 'price', 'tradability', 'quantity','average_buy_price','dividend', 'realized profit', 'symbol', 'unrealized profit', 'percent unrealized profit', 'equity'];
+const history_columns = ['Name', 'Average Cost', 'Dividend', 'Equity', 'Realized Return', 'Unrealized Return', 'Current Price'];
 const all_fields = [...history_columns, 'Tradability', 'Quantity', 'Unrealized Percent Return'];
 
 let keyword_mapping = {
     'Name': 'symbol',
     'Average Cost': 'average_buy_price',
     'Dividend': 'dividend',
+    'Equity': 'equity',
     'Realized Return': 'realized profit',
     'Unrealized Return': 'unrealized profit',
     'Unrealized Percent Return': 'percent unrealized profit',
@@ -60,14 +61,14 @@ const findIdxByDisplayColumnName = (display_column_name) => {
 const columnClass = utils.numDict[history_columns.length] + '-col';
 
 export const Statistics = props => {
-    const header = {
-        'Authorization': `Bearer ${auth.bearer_token}`
-    }
-
-
     // const header = {
-    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    //     'Authorization': `Bearer ${auth.bearer_token}`
     // }
+
+
+    const header = {
+        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    }
     
     const [totalInvested, setTotalInvested] = useState(0);
     const [cash, setCash] = useState(0);
@@ -159,6 +160,12 @@ export const Statistics = props => {
             let symbolSeries = new Series(symbols, 'symbol');
             merged = merged.set('symbol', symbolSeries);
 
+            // ----- equity holdings -----
+            let equity = analysis.getEquities(merged);
+            let equityDF = new DataFrame(equity);
+            equityDF.columns = ['symbol', 'equity'];
+            merged = merged.merge(equityDF, ['symbol'], 'outer');
+
 
             console.log(merged.toString());
             merged = merged.get(df_columns);
@@ -243,6 +250,7 @@ export const Statistics = props => {
         unrealized_obj_idx = findIdxByDFColumnName('unrealized profit'),
         unrealized_percent_obj_idx = findIdxByDFColumnName('percent unrealized profit'),
         dividend_obj_idx = findIdxByDFColumnName('dividend'),
+        equity_obj_idx = findIdxByDFColumnName('equity'),
         averageCost_obj_idx = findIdxByDFColumnName('average_buy_price'),
         earningPotential_obj_idx = findIdxByDFColumnName('earning potential');
 
@@ -327,6 +335,13 @@ export const Statistics = props => {
                 return <div className={`cell text ${columnClass} ${unrealizedClass}`}>{unrealReturnString}</div>;
             };
 
+        // equity
+        if(history_specs[equity_obj_idx])
+            history_specs[equity_obj_idx].render = () => {
+                return <div className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_specs[equity_obj_idx].data)}</div>;
+            };
+    
+
         // render dividend
         if(history_specs[dividend_obj_idx])
             history_specs[dividend_obj_idx].render = () => {
@@ -355,9 +370,8 @@ export const Statistics = props => {
                 let obj = {...history_specs[i]};
                 if(obj.df_column_name){
                     history_specs[i].data = dataRow[df_columns.indexOf(obj.df_column_name)];
-                    console.log(obj.df_column_name);
-                    console.log(df_columns.indexOf(obj.df_column_name));
-                    console.log(history_specs[i].data);
+                    if (i === 3)
+                        console.log(history_specs[i].data);
                 }
             }
 
