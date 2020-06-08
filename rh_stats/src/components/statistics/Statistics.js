@@ -61,14 +61,14 @@ const findIdxByDisplayColumnName = (display_column_name) => {
 const columnClass = utils.numDict[history_columns.length] + '-col';
 
 export const Statistics = props => {
-    // const header = {
-    //     'Authorization': `Bearer ${auth.bearer_token}`
-    // }
-
-
     const header = {
-        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+        'Authorization': `Bearer ${auth.bearer_token}`
     }
+
+
+    // const header = {
+    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    // }
     
     const [totalInvested, setTotalInvested] = useState(0);
     const [cash, setCash] = useState(0);
