@@ -326,8 +326,8 @@ export const Statistics = props => {
                 let percent_returns = history_specs[unrealized_percent_obj_idx].data;
 
                 let unrealReturnString = `${utils.beautifyReturns(returns)}`
-                if(unrealReturnString !== '-')
-                    unrealReturnString += ` (${percent_returns >= 0 ? '+' : ''}${parseFloat(percent_returns).toFixed(2)}%)`;
+                // if(unrealReturnString !== '-')
+                //     unrealReturnString += ` (${percent_returns >= 0 ? '+' : ''}${parseFloat(percent_returns).toFixed(2)}%)`;
                 let unrealizedClass = ''; 
                 if(parseFloat(returns))
                     unrealizedClass = parseFloat(returns) > 0 ? 'positive' : 'negative';
