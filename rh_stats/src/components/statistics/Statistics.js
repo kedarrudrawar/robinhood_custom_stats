@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../../UI/css/Statistics.css'
 import {ReactComponent as ArrowIcon} from '../../UI/images/arrow.svg';
+import {ReactComponent as SortIcon} from '../../UI/images/sort.svg';
 import { Head } from '../misc/html_head'
 import * as api from '../../api/api'
 import * as utils from '../../utils';
@@ -61,14 +62,14 @@ const findIdxByDisplayColumnName = (display_column_name) => {
 const columnClass = utils.numDict[history_columns.length] + '-col';
 
 export const Statistics = props => {
-    const header = {
-        'Authorization': `Bearer ${auth.bearer_token}`
-    }
-
-
     // const header = {
-    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    //     'Authorization': `Bearer ${auth.bearer_token}`
     // }
+
+
+    const header = {
+        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    }
     
     const [totalInvested, setTotalInvested] = useState(0);
     const [cash, setCash] = useState(0);
@@ -370,8 +371,6 @@ export const Statistics = props => {
                 let obj = {...history_specs[i]};
                 if(obj.df_column_name){
                     history_specs[i].data = dataRow[df_columns.indexOf(obj.df_column_name)];
-                    if (i === 3)
-                        console.log(history_specs[i].data);
                 }
             }
 
@@ -437,13 +436,23 @@ export const Statistics = props => {
                                 <div className='row'>
                                     {history_columns.map((elem, idx) => {
                                         return (
-                                            <button 
-                                                key={idx} 
-                                                onClick={() => sortDataByCategory(elem)}
-
-                                                className={`cell text row-header history-column-btn ${columnClass}`}
+                                            <div className={`cell text row-header ${columnClass} category`}>
+                                                <button className='cell text row-header history-column-btn'
+                                                    key={idx} 
+                                                    onClick={() => sortDataByCategory(elem)}
                                                     >{elem}
-                                            </button>
+                                                </button>
+                                                <div
+                                                style ={{
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                }}>
+                                                    <SortIcon className='sort-icon'/>
+                                                    {/* <img className='sort-icon' src={require("../../UI/images/sort.svg")}/>     */}
+                                                </div>
+                                            </div>
+                                            
                                         );
                                     })}
                                 </div>

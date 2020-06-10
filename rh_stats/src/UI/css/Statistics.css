@@ -8,6 +8,10 @@ body {
     background-color: #FFFFFF;
 } 
 
+/* .category {
+    border: 2px solid orange;
+} */
+
 .stats-header {
     /* border: 3px solid red; */
     display: flex;
@@ -165,10 +169,23 @@ hr {
 
     padding: 1.2em 0;
     overflow: hidden;
-    /* border: 1px solid blue; */
 
-    border: 0;
+    /* border: 0; */
     background-color: white;
+}
+
+
+.sort-icon {
+    display: flex;
+    width: 10px;
+    height: 20px;
+    margin-left: 3px;
+}
+
+.history-column-btn {
+    max-width: fit-content;
+    border: 0;
+    /* border: 2px red solid; */
 }
 
 .history-column-btn:hover {
