@@ -175,30 +175,28 @@ hr {
 }
 
 
+
+.category:hover{
+    cursor: pointer;
+    transition: 0.3s ease;
+
+    color: gray;
+    fill: gray;
+}
+
+
 .sort-icon {
     display: flex;
     width: 10px;
-    height: 20px;
+    height: 40px;
     margin-left: 3px;
 }
 
 .history-column-btn {
     max-width: fit-content;
     border: 0;
-    /* border: 2px red solid; */
 }
 
-.history-column-btn:hover {
-    cursor: pointer;
-    transition: 0.3s ease;
-
-    color: gray;
-}
-
-.history-column-btn:focus {
-    cursor: pointer;
-    outline: none;
-}
 
 .btn-container {
     display: flex;

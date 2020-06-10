@@ -62,14 +62,14 @@ const findIdxByDisplayColumnName = (display_column_name) => {
 const columnClass = utils.numDict[history_columns.length] + '-col';
 
 export const Statistics = props => {
-    const header = {
-        'Authorization': `Bearer ${auth.bearer_token}`
-    }
-
-
     // const header = {
-    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    //     'Authorization': `Bearer ${auth.bearer_token}`
     // }
+
+
+    const header = {
+        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    }
     
     const [totalInvested, setTotalInvested] = useState(0);
     const [cash, setCash] = useState(0);
@@ -436,12 +436,13 @@ export const Statistics = props => {
                                 <div className='row'>
                                     {history_columns.map((elem, idx) => {
                                         return (
-                                            <div className={`cell text row-header ${columnClass} category`}>
-                                                <button className='cell text row-header history-column-btn'
+                                            <div className={`cell text row-header ${columnClass} category`}
+                                                onClick={() => sortDataByCategory(elem)}
+                                            >
+                                                <div className='cell text row-header history-column-btn'
                                                     key={idx} 
-                                                    onClick={() => sortDataByCategory(elem)}
                                                     >{elem}
-                                                </button>
+                                                </div>
                                                 <div
                                                 style ={{
                                                     display: 'flex',
