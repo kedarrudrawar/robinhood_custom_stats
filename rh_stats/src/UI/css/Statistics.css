@@ -20,6 +20,11 @@ body {
     margin-top: 70px;
 }
 
+.header-btns {
+    display: flex;
+    flex-direction: row;
+}
+
 .stock-redir-btn {
     display: flex;
     justify-content: center;
@@ -52,10 +57,14 @@ body {
 
 .reload-btn {
     display: flex;
-    border: 1px black solid;
+    border: 1px white solid;
     margin-right: 56px;
     padding: 8px 8px;
     height: 40px;
+    font-style: normal;
+    font-weight: 900;
+    font-size: 12px;
+    line-height: 16px;
 }
 
 .positive {

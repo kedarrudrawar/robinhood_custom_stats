@@ -21,6 +21,14 @@ class Auth{
         this.password = '';
     }
 
+    resetAllCredentials(){
+        this.username = '';
+        this.password = '';
+        this.bearer_token = '';
+        this.refresh_token = '';
+        this.expiry_time = ''; 
+    }
+
     setChallengeID(challengeID){
         this.challengeID = challengeID;
     }
@@ -99,9 +107,10 @@ class Auth{
         this.expiry_time = expiry_time;
     }
 
-    logout(cb){
+    logout(){
+        this.resetAllCredentials()
         this.authenticated = false;
-        cb();
+        // cb();
     }
 
     isAuthenticated(){
