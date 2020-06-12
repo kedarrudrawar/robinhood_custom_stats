@@ -15,8 +15,47 @@ body {
 .stats-header {
     /* border: 3px solid red; */
     display: flex;
+    justify-content: space-between;
     margin-left: 56px;
     margin-top: 70px;
+}
+
+.stock-redir-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0 8px 12px;
+    color: black;
+    background-color: white;
+
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 21px;
+
+    border-radius: 4px;
+    border: 1px solid #222222;
+}
+
+.stock-redir-btn:hover {
+    background-color:  #00C804;
+    transition: all 0.1s ease;
+    color: white;
+    border: 1px solid white;
+    cursor: pointer;
+}
+
+.stock-redir-btn:hover .arrow path{
+    transition: all 0.1s ease;
+    fill: white;
+}
+
+.reload-btn {
+    display: flex;
+    border: 1px black solid;
+    margin-right: 56px;
+    padding: 8px 8px;
+    height: 40px;
 }
 
 .positive {
@@ -40,10 +79,10 @@ body {
     width: 334px;
     margin-right: 40px;
     background-color: white;    
-
-    border: 1px solid #F4F4F5;
+    border: 1px solid #CDCDCD;
     box-sizing: border-box;
-    box-shadow: 0px 4px 48px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0px 4px 48px rgba(0, 0, 0, 0.1);
+    border: 1px solid #F4F4F5; */
     border-radius: 4px;
 }
 
@@ -217,34 +256,7 @@ hr {
 }
 
 
-.stock-redir-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 8px 0 8px 12px;
-    color: black;
-    background-color: white;
 
-    font-style: normal;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 21px;
-
-    border-radius: 4px;
-    border: 1px solid #222222;
-}
-
-.stock-redir-btn:hover {
-    background-color:  #00C804;
-    transition: all 0.1s ease;
-    color: white;
-    border: 1px solid white;
-}
-
-.stock-redir-btn:hover .arrow path{
-    transition: all 0.1s ease;
-    fill: white;
-}
 
 .arrow {
     display: flex;
