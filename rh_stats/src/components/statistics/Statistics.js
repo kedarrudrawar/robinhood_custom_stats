@@ -184,9 +184,9 @@ export const Statistics = props => {
 
     useEffect(() => {
         setLastUpdatedAt(new Date().toLocaleTimeString());
-        updateData();
         updateCash();
         updateTotalInvested();
+        updateData();
     }, [refresh]);
 
     // convert history_df to history array
