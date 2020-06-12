@@ -2,7 +2,7 @@ import * as api from '../api/api';
 
 class Auth{
     constructor(){
-        this.authenticated = false;
+        this.authenticated = true;
         this.username = '';
         this.password = '';
         this.bearer_token = '';
@@ -110,7 +110,6 @@ class Auth{
     logout(){
         this.resetAllCredentials()
         this.authenticated = false;
-        // cb();
     }
 
     isAuthenticated(){

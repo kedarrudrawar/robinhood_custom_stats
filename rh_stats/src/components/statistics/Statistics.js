@@ -63,16 +63,18 @@ const findIdxByDisplayColumnName = (display_column_name) => {
 const columnClass = utils.numDict[history_columns.length] + '-col';
 
 export const Statistics = props => {
-    const header = {
-        'Authorization': `Bearer ${auth.bearer_token}`
-    }
-
-
     // const header = {
-    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    //     'Authorization': `Bearer ${auth.bearer_token}`
     // }
 
+
+    const header = {
+        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    }
+
     const [loggedIn, setLoggedIn] = useState(true);
+
+    const [lastUpdatedAt, setLastUpdatedAt] = useState('')
     
     const [totalInvested, setTotalInvested] = useState(0);
     const [cash, setCash] = useState(0);
@@ -175,9 +177,11 @@ export const Statistics = props => {
         console.log(merged.toString());
         merged = merged.get(df_columns);
         setHistoryDF(merged);
+        setLastUpdatedAt(new Date().toLocaleTimeString());
     }
 
     useEffect(() => {
+        setLastUpdatedAt(new Date().toLocaleTimeString());
         updateData();
     }, [refresh]);
 
@@ -464,7 +468,7 @@ export const Statistics = props => {
 
                     <div className='bottom-container'>
                         <div className='history-container'>
-                            <div className="history-header updated-stats">Updated at:</div>
+                            <div className="history-header updated-stats">Updated at: {lastUpdatedAt}</div>
                             <div className="history-header table-title text">History</div>
                             <div className='table'>
                                 <div className='row'>
