@@ -23,6 +23,7 @@ body {
 .header-btns {
     display: flex;
     flex-direction: row;
+    margin-right: 56px;
 }
 
 .stock-redir-btn {
@@ -58,7 +59,7 @@ body {
 .reload-btn {
     display: flex;
     border: 1px white solid;
-    margin-right: 56px;
+    margin-left: 20px;
     padding: 8px 8px;
     height: 40px;
     font-style: normal;
