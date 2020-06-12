@@ -89,29 +89,31 @@ export const Statistics = props => {
 
     // ----------------------------------------- raw account data -----------------------------------------
 
+
     // total invested
+    const updateTotalInvested = async () => {
+        let inv = await api.getPortfolio(header);
+        let value = await inv['results'][0]['market_value'];
+        setTotalInvested(parseFloat(value).toFixed(2));
+    }
+
+    // cash
+    const updateCash = async () => {
+        let details = await api.getAccountDetails(header);
+        let cashStr = await details[0]['portfolio_cash'];
+        setCash(parseFloat(cashStr).toFixed(2));
+    }
+
     useEffect(() => {
-        const updateTotalInvested = async () => {
-            let inv = await api.getPortfolio(header);
-            let value = await inv['results'][0]['market_value'];
-            setTotalInvested(parseFloat(value).toFixed(2));
-        }
         updateTotalInvested();
     }, []);
     
-    // cash
     useEffect(() => {
-        const updateCash = async () => {
-            let details = await api.getAccountDetails(header);
-            let cashStr = await details[0]['portfolio_cash'];
-            setCash(parseFloat(cashStr).toFixed(2));
-        }
         updateCash();
     }, []);
 
 
     // history
-
     const updateData = async () => {
         let merged;
 
@@ -183,6 +185,8 @@ export const Statistics = props => {
     useEffect(() => {
         setLastUpdatedAt(new Date().toLocaleTimeString());
         updateData();
+        updateCash();
+        updateTotalInvested();
     }, [refresh]);
 
     // convert history_df to history array
