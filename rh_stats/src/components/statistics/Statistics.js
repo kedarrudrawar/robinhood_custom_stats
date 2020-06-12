@@ -75,6 +75,7 @@ export const Statistics = props => {
     const [historyDF, setHistoryDF] = useState(null);
 
     const [history, setHistory] = useState(null);
+    const [refresh, setRefresh] = useState(0);
 
     const [sortedBy, setSortedBy] = useState('symbol');
     const [ascending, setAscending] = useState(true);
@@ -103,69 +104,71 @@ export const Statistics = props => {
 
 
     // history
-    useEffect(() => {
-        const updateData = async () => {
-            let merged;
 
-            // ----- positions -----
-            let pos = await api.getPositions(header, true); // active positions
-            let positionsDF = await analysis.positionsToDF(pos);
-            positionsDF = positionsDF.get(['symbol', 'average_buy_price', 'quantity', 'instrument']);
-            merged = positionsDF;
-            
-            // ----- realized profit -----
-            let buyOrders = await api.getOrderHistory(header, ['filled'], 'buy');
-            let sellOrders = await api.getOrderHistory(header, ['filled'], 'sell');
-            let realProfit = await analysis.getRealizedProfit(buyOrders, sellOrders);
-            
-            let profitDF = new DataFrame(realProfit);
-            if(profitDF.length){
-                profitDF.columns = ['symbol', 'realized profit', 'instrument'];
-                merged = positionsDF.merge(profitDF, ['symbol', 'instrument'], 'outer');
-            }
-            else {
-                merged = merged.set('realized profit', utils.zeroesArray(merged.length));
-            }
+    const updateData = async () => {
+        let merged;
 
-            let currentPrices = await api.getCurrentPricesFromInstrumentsDF(header, merged);
-            let pricesDF = new DataFrame(currentPrices);
-            pricesDF.columns = ['symbol', 'price'];
-            merged = merged.merge(pricesDF, ['symbol'], 'outer');
-
-            // ----- unrealized profit -----
-            let unreal = await analysis.getUnrealizedProfit(merged);
-            let unrealDF = new DataFrame(unreal);
-            unrealDF.columns = ['symbol', 'unrealized profit', 'percent unrealized profit'];
-            merged = merged.merge(unrealDF, ['symbol'], 'outer');
-            // console.log(merged.toString());
-
-            // ----- dividends -----
-            let div = await api.getDividends(header, ['paid', 'reinvested']);
-            if(div.length){
-                let divDF = analysis.dividendsToDF(div);
-                merged = merged.merge(divDF, ['instrument'], 'outer');
-            }
-            else{
-                merged = merged.set('dividend', utils.zeroesArray(utils.zeroesArray(merged.length)));
-            }
-
-            // ----- tradability -----
-            let tradabilities = await api.getFieldFromInstrumentsDF(merged, 'tradability');
-            let tradeSeries = new Series(tradabilities, 'tradability');
-            merged = merged.set('tradability', tradeSeries);
-
-            // ----- symbols -----
-            let symbols = await api.getFieldFromInstrumentsDF(merged, 'symbol');
-            let symbolSeries = new Series(symbols, 'symbol');
-            merged = merged.set('symbol', symbolSeries);
-
-
-            console.log(merged.toString());
-            merged = merged.get(df_columns);
-            setHistoryDF(merged);
+        // ----- positions -----
+        let pos = await api.getPositions(header, true); // active positions
+        let positionsDF = await analysis.positionsToDF(pos);
+        positionsDF = positionsDF.get(['symbol', 'average_buy_price', 'quantity', 'instrument']);
+        merged = positionsDF;
+        
+        // ----- realized profit -----
+        let buyOrders = await api.getOrderHistory(header, ['filled'], 'buy');
+        let sellOrders = await api.getOrderHistory(header, ['filled'], 'sell');
+        let realProfit = await analysis.getRealizedProfit(buyOrders, sellOrders);
+        
+        let profitDF = new DataFrame(realProfit);
+        if(profitDF.length){
+            profitDF.columns = ['symbol', 'realized profit', 'instrument'];
+            merged = positionsDF.merge(profitDF, ['symbol', 'instrument'], 'outer');
         }
+        else {
+            merged = merged.set('realized profit', utils.zeroesArray(merged.length));
+        }
+
+        let currentPrices = await api.getCurrentPricesFromInstrumentsDF(header, merged);
+        let pricesDF = new DataFrame(currentPrices);
+        pricesDF.columns = ['symbol', 'price'];
+        merged = merged.merge(pricesDF, ['symbol'], 'outer');
+
+        // ----- unrealized profit -----
+        let unreal = await analysis.getUnrealizedProfit(merged);
+        let unrealDF = new DataFrame(unreal);
+        unrealDF.columns = ['symbol', 'unrealized profit', 'percent unrealized profit'];
+        merged = merged.merge(unrealDF, ['symbol'], 'outer');
+        // console.log(merged.toString());
+
+        // ----- dividends -----
+        let div = await api.getDividends(header, ['paid', 'reinvested']);
+        if(div.length){
+            let divDF = analysis.dividendsToDF(div);
+            merged = merged.merge(divDF, ['instrument'], 'outer');
+        }
+        else{
+            merged = merged.set('dividend', utils.zeroesArray(utils.zeroesArray(merged.length)));
+        }
+
+        // ----- tradability -----
+        let tradabilities = await api.getFieldFromInstrumentsDF(merged, 'tradability');
+        let tradeSeries = new Series(tradabilities, 'tradability');
+        merged = merged.set('tradability', tradeSeries);
+
+        // ----- symbols -----
+        let symbols = await api.getFieldFromInstrumentsDF(merged, 'symbol');
+        let symbolSeries = new Series(symbols, 'symbol');
+        merged = merged.set('symbol', symbolSeries);
+
+
+        console.log(merged.toString());
+        merged = merged.get(df_columns);
+        setHistoryDF(merged);
+    }
+
+    useEffect(() => {
         updateData();
-    }, []);
+    }, [refresh]);
 
     // convert history_df to history array
     useEffect(() => {
@@ -355,9 +358,9 @@ export const Statistics = props => {
                 let obj = {...history_specs[i]};
                 if(obj.df_column_name){
                     history_specs[i].data = dataRow[df_columns.indexOf(obj.df_column_name)];
-                    console.log(obj.df_column_name);
-                    console.log(df_columns.indexOf(obj.df_column_name));
-                    console.log(history_specs[i].data);
+                    // console.log(obj.df_column_name);
+                    // console.log(df_columns.indexOf(obj.df_column_name));
+                    // console.log(history_specs[i].data);
                 }
             }
 
@@ -391,26 +394,37 @@ export const Statistics = props => {
             <div>
                 <Head />
                 <body>
-                    <div className="stats-header"> 
-                        <div className="stats-box">
-                            <div className="stats-box-title text">Total Portfolio</div>
-                            <div className="stats-box-value condensed">{utils.beautifyPrice(parseFloat(totalInvested) + parseFloat(cash))}</div>
-                            <div className="stats-box-data-row">
-                                <div className="data-row-categ text" >Realized Return</div>
-                                {renderTotal(true)}
+                    <div className="top-container">
+                        <div className="stats-header"> 
+                            <div className="stats-box">
+                                <div className="stats-box-title text">Total Portfolio</div>
+                                <div className="stats-box-value condensed">{utils.beautifyPrice(parseFloat(totalInvested) + parseFloat(cash))}</div>
+                                <div className="stats-box-data-row">
+                                    <div className="data-row-categ text" >Realized Return</div>
+                                    {renderTotal(true)}
+                                </div>
+                                <div className="stats-box-data-row">
+                                    <div className="data-row-categ text">Unrealized Return</div>
+                                    {renderTotal(false)}
+                                </div>
+                                <div className="stats-box-data-row">
+                                    <div className="data-row-categ text">Buying Power</div>
+                                    <div className="data-row-value condensed">{utils.beautifyPrice(cash)}</div>
+                                </div>
+                                <div className="stats-box-data-row">
+                                    <div className="data-row-categ text">Total Investment</div>
+                                    <div className="data-row-value condensed">{utils.beautifyPrice(totalInvested)}</div>
+                                    
+                                </div>
                             </div>
-                            <div className="stats-box-data-row">
-                                <div className="data-row-categ text">Unrealized Return</div>
-                                {renderTotal(false)}
-                            </div>
-                            <div className="stats-box-data-row">
-                                <div className="data-row-categ text">Buying Power</div>
-                                <div className="data-row-value condensed">{utils.beautifyPrice(cash)}</div>
-                            </div>
-                            <div className="stats-box-data-row">
-                                <div className="data-row-categ text">Total Investment</div>
-                                <div className="data-row-value condensed">{utils.beautifyPrice(totalInvested)}</div>
-                                
+                            <div className='text stock-redir-btn reload-btn'
+                                type='button'
+                                onClick={() => {
+                                    setHistory(null);
+                                    setRefresh(refresh + 1);
+                                }}
+                            >
+                                Reload
                             </div>
                         </div>
                     </div>
