@@ -63,14 +63,14 @@ const findIdxByDisplayColumnName = (display_column_name) => {
 const columnClass = utils.numDict[history_columns.length] + '-col';
 
 export const Statistics = props => {
-    const header = {
-        'Authorization': `Bearer ${auth.bearer_token}`
-    }
-
-
     // const header = {
-    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    //     'Authorization': `Bearer ${auth.bearer_token}`
     // }
+
+
+    const header = {
+        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    }
 
     const [loggedIn, setLoggedIn] = useState(true);
 
@@ -472,7 +472,7 @@ export const Statistics = props => {
 
                     <div className='bottom-container'>
                         <div className='history-container'>
-                            <div className="history-header updated-stats">Updated at: {lastUpdatedAt}</div>
+                            <div className="history-header updated-stats">Updated at {lastUpdatedAt}</div>
                             <div className="history-header table-title text">History</div>
                             <div className='table'>
                                 <div className='row'>
