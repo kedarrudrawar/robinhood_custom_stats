@@ -161,6 +161,7 @@ body {
 
 .bottom-container {
     background-color: #F3F3F3;
+    /* border: 2px red solid; */
     margin-top: 32px;
     padding-top: 30px;
 }

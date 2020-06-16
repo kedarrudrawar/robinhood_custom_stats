@@ -20,10 +20,12 @@ export const ChallengeLogin = props => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         let success = await props.onSubmit(challengeID, challengeCode, challengeType);
-        if(success)
+        if(success){
             props.history.push('/stats');
-        else 
+        }
+        else{ 
             alert('Invalid code');
+        }
     }
 
     // once type has been inputted, request with type to get challenge ID

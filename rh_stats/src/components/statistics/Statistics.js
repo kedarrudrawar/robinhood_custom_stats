@@ -63,14 +63,14 @@ const findIdxByDisplayColumnName = (display_column_name) => {
 const columnClass = utils.numDict[history_columns.length] + '-col';
 
 export const Statistics = props => {
-    const header = {
-        'Authorization': `Bearer ${auth.bearer_token}`
-    }
-
-
     // const header = {
-    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    //     'Authorization': `Bearer ${auth.bearer_token}`
     // }
+
+
+    const header = {
+        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    }
 
     const [loggedIn, setLoggedIn] = useState(true);
 
@@ -156,7 +156,7 @@ export const Statistics = props => {
             merged = merged.merge(divDF, ['instrument'], 'outer');
         }
         else{
-            merged = merged.set('dividend', utils.zeroesArray(utils.zeroesArray(merged.length)));
+            merged = merged.set('dividend', utils.zeroesArray(merged.length));
         }
 
         // ----- equity holdings -----
