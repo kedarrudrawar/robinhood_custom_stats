@@ -253,7 +253,13 @@ export const Statistics = props => {
         let colorClass = total >= 0 ? 'positive' : 'negative';
         let className = 'data-row-value condensed ' + colorClass;
         let value = utils.beautifyPrice(parseFloat(total).toFixed(2));
-        return <div className={className}>{value}</div>
+
+        let percent = '';
+        if (! realizedBoolean){
+            percent = `(${utils.beautifyPercent((total / totalInvested)*100)})`;
+        }
+
+        return <div className={className}>{value} {percent} </div>
     }
 
     function populateHistorySpecRender(){

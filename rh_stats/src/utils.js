@@ -14,6 +14,11 @@ export function beautifyPrice(num){
     return num !== 0 && num ? '$' + numberWithCommas((parseFloat(num).toFixed(2))) : '-';
 }
 
+export function beautifyPercent(perc){
+    let sign = perc >= 0 ? '+' : '-';
+    return `${sign}${perc.toFixed(2)}%`;
+}
+
 export function zeroesArray(length) {
     return Array.apply(null, Array(length)).map(() => 0);
 }
