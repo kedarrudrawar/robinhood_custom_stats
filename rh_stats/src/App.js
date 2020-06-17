@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 
 import { Login } from './components/login/Login';
-import MFA_Login from "./components/login/MFA_Login";
+import MfaLogin from "./components/login/MFA_Login";
 import { ChallengeLogin } from "./components/login/ChallengeLogin";
 import { Statistics } from "./components/statistics/Statistics";
 import auth from './auth/auth';
@@ -56,7 +56,7 @@ const App = props => {
             <Route path='/MFA'
                 exact
                 render={(props) =>
-                    <MFA_Login {...props}
+                    <MfaLogin {...props}
                         onSubmit={handleMFASubmit}
                         username={auth.username}
                         password={auth.password}
@@ -77,7 +77,6 @@ const App = props => {
             />
         </Switch>
     );
-    {/* </div> */ }
     // </Router>
 
 }

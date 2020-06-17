@@ -106,11 +106,11 @@ export const Statistics = props => {
 
     useEffect(() => {
         updateTotalInvested();
-    }, []);
+    }, [refresh]);
     
     useEffect(() => {
         updateCash();
-    }, []);
+    }, [refresh]);
 
 
     // history
@@ -243,6 +243,7 @@ export const Statistics = props => {
         if(!history) return 0;
         history.map(row => {
             total += row[idx];
+            return null;
         });
         return total;
     }
@@ -269,7 +270,7 @@ export const Statistics = props => {
         tradability_obj_idx = findIdxByDFColumnName('tradability'),
         realized_obj_idx = findIdxByDFColumnName('realized profit'),
         unrealized_obj_idx = findIdxByDFColumnName('unrealized profit'),
-        unrealized_percent_obj_idx = findIdxByDFColumnName('percent unrealized profit'),
+        // unrealized_percent_obj_idx = findIdxByDFColumnName('percent unrealized profit'),
         dividend_obj_idx = findIdxByDFColumnName('dividend'),
         equity_obj_idx = findIdxByDFColumnName('equity'),
         averageCost_obj_idx = findIdxByDFColumnName('average_buy_price'),
@@ -284,7 +285,7 @@ export const Statistics = props => {
         
             
             history_specs[symbol_obj_idx].render = () => (
-                <div className={`value-container ${columnClass} cell`}>
+                <div key='symbol' className={`value-container ${columnClass} cell`}>
                     <div className='text' >{history_specs[symbol_obj_idx].data}</div>
                     <div style={{fontSize: '12px',
                                 lineHeight: '16px',
@@ -320,7 +321,7 @@ export const Statistics = props => {
                 let tradability = history_specs[tradability_obj_idx].data;
                 let currentPrice = history_specs[currentPrice_obj_idx].data;
                 return (
-                    <div className={`btn-container ${columnClass}`}>
+                    <div key='current price' className={`btn-container ${columnClass}`}>
                             {renderPriceButton(symbol, tradability, currentPrice)}
                     </div>
                 );
@@ -338,13 +339,13 @@ export const Statistics = props => {
                 if(parseFloat(data))
                     realizedClass = parseFloat(data) > 0 ? 'positive' : 'negative';
             
-                return <div className={`cell text ${columnClass} ${realizedClass}`}>{realReturnString}</div>;
+                return <div key='realized profit' className={`cell text ${columnClass} ${realizedClass}`}>{realReturnString}</div>;
             };
         // unrealized
         if(history_specs[unrealized_obj_idx])
             history_specs[unrealized_obj_idx].render = () => {
                 let returns = history_specs[unrealized_obj_idx].data;
-                let percent_returns = history_specs[unrealized_percent_obj_idx].data;
+                // let percent_returns = history_specs[unrealized_percent_obj_idx].data;
 
                 let unrealReturnString = `${utils.beautifyReturns(returns)}`
                 // if(unrealReturnString !== '-')
@@ -353,33 +354,33 @@ export const Statistics = props => {
                 if(parseFloat(returns))
                     unrealizedClass = parseFloat(returns) > 0 ? 'positive' : 'negative';
             
-                return <div className={`cell text ${columnClass} ${unrealizedClass}`}>{unrealReturnString}</div>;
+                return <div key='unrealized profit' className={`cell text ${columnClass} ${unrealizedClass}`}>{unrealReturnString}</div>;
             };
 
         // equity
         if(history_specs[equity_obj_idx])
             history_specs[equity_obj_idx].render = () => {
-                return <div className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_specs[equity_obj_idx].data)}</div>;
+                return <div key='equity' className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_specs[equity_obj_idx].data)}</div>;
             };
     
 
         // render dividend
         if(history_specs[dividend_obj_idx])
             history_specs[dividend_obj_idx].render = () => {
-                return <div className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_specs[dividend_obj_idx].data)}</div>;
+                return <div key='dividend' className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_specs[dividend_obj_idx].data)}</div>;
             };
 
 
         // average cost
         if(history_specs[averageCost_obj_idx])
             history_specs[averageCost_obj_idx].render = () => {
-                return <div className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_specs[averageCost_obj_idx].data)}</div>;
+                return <div key='average cost' className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_specs[averageCost_obj_idx].data)}</div>;
             };
 
         // earnings potential
         if(history_specs[earningPotential_obj_idx])
             history_specs[earningPotential_obj_idx].render = () => {
-                return <div className={`cell text ${columnClass}`}>-</div>
+                return <div key='earnings potential' className={`cell text ${columnClass}`}>-</div>
             };
     }
 
@@ -427,9 +428,9 @@ export const Statistics = props => {
     return !history 
         ? <Loading />
         : (
-            <div>
+            <>
                 <Head />
-                <body>
+                <div>
                     <div className="top-container">
                         <div className="stats-header"> 
                             <div className="stats-box">
@@ -453,7 +454,7 @@ export const Statistics = props => {
                                     
                                 </div>
                             </div>
-                            <div class='header-btns'>
+                            <div className='header-btns'>
                                 <div className='text stock-redir-btn reload-btn'
                                     type='button'
                                     onClick={() => {
@@ -484,7 +485,7 @@ export const Statistics = props => {
                                 <div className='row'>
                                     {history_columns.map((elem, idx) => {
                                         return (
-                                            <div className={`cell text row-header ${columnClass} category`}
+                                            <div key={idx} className={`cell text row-header ${columnClass} category`}
                                                 onClick={() => sortDataByCategory(elem)}
                                             >
                                                 <div className='cell text row-header history-column-btn'
@@ -511,8 +512,8 @@ export const Statistics = props => {
                             </div>
                         </div>
                     </div>
-                </body>
-            </div>
+                </div>
+            </>
         );
 
 

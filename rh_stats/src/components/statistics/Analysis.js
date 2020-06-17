@@ -126,6 +126,7 @@ export function dividendsToDF(dividendsRes){
             dividends[div['instrument']] += parseFloat(div['amount'])
         else
             dividends[div['instrument']] = parseFloat(div['amount']);
+        return null;
     });
 
     let arr = Object.keys(dividends).map(div => {

@@ -112,7 +112,6 @@ export async function oauth2Challenge(username, password, challenge_type, challe
     catch (err) {
         console.log(err);
         alert('Invalid code. Please go back and try again.');
-        return [,,,];
     }
 }
 
