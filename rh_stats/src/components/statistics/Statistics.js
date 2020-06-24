@@ -63,18 +63,20 @@ const findIdxByDisplayColumnName = (display_column_name) => {
 const columnClass = utils.numDict[history_columns.length] + '-col';
 
 export const Statistics = props => {
-    const header = {
-        'Authorization': `Bearer ${auth.bearer_token}`
-    }
-
-
     // const header = {
-    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    //     'Authorization': `Bearer ${auth.bearer_token}`
     // }
+
+
+    const header = {
+        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    }
 
     const [loggedIn, setLoggedIn] = useState(true);
 
-    const [lastUpdatedAt, setLastUpdatedAt] = useState('')
+    const [lastUpdatedAt, setLastUpdatedAt] = useState('');
+
+    const [activeCategory, setActiveCategory] = useState('equities');
     
     const [totalInvested, setTotalInvested] = useState(0);
     const [cash, setCash] = useState(0);
@@ -384,7 +386,40 @@ export const Statistics = props => {
             };
     }
 
-    function renderHistory(){
+    function activateHistoryCategory(category){
+        setActiveCategory(category);
+    }
+
+    function renderTableColumnHeaders(){
+        return (
+            <div className='row'>
+                {history_columns.map((elem, idx) => {
+                    return (
+                        <div key={idx} className={`cell text row-header ${columnClass} category`}
+                            onClick={() => sortDataByCategory(elem)}
+                        >
+                            <div className='cell text row-header history-column-btn'
+                                key={idx} 
+                                >{elem}
+                            </div>
+                            <div
+                            style ={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}>
+                                <SortIcon className='sort-icon'/>
+                                {/* <img className='sort-icon' src={require("../../UI/images/sort.svg")}/>     */}
+                            </div>
+                        </div>
+                        
+                    );
+                })}
+            </div>
+        );
+    }
+
+    function renderEquityHistory(){
         if(!history) return <div></div>;
 
         return history.map((dataRow) => {
@@ -392,9 +427,6 @@ export const Statistics = props => {
                 let obj = {...history_specs[i]};
                 if(obj.df_column_name){
                     history_specs[i].data = dataRow[df_columns.indexOf(obj.df_column_name)];
-                    // console.log(obj.df_column_name);
-                    // console.log(df_columns.indexOf(obj.df_column_name));
-                    // console.log(history_specs[i].data);
                 }
             }
 
@@ -410,6 +442,22 @@ export const Statistics = props => {
             );
         });
     }
+
+    function renderTable(){
+        if(activeCategory === 'equities'){
+            return (
+                <div className='table'>
+                    {renderTableColumnHeaders()}
+                    <hr/>
+                    {renderEquityHistory()}
+                </div>
+            );
+        }
+        else {
+            return <div className='table'>Not Implemented</div>
+        }
+    }
+
 
     function sortDataByCategory(elem){
         let idx = findIdxByDisplayColumnName(elem);
@@ -481,35 +529,18 @@ export const Statistics = props => {
                         <div className='history-container'>
                             <div className="history-header updated-stats">Updated at {lastUpdatedAt}</div>
                             <div className="history-header table-title text">History</div>
-                            <div className='table'>
-                                <div className='row'>
-                                    {history_columns.map((elem, idx) => {
-                                        return (
-                                            <div key={idx} className={`cell text row-header ${columnClass} category`}
-                                                onClick={() => sortDataByCategory(elem)}
-                                            >
-                                                <div className='cell text row-header history-column-btn'
-                                                    key={idx} 
-                                                    >{elem}
-                                                </div>
-                                                <div
-                                                style ={{
-                                                    display: 'flex',
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center',
-                                                }}>
-                                                    <SortIcon className='sort-icon'/>
-                                                    {/* <img className='sort-icon' src={require("../../UI/images/sort.svg")}/>     */}
-                                                </div>
-                                            </div>
-                                            
-                                        );
-                                    })}
-                                </div>
-                                <hr/>
-                                {renderHistory()}
-                                
+                            <div className='history-categories'>
+                                <div className={`history-category-btn ${activeCategory === 'equities' ? 'active-category' : 'inactive-category'}`}
+                                    onClick={() => {
+                                        activateHistoryCategory('equities');
+                                    }}
+                                >Equities</div>
+                                <div className={`history-category-btn ${activeCategory === 'options' ? 'active-category' : 'inactive-category'}`}
+                                    onClick={() => {
+                                        activateHistoryCategory('options');
+                                    }}>Options</div>
                             </div>
+                            {renderTable()}
                         </div>
                     </div>
                 </div>

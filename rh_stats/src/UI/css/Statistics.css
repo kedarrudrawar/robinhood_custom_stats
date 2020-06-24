@@ -168,15 +168,44 @@ body {
 
 .history-container {
     margin: 0 56px;
-    border: 2px red solid;
+    /* border: 2px red solid; */
 
     background: #FFFFFF;
     border: 1px solid #CDCDCD;
     border-radius: 4px;
 }
 
+.history-categories {
+    display: flex;
+    flex-direction: row;
+    margin-left: 26px;
+    margin-top: 20px;
+}
+
+.history-category-btn {
+    display: flex;
+    padding: 10px 24px;
+    margin-right: 16px;
+
+    background: #222222;
+    border: 1px solid #222222;
+    box-sizing: border-box;
+    border-radius: 4px;
+}
+
+.inactive-category {
+    background: #FFFFFF;
+    color: #222222;
+}
+
+.active-category {
+    background: #222222;
+    color: #FFFFFF;
+}
+
+
 .table {
-    margin: 26px 26px;
+    margin: 20px 26px;
     /* border: 1px blue solid; */
 }
 
