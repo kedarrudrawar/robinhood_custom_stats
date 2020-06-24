@@ -81,9 +81,11 @@ export const Statistics = props => {
     const [totalInvested, setTotalInvested] = useState(0);
     const [cash, setCash] = useState(0);
     
-    const [historyDF, setHistoryDF] = useState(null);
+    const [equityHistoryDF, setEquityHistoryDF] = useState(null);
+    const [optionsHistoryDF, setOptionsHistoryDF] = useState(null);
 
-    const [history, setHistory] = useState(null);
+    const [equityHistory, setEquityHistory] = useState(null);
+    const [optionsHistory, setOptionsHistory] = useState(null);
     const [refresh, setRefresh] = useState(0);
 
     const [sortedBy, setSortedBy] = useState('symbol');
@@ -115,8 +117,8 @@ export const Statistics = props => {
     }, [refresh]);
 
 
-    // history
-    const updateData = async () => {
+    // equity history
+    const updateEquityData = async () => {
         let merged;
 
         // ----- positions -----
@@ -180,13 +182,20 @@ export const Statistics = props => {
 
         console.log(merged.toString());
         merged = merged.get(df_columns);
-        setHistoryDF(merged);
+        setEquityHistoryDF(merged);
         setLastUpdatedAt(new Date().toLocaleTimeString());
     }
 
+    const updateOptionsData = () => {
+        let merged; 
+        
+    }
+
+
+
     useEffect(() => {
         setLastUpdatedAt(new Date().toLocaleTimeString());
-        updateData();
+        updateEquityData();
         updateCash();
         updateTotalInvested();
     }, [refresh]);
@@ -195,11 +204,11 @@ export const Statistics = props => {
     useEffect(() => {
             // store data as array of rows (arrays)
             // data columns represented by history_columns
-            if(!historyDF)
+            if(!equityHistoryDF)
                 return;
 
             let dataRows = [];
-            for(const row of historyDF){
+            for(const row of equityHistoryDF){
                 let dataRow = df_columns.map((col) => {
                     let val = row.get(col);
                     if(parseFloat(val))
@@ -210,8 +219,8 @@ export const Statistics = props => {
             }
 
             dataRows = sortColumns(dataRows, sortedBy);
-            setHistory(dataRows);
-    }, [historyDF, sortedBy, ascending]);
+            setEquityHistory(dataRows);
+    }, [equityHistoryDF, sortedBy, ascending]);
 
 
 
@@ -242,8 +251,8 @@ export const Statistics = props => {
 
         let idx = realizedBoolean ? REALIZED_IDX : UNREALIZED_IDX;
         let total = 0;
-        if(!history) return 0;
-        history.map(row => {
+        if(!equityHistory) return 0;
+        equityHistory.map(row => {
             total += row[idx];
             return null;
         });
@@ -386,6 +395,19 @@ export const Statistics = props => {
             };
     }
 
+    function sortDataByCategory(elem){
+        let idx = findIdxByDisplayColumnName(elem);
+        let df_col_name = history_specs[idx].df_column_name;
+        if(sortedBy === df_col_name){
+            setAscending(!ascending);
+        }
+        else
+            setAscending(true);
+        setSortedBy(df_col_name);
+    }
+
+
+
     function activateHistoryCategory(category){
         setActiveCategory(category);
     }
@@ -420,9 +442,9 @@ export const Statistics = props => {
     }
 
     function renderEquityHistory(){
-        if(!history) return <div></div>;
+        if(!equityHistory) return <div></div>;
 
-        return history.map((dataRow) => {
+        return equityHistory.map((dataRow) => {
             for(let i = 0; i < history_specs.length; i++){
                 let obj = {...history_specs[i]};
                 if(obj.df_column_name){
@@ -443,37 +465,31 @@ export const Statistics = props => {
         });
     }
 
+    function renderEquityTable(){
+        return (
+            <div className='table'>
+                {renderTableColumnHeaders()}
+                <hr/>
+                {renderEquityHistory()}
+            </div>
+        );
+    }
+
+    function renderOptionsTable(){
+        return <div className='table'>Not Implemented</div>;
+    }
+
     function renderTable(){
-        if(activeCategory === 'equities'){
-            return (
-                <div className='table'>
-                    {renderTableColumnHeaders()}
-                    <hr/>
-                    {renderEquityHistory()}
-                </div>
-            );
-        }
-        else {
-            return <div className='table'>Not Implemented</div>
-        }
+        return activeCategory === 'equities' ?  renderEquityTable() : renderOptionsTable();
     }
 
 
-    function sortDataByCategory(elem){
-        let idx = findIdxByDisplayColumnName(elem);
-        let df_col_name = history_specs[idx].df_column_name;
-        if(sortedBy === df_col_name){
-            setAscending(!ascending);
-        }
-        else
-            setAscending(true);
-        setSortedBy(df_col_name);
-    }
+
 
     if (! loggedIn)
         return <Redirect to='/login' push={true}/>
 
-    return !history 
+    return !equityHistory 
         ? <Loading />
         : (
             <>
@@ -506,7 +522,7 @@ export const Statistics = props => {
                                 <div className='text stock-redir-btn reload-btn'
                                     type='button'
                                     onClick={() => {
-                                        setHistory(null);
+                                        setEquityHistory(null);
                                         setRefresh(refresh + 1);
                                     }}
                                 >
