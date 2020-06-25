@@ -2,6 +2,16 @@ import { Series, DataFrame } from 'pandas-js';
 import * as api from '../../api/api';
 
 
+export async function positionsToDFOptions(positions){
+    if(!positions || Array.from(positions).length === 0){
+        return new DataFrame();
+    }
+
+    let df = new DataFrame(positions);   
+    return df;
+}
+
+
 export async function positionsToDF(positions){
     if(!positions || Array.from(positions).length === 0){
         return new DataFrame();

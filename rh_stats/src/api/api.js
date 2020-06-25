@@ -199,18 +199,45 @@ export async function getPortfolio(header){
  * @param {object - contains bearer authorization token} header 
  * @param {boolean - true for only active positions, false for all} active 
  */
-export async function getPositions(header, active=false){
-    let data = buildHeaders(header);
-    let url = active ? urls.POSITIONS_NON_ZERO : urls.POSITIONS;
-    const res = await axios.get(url, data);
-    return processRHObject(res).results;
+export async function getPositions(header, active=false, instrument_type){
+    let paths = instrument_type === 'equity' ? urls.equityPaths : urls.optionPaths;
+    
+    let payload = buildHeaders(header);
+    let url = active ? paths.POSITIONS_NON_ZERO : paths.POSITIONS;
+    let nextPosLink = await checkForNext(url, payload);
+    let nextExists = true; 
+    let positions = [];
+    let res, data;
+
+    const filterOptions = (data) => {
+        if(active){
+            return data.filter(option => parseFloat(option['quantity']) >= 1)
+        }
+        return data;
+    }
+
+    while(nextExists){
+        nextExists = nextPosLink !== null;
+
+        res = await axios.get(url, payload);
+        data = processRHObject(res).results;
+        data = filterOptions(data);
+        positions = positions.concat(data);
+
+        if(nextExists){
+            url = nextPosLink;
+            nextPosLink = await checkForNext(url, payload);
+        }
+    }
+
+    return positions;
     
 }
 
 // dividends
 export const getDividends = async (auth_header, states) => {
     let payload = buildHeaders(auth_header);
-    let url = urls.DIVIDENDS;
+    let url = urls.equityPaths.DIVIDENDS;
     let nextDivsLink = await checkForNext(url, payload);
     let nextExists = true; 
     
@@ -370,10 +397,12 @@ const checkForNext = async (url, payload) => {
  * @param {Array of states ('filled', 'cancelled')} state 
  * @param {String ('buy', 'sell')} side 
  */
-export const getOrderHistory = async (header, state=['filled'], side='') => {
+export const getOrderHistory = async (header, state=['filled'], side='', instrument_type) => {
+    let paths = instrument_type === 'equity' ? urls.equityPaths : urls.optionPaths;
+    
     let payload = buildHeaders(header);
 
-    let url = urls.ORDERS
+    let url = paths.ORDERS
     let nextOrdersLink = await checkForNext(url, payload);
     let nextExists = true; 
     let orders = [];

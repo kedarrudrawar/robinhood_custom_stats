@@ -308,6 +308,26 @@ hr {
     margin: 0 12px 0 6px;
 }
 
+
+
+
+
+.two-col {
+    width: 50%,
+}
+
+.three-col {
+    width: 33.3%
+}
+
+.four-col {
+    width: 25%
+}
+
+.five-col {
+    width: 20%
+}
+
 .six-col {
     width: 16.6%
 }
