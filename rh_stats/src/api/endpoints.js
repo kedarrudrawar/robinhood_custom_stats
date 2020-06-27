@@ -16,9 +16,10 @@ export const equityPaths = {
     DIVIDENDS: BASE_PATH + 'dividends/',
 }
 
+// TODO: Identify aggregage_positions vs. positions endpoint (?)
 export const optionPaths = {
-    POSITIONS: OPTIONS_PATH + 'positions/',
-    POSITIONS_NON_ZERO: OPTIONS_PATH + 'positions/' + '?nonzero=true', 
+    POSITIONS: OPTIONS_PATH + 'aggregate_positions/',
+    POSITIONS_NON_ZERO: OPTIONS_PATH + 'aggregate_positions/' + '?nonzero=true', 
 
     ORDERS: OPTIONS_PATH + 'orders/',
 }

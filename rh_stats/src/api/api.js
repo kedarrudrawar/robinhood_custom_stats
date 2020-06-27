@@ -199,11 +199,9 @@ export async function getPortfolio(header){
  * @param {object - contains bearer authorization token} header 
  * @param {boolean - true for only active positions, false for all} active 
  */
-export async function getPositions(header, active=false, instrument_type){
-    let paths = instrument_type === 'equity' ? urls.equityPaths : urls.optionPaths;
-    
+export async function getPositionsEquity(header, active=false){
     let payload = buildHeaders(header);
-    let url = active ? paths.POSITIONS_NON_ZERO : paths.POSITIONS;
+    let url = active ? urls.equityPaths.POSITIONS_NON_ZERO : urls.equityPaths.POSITIONS;
     let nextPosLink = await checkForNext(url, payload);
     let nextExists = true; 
     let positions = [];
@@ -233,6 +231,50 @@ export async function getPositions(header, active=false, instrument_type){
     return positions;
     
 }
+
+/**
+ * 
+ * @param {object - contains bearer authorization token} header 
+ * @param {boolean - true for only active positions, false for all} active 
+ */
+export async function getPositionsOptions(header, active=false){
+    let payload = buildHeaders(header);
+    let url = active ? urls.optionPaths.POSITIONS_NON_ZERO : urls.optionPaths.POSITIONS;
+    let nextPosLink = await checkForNext(url, payload);
+    let nextExists = true; 
+    let positions = [];
+    let res, data;
+
+    const filterOptions = (data) => {
+        if(active){
+            return data.filter(option => parseFloat(option['quantity']) >= 1)
+        }
+        return data;
+    }
+
+    while(nextExists){
+        nextExists = nextPosLink !== null;
+
+        res = await axios.get(url, payload);
+        data = processRHObject(res).results;
+        data = filterOptions(data);
+        positions = positions.concat(data);
+
+        if(nextExists){
+            url = nextPosLink;
+            nextPosLink = await checkForNext(url, payload);
+        }
+    }
+
+    return positions;
+    
+}
+
+
+
+
+
+
 
 // dividends
 export const getDividends = async (auth_header, states) => {
@@ -289,6 +331,21 @@ export const getInstrumentsFromOrders = async (header, orders) => {
     return Promise.all(orderPromises);
 }
 
+
+
+export async function getFieldFromInstrumentOption(header, instrument_url, field){
+    let payload = buildHeaders(header);
+
+    try {
+        let response = await axios.get(instrument_url, payload);
+        let data = processRHObject(response);
+        return data[field];
+    }
+    catch(err){
+        return err;
+    }
+
+}
 
 /**
  * Returns Array of arrays: [symbol, price]
@@ -382,6 +439,14 @@ export const getCurrentPricesFromInstruments = async (header, instruments) => {
     return validResults;
 }
 
+
+
+
+
+
+
+
+
 // orders
 
 const checkForNext = async (url, payload) => {
@@ -391,18 +456,67 @@ const checkForNext = async (url, payload) => {
     return next
 }
 
+
+/**
+ * Returns Array of order Objects
+ * @param {Object} header 
+ * @param {Array of states ('filled', 'cancelled')} state 
+ * @param {String ('debit', 'credit')} direction 
+ *              (debit = buy, credit = sell)
+ */
+export const getOrderHistoryOptions = async (header, state=['filled'], direction='') => {
+    let payload = buildHeaders(header);
+
+
+    let url = urls.optionPaths.ORDERS;
+    let nextOrdersLink = await checkForNext(url, payload);
+    let nextExists = true; 
+    let orders = [];
+    let res, data, filtered;
+
+    const filter = (resData) => {
+        if(state.length !== 0)
+            resData = resData.filter(order => state.includes(order['state']));
+        if(direction !== '')
+            resData = resData.filter(order => order['direction'] === direction);
+        
+        return resData;
+    }
+
+    while(nextExists){
+        nextExists = nextOrdersLink !== null;
+
+        res = await axios.get(url, payload);
+        data = processRHObject(res).results;
+        filtered = filter(data);
+        orders = orders.concat(filtered);
+
+        if(nextExists){
+            url = nextOrdersLink;
+            nextOrdersLink = await checkForNext(url, payload);
+        }
+    }
+    
+    // orders are returned by API anti-chronologically
+    orders.reverse();
+    
+    return orders;
+}
+
+
+
+
+
 /**
  * Returns Array of order Objects
  * @param {Object} header 
  * @param {Array of states ('filled', 'cancelled')} state 
  * @param {String ('buy', 'sell')} side 
  */
-export const getOrderHistory = async (header, state=['filled'], side='', instrument_type) => {
-    let paths = instrument_type === 'equity' ? urls.equityPaths : urls.optionPaths;
-    
+export const getOrderHistoryEquity = async (header, state=['filled'], side='') => {
     let payload = buildHeaders(header);
 
-    let url = paths.ORDERS
+    let url = urls.equityPaths.ORDERS
     let nextOrdersLink = await checkForNext(url, payload);
     let nextExists = true; 
     let orders = [];

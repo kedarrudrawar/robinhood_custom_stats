@@ -36,30 +36,43 @@ jest.mock('../../api/api', () => ({
     getCurrentPricesFromInstrumentsDF: jest.fn(),
 }));
 
-let positions;
-let fullPositions;
+let positionsEquity;
+let fullPositionsEquity;
 
-let singleBuyOrder;
-let singleSellOrder;
+let positionsOptions;
+let positionsOptionsActive;
+
+let singleBuyOrderEquity;
+let singleSellOrderEquity;
+
+let singleBuyOrderOptions;
+let singleSellOrderOptions;
 
 let emptyBuyOrders = [];
 let emptySellOrders = [];
 
 beforeAll(() => {
-    positions = test_vars.positions;
-    fullPositions = test_vars.fullPositions;
-    singleBuyOrder = test_vars.singleBuyOrder;
-    singleSellOrder = test_vars.singleSellOrder;
+    positionsEquity = test_vars.positionsEquity;
+    fullPositionsEquity = test_vars.fullPositionsEquity;
+    singleBuyOrderEquity = test_vars.singleBuyOrderEquity;
+    singleSellOrderEquity = test_vars.singleSellOrderEquity;
+
+    positionsOptions = test_vars.positionsOptions;
+    positionsOptionsActive = test_vars.positionsOptionsActive;
+    singleBuyOrderOptions = test_vars.singleBuyOrderOptions;
+    singleSellOrderOptions = test_vars.singleSellOrderOptions;
 })
+
+// -------------------------------------------------- EQUITIES --------------------------------------------------
 
 describe('positions to DF', () => {
     it('should return an accurate dataframe', async () => {
-        let received = await analysis.positionsToDF(positions);
-        expect(received.length).toEqual(positions.length);
+        let received = await analysis.positionsToDF(positionsEquity);
+        expect(received.length).toEqual(positionsEquity.length);
         let idx = 0;
         for(const row of received){
-            for(const key of Object.keys(fullPositions[idx])){
-                expect(row.get(key)).toEqual(fullPositions[idx][key]);
+            for(const key of Object.keys(fullPositionsEquity[idx])){
+                expect(row.get(key)).toEqual(fullPositionsEquity[idx][key]);
             }
             idx += 1;
         }
@@ -72,19 +85,19 @@ describe('Get unrealized profit -- analysis', () => {
     api.getCurrentPricesFromInstrumentsDF.mockImplementation((header, df) => Array.from(df.get('symbol').map(symbol => [symbol, fakeCurrentPrice])));
 
     it('should return array of [[symbol, unrealized profit, percent unrealized profit], ...]', async () => {
-        let df = await analysis.positionsToDF(positions);
+        let df = await analysis.positionsToDF(positionsEquity);
         unrealProfit = await analysis.getUnrealizedProfit(df);
         expect(unrealProfit[0]).toHaveLength(3);
     });
 
     it('should return accurate string/numbers', async () => {
-        let df = await analysis.positionsToDF(positions);
+        let df = await analysis.positionsToDF(positionsEquity);
         let prices = await api.getCurrentPricesFromInstrumentsDF({}, df);
         let prices_df = new DataFrame(prices);
         prices_df.columns = ['symbol', 'price'];
         df = df.merge(prices_df, ['symbol'], 'outer');
         
-        let expected = fullPositions.map(pos => {
+        let expected = fullPositionsEquity.map(pos => {
             let buy_price = parseFloat(pos['average_buy_price']);
             let qty = parseFloat(pos['quantity']);
             let returns = (fakeCurrentPrice - buy_price) * qty;
@@ -103,12 +116,12 @@ describe('Get realized profit -- analysis', () => {
     let realProfit, receivedProfit, expectedProfit;
 
     it('should return array of [[symbol, profit, instrument],...]', async () => {
-        realProfit = await analysis.getRealizedProfit(singleBuyOrder, singleSellOrder);
+        realProfit = await analysis.getRealizedProfit(singleBuyOrderEquity, singleSellOrderEquity);
         await expect(realProfit[0]).toHaveLength(3);
     });
 
     it('should return expected profit for single buy/sell order', async () => {
-        realProfit = await analysis.getRealizedProfit(singleBuyOrder, singleSellOrder);
+        realProfit = await analysis.getRealizedProfit(singleBuyOrderEquity, singleSellOrderEquity);
         receivedProfit = Number(parseFloat(await realProfit[0][1]).toFixed(2));
         expectedProfit = Number((5 * (29.36 - 26)).toFixed(2));
         await expect(receivedProfit).toEqual(expectedProfit);
@@ -116,19 +129,19 @@ describe('Get realized profit -- analysis', () => {
 
   
     it('should handle EMPTY buy orders with single sell order', async () => {
-        realProfit = await analysis.getRealizedProfit(emptyBuyOrders, singleSellOrder);
+        realProfit = await analysis.getRealizedProfit(emptyBuyOrders, singleSellOrderEquity);
         receivedProfit = Number(parseFloat(await realProfit[0][1]).toFixed(2));
         expectedProfit = Number((5 * (29.36)).toFixed(2));
         await expect(receivedProfit).toEqual(expectedProfit);
     });
 
     it('should handle single buy order with EMPTY sell orders', async () => {
-        realProfit = await analysis.getRealizedProfit(singleBuyOrder, emptySellOrders);
+        realProfit = await analysis.getRealizedProfit(singleBuyOrderEquity, emptySellOrders);
         await expect(realProfit).toHaveLength(0);
     });
 
     it('should return expected profit for multiple buy/sell orders', async () => {
-        realProfit = await analysis.getRealizedProfit(test_vars.multipleBuyOrders, test_vars.multipleSellOrders);
+        realProfit = await analysis.getRealizedProfit(test_vars.multipleBuyOrdersEquity, test_vars.multipleSellOrdersEquity);
         expectedProfit = {
             'MRNA': (5 * (29.36 - 26)).toFixed(2),
             'NEE': ((236.96 * 2) - (203.29 + 237)).toFixed(2),
@@ -141,6 +154,122 @@ describe('Get realized profit -- analysis', () => {
 
 
 });
+
+
+
+
+
+// -------------------------------------------------- OPTIONS --------------------------------------------------
+
+
+describe('positions to DF options', () => {
+    it('should return an accurate dataframe', async () => {
+        let categories = ['symbol', 'average_open_price', 'quantity'];
+        let received = await analysis.positionsToDFOptions(positionsOptionsActive);
+        received = received.get(categories);
+        console.log(received.toString());
+        expect(received.length).toEqual(positionsOptionsActive.length);
+        let idx = 0;
+        for(const row of received){
+            for(const key of row.keys()){
+                expect(row.get(key)).toEqual(positionsOptionsActive[idx][key]);
+            }
+            idx += 1;
+        }
+    });
+});
+
+describe('Get realized profit -- analysis', () => {
+    let realProfit, receivedProfit, expectedProfit;
+
+    it('should return array of [[symbol, profit, instrument],...]', async () => {
+        realProfit = await analysis.getRealizedProfitOptions(test_vars.multipleBuyOrdersOptions, test_vars.multipleSellOrdersOptions);
+        await expect(realProfit[0]).toHaveLength(3);
+    });
+
+    // it('should return expected profit for single buy/sell order', async () => {
+    //     realProfit = await analysis.getRealizedProfit(singleBuyOrderEquity, singleSellOrderEquity);
+    //     receivedProfit = Number(parseFloat(await realProfit[0][1]).toFixed(2));
+    //     expectedProfit = Number((5 * (29.36 - 26)).toFixed(2));
+    //     await expect(receivedProfit).toEqual(expectedProfit);
+    // });
+
+  
+    // it('should handle EMPTY buy orders with single sell order', async () => {
+    //     realProfit = await analysis.getRealizedProfit(emptyBuyOrders, singleSellOrderEquity);
+    //     receivedProfit = Number(parseFloat(await realProfit[0][1]).toFixed(2));
+    //     expectedProfit = Number((5 * (29.36)).toFixed(2));
+    //     await expect(receivedProfit).toEqual(expectedProfit);
+    // });
+
+    // it('should handle single buy order with EMPTY sell orders', async () => {
+    //     realProfit = await analysis.getRealizedProfit(singleBuyOrderEquity, emptySellOrders);
+    //     await expect(realProfit).toHaveLength(0);
+    // });
+
+    // it('should return expected profit for multiple buy/sell orders', async () => {
+    //     realProfit = await analysis.getRealizedProfit(test_vars.multipleBuyOrdersEquity, test_vars.multipleSellOrdersEquity);
+    //     expectedProfit = {
+    //         'MRNA': (5 * (29.36 - 26)).toFixed(2),
+    //         'NEE': ((236.96 * 2) - (203.29 + 237)).toFixed(2),
+    //         'FANG': (2*44.00 - 2 * 32.91).toFixed(2),
+    //     }
+    //     for(const arr of realProfit){
+    //         await expect(arr[1].toFixed(2)).toEqual(expectedProfit[arr[0]]);
+    //     }
+    // });
+
+
+});
+
+
+// describe('Get unrealized profit OPTIONS -- analysis', () => {
+//     let unrealProfit;
+//     let fakeCurrentPrice = 500.00;
+//     // api.getCurrentPricesFromInstrumentsDF.mockImplementation((header, df) => Array.from(df.get('symbol').map(symbol => [symbol, fakeCurrentPrice])));
+
+//     it('should return array of [[symbol, unrealized profit, percent unrealized profit], ...]', async () => {
+//         let df = await analysis.positionsToDFOptions(positionsOptionsActive);
+//         unrealProfit = await analysis.getUnrealizedProfitOptions(df);
+//         expect(unrealProfit[0]).toHaveLength(3);
+//     });
+
+//     it('should return accurate string/numbers', async () => {
+//         let df = await analysis.positionsToDFOptions(positionsOptionsActive);
+//         let empty_prices = await api.getCurrentPricesFromInstrumentsDF({}, df);
+//         let prices_df = new DataFrame(empty_prices);
+//         prices_df.columns = ['symbol', 'price'];
+//         df = df.merge(prices_df, ['symbol'], 'outer');
+        
+//         let expected = fullPositionsEquity.map(pos => {
+//             let buy_price = parseFloat(pos['average_buy_price']);
+//             let qty = parseFloat(pos['quantity']);
+//             let returns = (fakeCurrentPrice - buy_price) * qty;
+//             let percent_return = (fakeCurrentPrice - buy_price) / buy_price * 100.00; 
+//             return [pos['symbol'],  returns, percent_return];
+//         });
+
+
+//         unrealProfit = await analysis.getUnrealizedProfit(df);
+//         await expect(unrealProfit).toEqual(expected);
+
+//     });
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// -------------------------------------------------- DIVIDENDS --------------------------------------------------
 
 describe('dividends to DF -- analysis', () => {
     it('should handle multiple dividends from same company', async () => {
@@ -170,5 +299,6 @@ describe('dividends to DF -- analysis', () => {
 
             i += 1;
         }
-    })
-})
+    });
+});
+

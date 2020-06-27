@@ -1,4 +1,6 @@
-export const positions = [
+// -------------------------------------------------- EQUITY --------------------------------------------------
+
+export const positionsEquity = [
     {
         "url": "https://api.robinhood.com/positions/925501777/49945af2-ee94-496f-9b18-18ab01f90033/",
         "instrument": "https://api.robinhood.com/instruments/49945af2-ee94-496f-9b18-18ab01f90033/",
@@ -77,26 +79,26 @@ export const positions = [
     },
 ];
 
-export const fullPositions = [
-    {   ...positions[0], 
+export const fullPositionsEquity = [
+    {   ...positionsEquity[0], 
         "symbol": "ILMN",
         "tradability": "tradable", 
     },
-    {   ...positions[1], 
+    {   ...positionsEquity[1], 
         "symbol": "BABA",
         "tradability": "tradable", 
     },    
-    {   ...positions[2], 
+    {   ...positionsEquity[2], 
         "symbol": "RHHBY",
         "tradability": "tradable", 
     },    
-    {   ...positions[3], 
+    {   ...positionsEquity[3], 
         "symbol": "MSFT",
         "tradability": "tradable", 
     },
 ];
 
-export const singleBuyOrder = [
+export const singleBuyOrderEquity = [
     // buy 15 MRNA at $26
     {
         "id": "ae07ba70-0bb6-468f-9ef6-e08c543ac415",
@@ -155,7 +157,7 @@ export const singleBuyOrder = [
        
 ];
 
-export const singleSellOrder = [
+export const singleSellOrderEquity = [
     // sell 5 MRNA at $29.36
     {
         "id": "99a63304-adc1-49de-aa0f-3c14f871bdb9",
@@ -213,8 +215,8 @@ export const singleSellOrder = [
 
 ];
 
-export const multipleBuyOrders = [
-    ...singleBuyOrder, 
+export const multipleBuyOrdersEquity = [
+    ...singleBuyOrderEquity, 
     // buy 3 FANG @  32.91
     {
         "id": "2d5e4d72-df78-4335-a3cb-a4a1fac00787",
@@ -438,12 +440,10 @@ export const multipleBuyOrders = [
         },
         "investment_schedule_id": null
     },
-
-
 ]
 
-export const multipleSellOrders = [
-    ...singleSellOrder, 
+export const multipleSellOrdersEquity = [
+    ...singleSellOrderEquity, 
     // 2 NEE @ $236.96
     {
         "id": "92041639-071d-4784-8e51-0e2c8ba2bd2f",
@@ -546,6 +546,540 @@ export const multipleSellOrders = [
         "investment_schedule_id": null
     },
 ];
+
+// -------------------------------------------------- OPTIONS --------------------------------------------------
+
+// aggregate positions API
+export const positionsOptions = [
+    // 1 SPY call [ACTIVE]
+    {
+        "id": "4cbb4e85-41e5-41d9-bf07-d746c1779e44",
+        "chain": "https://api.robinhood.com/options/chains/c277b118-58d9-4060-8dc5-a3b5898955cb/",
+        "symbol": "SPY",
+        "strategy": "long_call",
+        "average_open_price": "5.0000",
+        "legs": [
+            {
+                "id": "cc9973fd-8319-46f8-abd5-9831d389f732",
+                "position": "https://api.robinhood.com/options/positions/7814ed82-30e3-4aaa-82ae-17826e5239f4/",
+                "position_type": "long",
+                "option": "https://api.robinhood.com/options/instruments/51e40b32-30d1-4644-83be-b6b0ed220f2e/",
+                "ratio_quantity": 1,
+                "expiration_date": "2020-07-10",
+                "strike_price": "343.0000",
+                "option_type": "call"
+            }
+        ],
+        "quantity": "1.0000",
+        "intraday_average_open_price": "5.0000",
+        "intraday_quantity": "1.0000",
+        "direction": "debit",
+        "intraday_direction": "debit",
+        "trade_value_multiplier": "100.0000",
+        "created_at": "2020-06-26T17:35:13.207458Z",
+        "updated_at": "2020-06-26T17:35:13.213726Z"
+    },
+
+    // 1 PLUG put [INACTIVE]
+    {
+        "id": "8228fea0-fadd-47e5-8ca0-f6ca451910a3",
+        "chain": "https://api.robinhood.com/options/chains/bfd42df1-e4e3-46fc-aee0-0f1dad954482/",
+        "symbol": "PLUG",
+        "strategy": "long_put",
+        "average_open_price": "0.0000",
+        "legs": [
+            {
+                "id": "6192e2df-ee59-4783-9d24-37138939bcd4",
+                "position": "https://api.robinhood.com/options/positions/3ef7c00a-f8be-482b-a94c-57680bbcc4f1/",
+                "position_type": "long",
+                "option": "https://api.robinhood.com/options/instruments/677f62de-ea83-4f8b-a960-722379c5519b/",
+                "ratio_quantity": 1,
+                "expiration_date": "2020-07-17",
+                "strike_price": "6.0000",
+                "option_type": "put"
+            }
+        ],
+        "quantity": "0.0000",
+        "intraday_average_open_price": "0.0000",
+        "intraday_quantity": "0.0000",
+        "direction": "debit",
+        "intraday_direction": "debit",
+        "trade_value_multiplier": "100.0000",
+        "created_at": "2020-06-24T14:50:21.576757Z",
+        "updated_at": "2020-06-26T14:10:08.315245Z"
+    },
+    
+    // 1 CCL put [INACTIVE]
+    {
+        "id": "9ede2e3f-e3e9-4a4f-8d72-847c74eaf241",
+        "chain": "https://api.robinhood.com/options/chains/26cb3176-c6c4-4cc2-8602-898cf73f3f96/",
+        "symbol": "CCL",
+        "strategy": "long_put",
+        "average_open_price": "0.0000",
+        "legs": [
+            {
+                "id": "85452368-4c8c-48c3-b110-4dec768cef82",
+                "position": "https://api.robinhood.com/options/positions/584f9408-9579-49b8-8a93-4f5dbe350251/",
+                "position_type": "long",
+                "option": "https://api.robinhood.com/options/instruments/6eeefa6f-7498-494b-b06d-81c79a654ff8/",
+                "ratio_quantity": 1,
+                "expiration_date": "2020-07-17",
+                "strike_price": "12.5000",
+                "option_type": "put"
+            }
+        ],
+        "quantity": "0.0000",
+        "intraday_average_open_price": "0.0000",
+        "intraday_quantity": "0.0000",
+        "direction": "debit",
+        "intraday_direction": "debit",
+        "trade_value_multiplier": "100.0000",
+        "created_at": "2020-06-19T18:11:45.185441Z",
+        "updated_at": "2020-06-24T16:04:56.684452Z"
+    },
+];
+
+export const positionsOptionsActive = positionsOptions.filter((option) => parseFloat(option['quantity']) > 0)
+
+export const singleBuyOrderOptions = [
+    // PLUG buy - $27
+    {
+        "cancel_url": null,
+        "canceled_quantity": "0.00000",
+        "created_at": "2020-06-24T14:50:20.697057Z",
+        "direction": "debit",
+        "id": "f27894b8-ab8c-4b36-a9be-bbd2b84ac026",
+        "legs": [
+            {
+                "executions": [
+                    {
+                        "id": "86f4d8cd-361c-4735-8c34-9345a70df7df",
+                        "price": "0.27000000",
+                        "quantity": "1.00000",
+                        "settlement_date": "2020-06-25",
+                        "timestamp": "2020-06-24T14:50:21.114000Z"
+                    }
+                ],
+                "id": "4da45aa7-a0f0-4662-ba2d-3f19f024b252",
+                "option": "https://api.robinhood.com/options/instruments/677f62de-ea83-4f8b-a960-722379c5519b/",
+                "position_effect": "open",
+                "ratio_quantity": 1,
+                "side": "buy"
+            }
+        ],
+        "pending_quantity": "0.00000",
+        "premium": "27.00000000",
+        "processed_premium": "27.00000000000000000",
+        "price": "0.27000000",
+        "processed_quantity": "1.00000",
+        "quantity": "1.00000",
+        "ref_id": "5750EC68-D881-4C3C-98F5-D7A269BE0001",
+        "state": "filled",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "type": "limit",
+        "updated_at": "2020-06-24T14:50:21.592287Z",
+        "chain_id": "bfd42df1-e4e3-46fc-aee0-0f1dad954482",
+        "chain_symbol": "PLUG",
+        "response_category": null,
+        "opening_strategy": "long_put",
+        "closing_strategy": null,
+        "stop_price": null
+    },
+];
+
+export const singleSellOrderOptions = [
+    {
+        "cancel_url": null,
+        "canceled_quantity": "0.00000",
+        "created_at": "2020-06-26T13:59:28.566373Z",
+        "direction": "credit",
+        "id": "10b58231-314d-4a98-bd35-7ef8991fd2ee",
+        "legs": [
+            {
+                "executions": [
+                    {
+                        "id": "42c4ef1b-0169-407c-9c2f-0ec1b73618bf",
+                        "price": "0.28000000",
+                        "quantity": "1.00000",
+                        "settlement_date": "2020-06-29",
+                        "timestamp": "2020-06-26T14:10:07.806000Z"
+                    }
+                ],
+                "id": "58dd5337-f998-4c33-aee7-73d57941494e",
+                "option": "https://api.robinhood.com/options/instruments/677f62de-ea83-4f8b-a960-722379c5519b/",
+                "position_effect": "close",
+                "ratio_quantity": 1,
+                "side": "sell"
+            }
+        ],
+        "pending_quantity": "0.00000",
+        "premium": "28.00000000",
+        "processed_premium": "28.00000000000000000",
+        "price": "0.28000000",
+        "processed_quantity": "1.00000",
+        "quantity": "1.00000",
+        "ref_id": "0C0D22CC-BAEE-4F03-B034-EB3131DF11DA",
+        "state": "filled",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "type": "limit",
+        "updated_at": "2020-06-26T14:10:09.069592Z",
+        "chain_id": "bfd42df1-e4e3-46fc-aee0-0f1dad954482",
+        "chain_symbol": "PLUG",
+        "response_category": null,
+        "opening_strategy": null,
+        "closing_strategy": "long_put",
+        "stop_price": null
+    },
+];
+
+export const multipleBuyOrdersOptions = [
+    // PLUG buy - $27
+    ...singleBuyOrderOptions,
+
+    // CCL buy - $55
+    {
+        "cancel_url": null,
+        "canceled_quantity": "0.00000",
+        "created_at": "2020-06-19T18:11:44.347913Z",
+        "direction": "debit",
+        "id": "5ebb51ae-6bc5-49aa-9b89-6a0b2498c9b5",
+        "legs": [
+            {
+                "executions": [
+                    {
+                        "id": "0ee01e27-1643-4b37-84ed-8421d42dc89b",
+                        "price": "0.55000000",
+                        "quantity": "1.00000",
+                        "settlement_date": "2020-06-22",
+                        "timestamp": "2020-06-19T18:11:44.777000Z"
+                    }
+                ],
+                "id": "37f31a0a-bbbf-4844-ad97-eddf8e9b6026",
+                "option": "https://api.robinhood.com/options/instruments/6eeefa6f-7498-494b-b06d-81c79a654ff8/",
+                "position_effect": "open",
+                "ratio_quantity": 1,
+                "side": "buy"
+            }
+        ],
+        "pending_quantity": "0.00000",
+        "premium": "55.00000000",
+        "processed_premium": "55.00000000000000000",
+        "price": "0.55000000",
+        "processed_quantity": "1.00000",
+        "quantity": "1.00000",
+        "ref_id": "055718E7-E59A-43CB-A778-B2E70C41D393",
+        "state": "filled",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "type": "limit",
+        "updated_at": "2020-06-19T18:11:45.193363Z",
+        "chain_id": "26cb3176-c6c4-4cc2-8602-898cf73f3f96",
+        "chain_symbol": "CCL",
+        "response_category": null,
+        "opening_strategy": "long_put",
+        "closing_strategy": null,
+        "stop_price": null
+    },
+    // cancelled buy order
+    {
+        "cancel_url": null,
+        "canceled_quantity": "1.00000",
+        "created_at": "2020-06-08T17:27:38.166787Z",
+        "direction": "debit",
+        "id": "bddd37b5-5380-4bc2-9376-d797f1aedff2",
+        "legs": [
+            {
+                "executions": [],
+                "id": "48a524de-ce0a-482d-9e10-effe2a74cd3a",
+                "option": "https://api.robinhood.com/options/instruments/5a83e8d1-3de3-4316-8f8e-f661cfc43772/",
+                "position_effect": "open",
+                "ratio_quantity": 1,
+                "side": "buy"
+            }
+        ],
+        "pending_quantity": "0.00000",
+        "premium": "12.00000000",
+        "processed_premium": "0.0000",
+        "price": "0.12000000",
+        "processed_quantity": "0.00000",
+        "quantity": "1.00000",
+        "ref_id": "A6A6F8F3-148C-4D85-A59E-53B22F495D4E",
+        "state": "cancelled",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "type": "limit",
+        "updated_at": "2020-06-08T20:03:24.592698Z",
+        "chain_id": "103ce21e-4921-47ed-a263-e05d2d3d5e99",
+        "chain_symbol": "XLF",
+        "response_category": null,
+        "opening_strategy": "long_call",
+        "closing_strategy": null,
+        "stop_price": null
+    },
+    // 1 XLF buy - $11
+    {
+        "cancel_url": null,
+        "canceled_quantity": "0.00000",
+        "created_at": "2020-06-09T14:03:32.516857Z",
+        "direction": "debit",
+        "id": "e1da334f-f1bd-41f7-869a-418691fc0fd4",
+        "legs": [
+            {
+                "executions": [
+                    {
+                        "id": "3ea4faf1-1f0c-4fff-b21d-186220e5230e",
+                        "price": "0.11000000",
+                        "quantity": "1.00000",
+                        "settlement_date": "2020-06-10",
+                        "timestamp": "2020-06-09T14:03:33.053000Z"
+                    }
+                ],
+                "id": "333060bb-c5b1-4d8b-911d-e6e011cb4a6c",
+                "option": "https://api.robinhood.com/options/instruments/5a83e8d1-3de3-4316-8f8e-f661cfc43772/",
+                "position_effect": "open",
+                "ratio_quantity": 1,
+                "side": "buy"
+            }
+        ],
+        "pending_quantity": "0.00000",
+        "premium": "11.00000000",
+        "processed_premium": "11.00000000000000000",
+        "price": "0.11000000",
+        "processed_quantity": "1.00000",
+        "quantity": "1.00000",
+        "ref_id": "1A9204E0-DEC8-493A-8B32-88E536254460",
+        "state": "filled",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "type": "limit",
+        "updated_at": "2020-06-09T14:03:33.608417Z",
+        "chain_id": "103ce21e-4921-47ed-a263-e05d2d3d5e99",
+        "chain_symbol": "XLF",
+        "response_category": null,
+        "opening_strategy": "long_call",
+        "closing_strategy": null,
+        "stop_price": null
+    },
+    // cancelled buy order - XLF
+    {
+        "cancel_url": null,
+        "canceled_quantity": "1.00000",
+        "created_at": "2020-06-08T17:27:38.166787Z",
+        "direction": "debit",
+        "id": "bddd37b5-5380-4bc2-9376-d797f1aedff2",
+        "legs": [
+            {
+                "executions": [],
+                "id": "48a524de-ce0a-482d-9e10-effe2a74cd3a",
+                "option": "https://api.robinhood.com/options/instruments/5a83e8d1-3de3-4316-8f8e-f661cfc43772/",
+                "position_effect": "open",
+                "ratio_quantity": 1,
+                "side": "buy"
+            }
+        ],
+        "pending_quantity": "0.00000",
+        "premium": "12.00000000",
+        "processed_premium": "0.0000",
+        "price": "0.12000000",
+        "processed_quantity": "0.00000",
+        "quantity": "1.00000",
+        "ref_id": "A6A6F8F3-148C-4D85-A59E-53B22F495D4E",
+        "state": "cancelled",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "type": "limit",
+        "updated_at": "2020-06-08T20:03:24.592698Z",
+        "chain_id": "103ce21e-4921-47ed-a263-e05d2d3d5e99",
+        "chain_symbol": "XLF",
+        "response_category": null,
+        "opening_strategy": "long_call",
+        "closing_strategy": null,
+        "stop_price": null
+    },
+    // 2 XLF buy - $ 16 each ($32 total)
+    {
+        "cancel_url": null,
+        "canceled_quantity": "0.00000",
+        "created_at": "2020-06-08T16:25:59.494403Z",
+        "direction": "debit",
+        "id": "64e9b38c-6050-4d82-9f81-bdaa19fb7ce8",
+        "legs": [
+            {
+                "executions": [
+                    {
+                        "id": "da748b1e-0293-4b82-846c-110c7a72cd16",
+                        "price": "0.16000000",
+                        "quantity": "2.00000",
+                        "settlement_date": "2020-06-09",
+                        "timestamp": "2020-06-08T16:25:59.924000Z"
+                    }
+                ],
+                "id": "ae6671cc-9c60-4ff5-971a-d06382a59cf4",
+                "option": "https://api.robinhood.com/options/instruments/5a83e8d1-3de3-4316-8f8e-f661cfc43772/",
+                "position_effect": "open",
+                "ratio_quantity": 1,
+                "side": "buy"
+            }
+        ],
+        "pending_quantity": "0.00000",
+        "premium": "16.00000000",
+        "processed_premium": "32.00000000000000000",
+        "price": "0.16000000",
+        "processed_quantity": "2.00000",
+        "quantity": "2.00000",
+        "ref_id": "5088D48A-6690-42C4-8A5D-43A83D8157A6",
+        "state": "filled",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "type": "limit",
+        "updated_at": "2020-06-08T16:26:00.389795Z",
+        "chain_id": "103ce21e-4921-47ed-a263-e05d2d3d5e99",
+        "chain_symbol": "XLF",
+        "response_category": null,
+        "opening_strategy": "long_call",
+        "closing_strategy": null,
+        "stop_price": null
+    },
+
+];
+
+export const multipleSellOrdersOptions = [
+    // 1 PLUG sell - $28
+    ...singleSellOrderOptions,
+
+    // 1 CCL sell - $65
+    {
+        "cancel_url": null,
+        "canceled_quantity": "0.00000",
+        "created_at": "2020-06-24T16:04:55.301433Z",
+        "direction": "credit",
+        "id": "da61d030-2bda-4cc3-842e-2539c34ab5fa",
+        "legs": [
+            {
+                "executions": [
+                    {
+                        "id": "db01d59f-5ead-463a-8ded-280e06c930c1",
+                        "price": "0.65000000",
+                        "quantity": "1.00000",
+                        "settlement_date": "2020-06-25",
+                        "timestamp": "2020-06-24T16:04:56.203000Z"
+                    }
+                ],
+                "id": "0b571570-e781-482d-8c4c-e54450124f16",
+                "option": "https://api.robinhood.com/options/instruments/6eeefa6f-7498-494b-b06d-81c79a654ff8/",
+                "position_effect": "close",
+                "ratio_quantity": 1,
+                "side": "sell"
+            }
+        ],
+        "pending_quantity": "0.00000",
+        "premium": "65.00000000",
+        "processed_premium": "65.00000000000000000",
+        "price": "0.65000000",
+        "processed_quantity": "1.00000",
+        "quantity": "1.00000",
+        "ref_id": "F674E594-DB8A-4894-A320-FA8E4F075824",
+        "state": "filled",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "type": "limit",
+        "updated_at": "2020-06-24T16:04:56.686380Z",
+        "chain_id": "26cb3176-c6c4-4cc2-8602-898cf73f3f96",
+        "chain_symbol": "CCL",
+        "response_category": null,
+        "opening_strategy": null,
+        "closing_strategy": "long_put",
+        "stop_price": null
+    },
+
+    // 3 XLF sell - $5 each ($15 total)
+    {
+        "cancel_url": null,
+        "canceled_quantity": "0.00000",
+        "created_at": "2020-06-12T15:17:07.147954Z",
+        "direction": "credit",
+        "id": "f6b2ff38-1d19-4cf2-b2e9-2ec2ad0b3769",
+        "legs": [
+            {
+                "executions": [
+                    {
+                        "id": "061ba6d9-685c-4d42-9ce2-8eb29eb590e9",
+                        "price": "0.05000000",
+                        "quantity": "3.00000",
+                        "settlement_date": "2020-06-15",
+                        "timestamp": "2020-06-12T15:17:08.053000Z"
+                    }
+                ],
+                "id": "f7c6e4c8-7beb-4f0d-9c63-b737271d6cd0",
+                "option": "https://api.robinhood.com/options/instruments/5a83e8d1-3de3-4316-8f8e-f661cfc43772/",
+                "position_effect": "close",
+                "ratio_quantity": 1,
+                "side": "sell"
+            }
+        ],
+        "pending_quantity": "0.00000",
+        "premium": "5.00000000",
+        "processed_premium": "15.00000000000000000",
+        "price": "0.05000000",
+        "processed_quantity": "3.00000",
+        "quantity": "3.00000",
+        "ref_id": "CDE8C0A4-7FA0-4BFC-85D5-F772289264A0",
+        "state": "filled",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "type": "limit",
+        "updated_at": "2020-06-12T15:17:08.581585Z",
+        "chain_id": "103ce21e-4921-47ed-a263-e05d2d3d5e99",
+        "chain_symbol": "XLF",
+        "response_category": null,
+        "opening_strategy": null,
+        "closing_strategy": "long_call",
+        "stop_price": null
+    },
+
+    // cancelled sell order
+    {
+        "cancel_url": null,
+        "canceled_quantity": "1.00000",
+        "created_at": "2020-06-24T16:03:49.415345Z",
+        "direction": "credit",
+        "id": "53ed3de2-4fec-4f29-86e4-96765b465b0f",
+        "legs": [
+            {
+                "executions": [],
+                "id": "8ab5cc9d-d7d4-4f7b-be35-bcedbaab92da",
+                "option": "https://api.robinhood.com/options/instruments/6eeefa6f-7498-494b-b06d-81c79a654ff8/",
+                "position_effect": "close",
+                "ratio_quantity": 1,
+                "side": "sell"
+            }
+        ],
+        "pending_quantity": "0.00000",
+        "premium": "70.00000000",
+        "processed_premium": "0.0000",
+        "price": "0.70000000",
+        "processed_quantity": "0.00000",
+        "quantity": "1.00000",
+        "ref_id": "842A3D07-3077-4B3A-BFC4-8E7E8C6D06D7",
+        "state": "cancelled",
+        "time_in_force": "gfd",
+        "trigger": "immediate",
+        "type": "limit",
+        "updated_at": "2020-06-24T16:04:41.582813Z",
+        "chain_id": "26cb3176-c6c4-4cc2-8602-898cf73f3f96",
+        "chain_symbol": "CCL",
+        "response_category": null,
+        "opening_strategy": null,
+        "closing_strategy": "long_put",
+        "stop_price": null
+    },
+]
+
+
+// -------------------------------------------------- DIVIDENDS --------------------------------------------------
+
 
 
 // 1 AMAT dividend

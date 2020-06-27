@@ -13,6 +13,8 @@ import { Redirect } from 'react-router-dom';
 
 
 
+
+
 const equity_df_columns = ['instrument', 'price', 'tradability', 'quantity','average_buy_price','dividend', 'realized profit', 'symbol', 'unrealized profit', 'percent unrealized profit', 'equity'];
 const equity_columns_to_display = ['Name', 'Average Cost', 'Equity', 'Dividend', 'Realized Return', 'Unrealized Return', 'Current Price'];
 const all_equity_fields = [...equity_columns_to_display, 'Tradability', 'Quantity', 'Unrealized Percent Return'];
@@ -51,14 +53,14 @@ let equity_specs = all_equity_fields.map((element) => (
 
 // ---------------- options -------------
 
-const options_df_columns = ['chain_symbol', 'average_price', 'quantity', 'option', 'equity', 'realized profit', 'unrealized profit', 'percent unrealized profit'];
-const options_columns_to_display = ['Name', 'Average Cost']
+const options_df_columns = ['symbol', 'average_open_price', 'quantity', 'option', 'equity', 'realized profit', 'unrealized profit', 'percent unrealized profit'];
+const options_columns_to_display = ['Name', 'Average Cost', 'Realized Return']
 const all_options_fields = [...options_columns_to_display, 'Tradability', 'Quantity', 'Unrealized Percent Return'];
 let options_keyword_mapping = {
-    'Name': 'chain_symbol',
-    'Average Cost': 'average_price',
+    'Name': 'symbol',
+    'Average Cost': 'average_open_price',
     // 'Equity': 'equity',
-    // 'Realized Return': 'realized profit',
+    'Realized Return': 'realized profit',
     // 'Unrealized Return': 'unrealized profit',
     // 'Unrealized Percent Return': 'percent unrealized profit',
     // 'Earning Potential': 'earning potential',
@@ -100,11 +102,12 @@ const findIdxByDisplayColumnName = (specs, display_column_name) => {
 
 
 export const Statistics = props => {
+
     // const header = {
     //     'Authorization': `Bearer ${auth.bearer_token}`
     // }
-
-
+    
+    
     const header = {
         'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
     }
@@ -169,15 +172,15 @@ export const Statistics = props => {
 
         // ----- positions -----
         let activeBool = true;
-        let pos = await api.getPositions(header, activeBool, 'equity'); // active equity positions
+        let pos = await api.getPositionsEquity(header, activeBool); // active equity positions
         let positionsDF = await analysis.positionsToDF(pos);
         positionsDF = positionsDF.get(['symbol', 'average_buy_price', 'quantity', 'instrument']);
         merged = positionsDF;
         // console.log(merged.toString());
         
         // ----- realized profit -----
-        let buyOrders = await api.getOrderHistory(header, ['filled'], 'buy', 'equity'); // equity buy orders
-        let sellOrders = await api.getOrderHistory(header, ['filled'], 'sell', 'equity'); // equity sell orders
+        let buyOrders = await api.getOrderHistoryEquity(header, ['filled'], 'buy'); // equity buy orders
+        let sellOrders = await api.getOrderHistoryEquity(header, ['filled'], 'sell'); // equity sell orders
         let realProfit = await analysis.getRealizedProfit(buyOrders, sellOrders);
         
         let profitDF = new DataFrame(realProfit);
@@ -241,10 +244,32 @@ export const Statistics = props => {
 
         // ----- positions -----
         let activeBool = true;
-        let optionsPositions = await api.getPositions(header, activeBool, 'options'); // active options positions
+        let optionsPositions = await api.getPositionsOptions(header, activeBool); // active options positions
+        // console.log(optionsPositions); 
         let optionsPositionsDF = await analysis.positionsToDFOptions(optionsPositions);
-        optionsPositionsDF = optionsPositionsDF.get(['chain_symbol', 'average_price', 'quantity', 'option']);
+        if (optionsHistoryDF)
+            optionsPositionsDF = optionsPositionsDF.get(['symbol', 'average_open_price', 'quantity', 'legs']);
         let newMerged = optionsPositionsDF;
+
+
+        let buyOrders = await api.getOrderHistoryOptions(header, ['filled'], 'debit');
+        let sellOrders = await api.getOrderHistoryOptions(header, ['filled'], 'credit');
+        let realProfit = await analysis.getRealizedProfitOptions(buyOrders, sellOrders);
+        
+        let profitDF = new DataFrame(realProfit);
+        // console.log(profitDF.toString());
+        if(profitDF.length){
+            profitDF.columns = ['symbol', 'realized profit', 'instrument'];
+            newMerged = optionsPositionsDF.merge(profitDF, ['symbol'], 'outer');
+        }
+        else {
+            newMerged = newMerged.set('realized profit', utils.zeroesArray(merged.length));
+        } 
+
+
+
+
+
 
         // console.log(merged.toString());
         setOptionsHistoryDF(newMerged);
@@ -283,9 +308,9 @@ export const Statistics = props => {
             dataRows = sortColumns(dataRows, sortedBy);
             return dataRows
         }
-        console.log("Pulling Equity data");
+        // console.log("Pulling Equity data");
         setEquityHistory(getSortedRows(equityHistoryDF, equity_df_columns));
-        console.log("Pulling Options data:");
+        // console.log("Pulling Options data:");
         setOptionsHistory(getSortedRows(optionsHistoryDF, options_df_columns));        
         
     }, [equityHistoryDF, optionsHistoryDF, sortedBy, ascending]);
@@ -463,17 +488,18 @@ export const Statistics = props => {
     }
 
     function populateOptionsSpecRender(){
-        let symbol_obj_idx = findIdxByDFColumnName(options_specs, 'chain_symbol'),
+        console.log(columnClass);
+        let symbol_obj_idx = findIdxByDFColumnName(options_specs, 'symbol'),
         quantity_obj_idx = findIdxByDFColumnName(options_specs, 'quantity'),
-        // currentPrice_obj_idx = findIdxByDFColumnName('price'),
-        // tradability_obj_idx = findIdxByDFColumnName('tradability'),
-        // realized_obj_idx = findIdxByDFColumnName('realized profit'),
-        // unrealized_obj_idx = findIdxByDFColumnName('unrealized profit'),
-        // unrealized_percent_obj_idx = findIdxByDFColumnName('percent unrealized profit'),
-        // dividend_obj_idx = findIdxByDFColumnName('dividend'),
-        // equity_obj_idx = findIdxByDFColumnName('equity'),
-        averageCost_obj_idx = findIdxByDFColumnName(options_specs, 'average_price');
-        // earningPotential_obj_idx = findIdxByDFColumnName('earning potential');
+        currentPrice_obj_idx = findIdxByDFColumnName(options_specs, 'price'),
+        tradability_obj_idx = findIdxByDFColumnName(options_specs, 'tradability'),
+        realized_obj_idx = findIdxByDFColumnName(options_specs, 'realized profit'),
+        unrealized_obj_idx = findIdxByDFColumnName(options_specs, 'unrealized profit'),
+        unrealized_percent_obj_idx = findIdxByDFColumnName(options_specs, 'percent unrealized profit'),
+        dividend_obj_idx = findIdxByDFColumnName(options_specs, 'dividend'),
+        equity_obj_idx = findIdxByDFColumnName(options_specs, 'equity'),
+        averageCost_obj_idx = findIdxByDFColumnName(options_specs, 'average_open_price'),
+        earningPotential_obj_idx = findIdxByDFColumnName(options_specs, 'earning potential');
 
         // render for symbol
         if(equity_specs[symbol_obj_idx]){
@@ -501,6 +527,18 @@ export const Statistics = props => {
                 return <div key='average cost' className={`cell text ${columnClass}`}>{utils.beautifyPrice(options_specs[averageCost_obj_idx].data)}</div>;
             };
 
+        if(options_specs[realized_obj_idx])
+            options_specs[realized_obj_idx].render = () => {
+                let data = options_specs[realized_obj_idx].data;
+
+                let realReturnString = utils.beautifyReturns(data);
+                let realizedClass = ''; 
+                if(parseFloat(data))
+                    realizedClass = parseFloat(data) > 0 ? 'positive' : 'negative';
+            
+                return <div key='realized profit' className={`cell text ${columnClass} ${realizedClass}`}>{realReturnString}</div>;
+             
+            }
     }
 
 
@@ -583,15 +621,15 @@ export const Statistics = props => {
             for(let i = 0; i < options_specs.length; i++){
                 let obj = {...options_specs[i]};
                 if(obj.df_column_name){
-                    console.log('column name:' + obj.df_column_name);
+                    // console.log('column name:' + obj.df_column_name);
                     options_specs[i].data = dataRow[options_df_columns.indexOf(obj.df_column_name)];
-                    console.log(options_specs[i].data);
+                    // console.log(options_specs[i].data);
                 }
             }
 
             populateOptionsSpecRender();
-            console.log(options_specs);
-            let key = options_specs[findIdxByDFColumnName(options_specs, 'chain_symbol')].data;
+            // console.log(options_specs);
+            let key = options_specs[findIdxByDFColumnName(options_specs, 'symbol')].data;
             return (
                 <div key={key}>
                     <div className='row'>
