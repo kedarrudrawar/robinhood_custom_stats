@@ -26,7 +26,7 @@ class Auth{
         this.password = '';
         this.bearer_token = '';
         this.refresh_token = '';
-        this.expiry_time = ''; 
+        this.expiry_time = '';
     }
 
     setChallengeID(challengeID){
@@ -52,7 +52,7 @@ class Auth{
             return {
                 'isMFA': false,
                 'isChallenge': false,
-            }; 
+            };
         }
         catch(err) {
             alert('Invalid Credentials');
@@ -84,24 +84,24 @@ class Auth{
                 let data = await api.oauth2Challenge(this.username, this.password, challenge_type, challenge_id);
                 console.log(data);
                 let [bearer_token, refresh_token, expiry_time] = data;
-                
+
                 this.login(bearer_token, refresh_token, expiry_time);
                 console.log(this.bearer_token);
                 return true;
             }
             return false;
-                
+
         }
         catch(err){
             console.log(err);
             return false;
-        } 
+        }
     }
 
     login(bearer_token, refresh_token, expiry_time) {
         this.resetCredentials();
         this.authenticated = true;
-        
+
         this.bearer_token = bearer_token;
         this.refresh_token = refresh_token;
         this.expiry_time = expiry_time;

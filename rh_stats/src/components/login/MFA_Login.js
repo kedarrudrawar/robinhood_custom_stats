@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { Head } from '../misc/html_head';
 import '../../UI/css/Login.css';
 
-const MFA_Login = props => {
+const MfaLogin = props => {
     const [mfa_code, setMFAcode] = useState('');
 
     const changeMFA = (e) => {
@@ -44,4 +44,4 @@ const MFA_Login = props => {
 
 }
 
-export default withRouter(MFA_Login);
+export default withRouter(MfaLogin);

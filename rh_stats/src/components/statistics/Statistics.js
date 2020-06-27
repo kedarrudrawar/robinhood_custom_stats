@@ -11,11 +11,15 @@ import * as analysis from './Analysis';
 import { DataFrame, Series } from 'pandas-js/dist/core';
 import { Redirect } from 'react-router-dom';
 
-const df_columns = ['instrument', 'price', 'tradability', 'quantity','average_buy_price','dividend', 'realized profit', 'symbol', 'unrealized profit', 'percent unrealized profit', 'equity'];
-const history_columns = ['Name', 'Average Cost', 'Equity', 'Dividend', 'Realized Return', 'Unrealized Return', 'Current Price'];
-const all_fields = [...history_columns, 'Tradability', 'Quantity', 'Unrealized Percent Return'];
 
-let keyword_mapping = {
+
+
+
+const equity_df_columns = ['instrument', 'price', 'tradability', 'quantity','average_buy_price','dividend', 'realized profit', 'symbol', 'unrealized profit', 'percent unrealized profit', 'equity'];
+const equity_columns_to_display = ['Name', 'Average Cost', 'Equity', 'Dividend', 'Realized Return', 'Unrealized Return', 'Current Price'];
+const all_equity_fields = [...equity_columns_to_display, 'Tradability', 'Quantity', 'Unrealized Percent Return'];
+
+let equity_keyword_mapping = {
     'Name': 'symbol',
     'Average Cost': 'average_buy_price',
     'Dividend': 'dividend',
@@ -36,31 +40,64 @@ let keyword_mapping = {
  *  - category lookup name in DF
  *  - data = value for each row (gets overriden while filling in table)
  */
-let history_specs = all_fields.map((element) => (
+let equity_specs = all_equity_fields.map((element) => (
     {
         render: () => {},
         display_column_name: element,
-        df_column_name: keyword_mapping[element],
+        df_column_name: equity_keyword_mapping[element],
         data: null,
     }
 
-))
+));
+
+
+// ---------------- options -------------
+
+const options_df_columns = ['symbol', 'average_open_price', 'quantity', 'option', 'equity', 'realized profit', 'unrealized profit', 'percent unrealized profit'];
+const options_columns_to_display = ['Name', 'Average Cost', 'Realized Return']
+const all_options_fields = [...options_columns_to_display, 'Tradability', 'Quantity', 'Unrealized Percent Return'];
+let options_keyword_mapping = {
+    'Name': 'symbol',
+    'Average Cost': 'average_open_price',
+    // 'Equity': 'equity',
+    'Realized Return': 'realized profit',
+    // 'Unrealized Return': 'unrealized profit',
+    // 'Unrealized Percent Return': 'percent unrealized profit',
+    // 'Earning Potential': 'earning potential',
+    // 'Current Price': 'price',
+    // 'Tradability': 'tradability',
+    'Quantity': 'quantity',
+};
+
+let options_specs = all_options_fields.map((element) => (
+    {
+        render: () => {},
+        display_column_name: element,
+        df_column_name: options_keyword_mapping[element],
+        data: null,
+    }
+));
+
+
+
+
+
+
 
 // ----------------------------------------- helpers -----------------------------------------
 
-const findIdxByDFColumnName = (df_column_name) => {
-    return history_specs.findIndex((object) => {
+const findIdxByDFColumnName = (specs, df_column_name) => {
+    return specs.findIndex((object) => {
         return object.df_column_name === df_column_name;
     });
-};   
+};
 
-const findIdxByDisplayColumnName = (display_column_name) => {
-    return history_specs.findIndex((object) => {
+const findIdxByDisplayColumnName = (specs, display_column_name) => {
+    return specs.findIndex((object) => {
         return object.display_column_name === display_column_name;
     });
-};   
+};
 
-const columnClass = utils.numDict[history_columns.length] + '-col';
 
 export const Statistics = props => {
     const header = {
@@ -72,20 +109,37 @@ export const Statistics = props => {
     //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
     // }
 
+
+    // const header = {
+    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    // }
+
     const [loggedIn, setLoggedIn] = useState(true);
 
-    const [lastUpdatedAt, setLastUpdatedAt] = useState('')
-    
+    const [lastUpdatedAt, setLastUpdatedAt] = useState('');
+
+    const [activeCategory, setActiveCategory] = useState('equities');
+
     const [totalInvested, setTotalInvested] = useState(0);
     const [cash, setCash] = useState(0);
-    
-    const [historyDF, setHistoryDF] = useState(null);
 
-    const [history, setHistory] = useState(null);
+    const [equityHistoryDF, setEquityHistoryDF] = useState(null);
+    const [optionsHistoryDF, setOptionsHistoryDF] = useState(null);
+
+    const [equityHistory, setEquityHistory] = useState(null);
+    const [optionsHistory, setOptionsHistory] = useState(null);
     const [refresh, setRefresh] = useState(0);
 
     const [sortedBy, setSortedBy] = useState('symbol');
     const [ascending, setAscending] = useState(true);
+
+
+    let columnClass;
+    if(activeCategory === 'equities')
+        columnClass = utils.numDict[equity_columns_to_display.length] + '-col';
+    else if(activeCategory === 'options')
+        columnClass = utils.numDict[options_columns_to_display.length] + '-col';
+
 
     // ----------------------------------------- raw account data -----------------------------------------
 
@@ -106,28 +160,31 @@ export const Statistics = props => {
 
     useEffect(() => {
         updateTotalInvested();
-    }, []);
-    
+    }, [refresh]);
+
     useEffect(() => {
         updateCash();
-    }, []);
+    }, [refresh]);
 
 
-    // history
-    const updateData = async () => {
+
+    // equity history
+    const updateEquityData = async () => {
         let merged;
 
         // ----- positions -----
-        let pos = await api.getPositions(header, true); // active positions
+        let activeBool = true;
+        let pos = await api.getPositionsEquity(header, activeBool); // active equity positions
         let positionsDF = await analysis.positionsToDF(pos);
         positionsDF = positionsDF.get(['symbol', 'average_buy_price', 'quantity', 'instrument']);
         merged = positionsDF;
-        
+        // console.log(merged.toString());
+
         // ----- realized profit -----
-        let buyOrders = await api.getOrderHistory(header, ['filled'], 'buy');
-        let sellOrders = await api.getOrderHistory(header, ['filled'], 'sell');
+        let buyOrders = await api.getOrderHistoryEquity(header, ['filled'], 'buy'); // equity buy orders
+        let sellOrders = await api.getOrderHistoryEquity(header, ['filled'], 'sell'); // equity sell orders
         let realProfit = await analysis.getRealizedProfit(buyOrders, sellOrders);
-        
+
         let profitDF = new DataFrame(realProfit);
         if(profitDF.length){
             profitDF.columns = ['symbol', 'realized profit', 'instrument'];
@@ -176,46 +233,94 @@ export const Statistics = props => {
         merged = merged.set('symbol', symbolSeries);
 
 
-        console.log(merged.toString());
-        merged = merged.get(df_columns);
-        setHistoryDF(merged);
+        // console.log(merged.toString());
+        merged = merged.get(equity_df_columns);
+        setEquityHistoryDF(merged);
+
         setLastUpdatedAt(new Date().toLocaleTimeString());
     }
 
+    // options history
+    const updateOptionsData = async () => {
+        let merged;
+
+        // ----- positions -----
+        let activeBool = true;
+        let optionsPositions = await api.getPositionsOptions(header, activeBool); // active options positions
+        // console.log(optionsPositions);
+        let optionsPositionsDF = await analysis.positionsToDFOptions(optionsPositions);
+        if (optionsHistoryDF)
+            optionsPositionsDF = optionsPositionsDF.get(['symbol', 'average_open_price', 'quantity', 'legs']);
+        let newMerged = optionsPositionsDF;
+
+
+        let buyOrders = await api.getOrderHistoryOptions(header, ['filled'], 'debit');
+        let sellOrders = await api.getOrderHistoryOptions(header, ['filled'], 'credit');
+        let realProfit = await analysis.getRealizedProfitOptions(buyOrders, sellOrders);
+
+        let profitDF = new DataFrame(realProfit);
+        // console.log(profitDF.toString());
+        if(profitDF.length){
+            profitDF.columns = ['symbol', 'realized profit', 'instrument'];
+            newMerged = optionsPositionsDF.merge(profitDF, ['symbol'], 'outer');
+        }
+        else {
+            newMerged = newMerged.set('realized profit', utils.zeroesArray(merged.length));
+        }
+
+
+
+
+
+
+        // console.log(merged.toString());
+        setOptionsHistoryDF(newMerged);
+        // console.log(newMerged.toString());
+    }
+
+
+
     useEffect(() => {
         setLastUpdatedAt(new Date().toLocaleTimeString());
-        updateData();
+        updateEquityData();
+        updateOptionsData();
         updateCash();
         updateTotalInvested();
     }, [refresh]);
 
     // convert history_df to history array
     useEffect(() => {
+        const getSortedRows = (df, df_columns) => {
             // store data as array of rows (arrays)
             // data columns represented by history_columns
-            if(!historyDF)
+            if(!df)
                 return;
 
             let dataRows = [];
-            for(const row of historyDF){
+            for(const row of df){
                 let dataRow = df_columns.map((col) => {
                     let val = row.get(col);
                     if(parseFloat(val))
                         val = parseFloat(row.get(col));
                     return val;
-                });   
+                });
                 dataRows.push(dataRow);
             }
 
             dataRows = sortColumns(dataRows, sortedBy);
-            setHistory(dataRows);
-    }, [historyDF, sortedBy, ascending]);
+            return dataRows
+        }
+        // console.log("Pulling Equity data");
+        setEquityHistory(getSortedRows(equityHistoryDF, equity_df_columns));
+        // console.log("Pulling Options data:");
+        setOptionsHistory(getSortedRows(optionsHistoryDF, options_df_columns));
 
+    }, [equityHistoryDF, optionsHistoryDF, sortedBy, ascending]);
 
 
 
     const sortColumns = (dataRows, category) => {
-        let index = df_columns.indexOf(category);
+        let index = equity_df_columns.indexOf(category);
         dataRows.sort((a, b) => {
             if(!a && !b)
                 return 0;
@@ -233,16 +338,17 @@ export const Statistics = props => {
         return dataRows;
     }
 
-    
+
     function getTotal(realizedBoolean){
-        const REALIZED_IDX = df_columns.indexOf('realized profit');
-        const UNREALIZED_IDX = df_columns.indexOf('unrealized profit');
+        const REALIZED_IDX = equity_df_columns.indexOf('realized profit');
+        const UNREALIZED_IDX = equity_df_columns.indexOf('unrealized profit');
 
         let idx = realizedBoolean ? REALIZED_IDX : UNREALIZED_IDX;
         let total = 0;
-        if(!history) return 0;
-        history.map(row => {
+        if(!equityHistory) return 0;
+        equityHistory.map(row => {
             total += row[idx];
+            return null;
         });
         return total;
     }
@@ -253,33 +359,39 @@ export const Statistics = props => {
         let colorClass = total >= 0 ? 'positive' : 'negative';
         let className = 'data-row-value condensed ' + colorClass;
         let value = utils.beautifyPrice(parseFloat(total).toFixed(2));
-        return <div className={className}>{value}</div>
+
+        let percent = '';
+        if (! realizedBoolean){
+            percent = `(${utils.beautifyPercent((total / totalInvested)*100)})`;
+        }
+
+        return <div className={className}>{value} {percent} </div>
     }
 
-    function populateHistorySpecRender(){
-        let symbol_obj_idx = findIdxByDFColumnName('symbol'),
-        quantity_obj_idx = findIdxByDFColumnName('quantity'),
-        currentPrice_obj_idx = findIdxByDFColumnName('price'),
-        tradability_obj_idx = findIdxByDFColumnName('tradability'),
-        realized_obj_idx = findIdxByDFColumnName('realized profit'),
-        unrealized_obj_idx = findIdxByDFColumnName('unrealized profit'),
-        unrealized_percent_obj_idx = findIdxByDFColumnName('percent unrealized profit'),
-        dividend_obj_idx = findIdxByDFColumnName('dividend'),
-        equity_obj_idx = findIdxByDFColumnName('equity'),
-        averageCost_obj_idx = findIdxByDFColumnName('average_buy_price'),
-        earningPotential_obj_idx = findIdxByDFColumnName('earning potential');
+    function populateEquitySpecRender(){
+        let symbol_obj_idx = findIdxByDFColumnName(equity_specs, 'symbol'),
+        quantity_obj_idx = findIdxByDFColumnName(equity_specs, 'quantity'),
+        currentPrice_obj_idx = findIdxByDFColumnName(equity_specs, 'price'),
+        tradability_obj_idx = findIdxByDFColumnName(equity_specs, 'tradability'),
+        realized_obj_idx = findIdxByDFColumnName(equity_specs, 'realized profit'),
+        unrealized_obj_idx = findIdxByDFColumnName(equity_specs, 'unrealized profit'),
+        // unrealized_percent_obj_idx = findIdxByDFColumnName('percent unrealized profit'),
+        dividend_obj_idx = findIdxByDFColumnName(equity_specs, 'dividend'),
+        equity_obj_idx = findIdxByDFColumnName(equity_specs, 'equity'),
+        averageCost_obj_idx = findIdxByDFColumnName(equity_specs, 'average_buy_price'),
+        earningPotential_obj_idx = findIdxByDFColumnName(equity_specs, 'earning potential');
 
 
         // render for symbol
-        if(history_specs[symbol_obj_idx]){
-            let quantity = history_specs[quantity_obj_idx].data || '0';
+        if(equity_specs[symbol_obj_idx]){
+            let quantity = equity_specs[quantity_obj_idx].data || '0';
             if(quantity !== '0')
                 quantity = quantity % 1 !== 0 ? parseFloat(quantity).toFixed(3) : parseInt(quantity);
-        
-            
-            history_specs[symbol_obj_idx].render = () => (
-                <div className={`value-container ${columnClass} cell`}>
-                    <div className='text' >{history_specs[symbol_obj_idx].data}</div>
+
+
+            equity_specs[symbol_obj_idx].render = () => (
+                <div key='symbol' className={`value-container ${columnClass} cell`}>
+                    <div className='text' >{equity_specs[symbol_obj_idx].data}</div>
                     <div style={{fontSize: '12px',
                                 lineHeight: '16px',
                                 textDecorationLine: 'underline',
@@ -289,32 +401,32 @@ export const Statistics = props => {
                 </div>
             );
         }
-            
+
         // render for current price
         const renderPriceButton = (symbol, tradability, currentPrice) => {
             if(tradability !== 'tradable')
                 return null;
 
             return (
-                <button onClick={() => window.open('http://robinhood.com/stocks/' + symbol)} 
-                target='_blank' 
+                <button onClick={() => window.open('http://robinhood.com/stocks/' + symbol)}
+                target='_blank'
                 className='text stock-redir-btn'
                 type='button'>
                     {utils.beautifyPrice(currentPrice)}
-                    <ArrowIcon className='arrow' /> 
+                    <ArrowIcon className='arrow' />
                     {/* <img className='arrow' src={require('../../UI/images/arrow.svg')}></img> */}
                 </button>
             );
         }
 
 
-        if(history_specs[currentPrice_obj_idx]){
-            let symbol = history_specs[symbol_obj_idx].data;
-            history_specs[currentPrice_obj_idx].render = () => {
-                let tradability = history_specs[tradability_obj_idx].data;
-                let currentPrice = history_specs[currentPrice_obj_idx].data;
+        if(equity_specs[currentPrice_obj_idx]){
+            let symbol = equity_specs[symbol_obj_idx].data;
+            equity_specs[currentPrice_obj_idx].render = () => {
+                let tradability = equity_specs[tradability_obj_idx].data;
+                let currentPrice = equity_specs[currentPrice_obj_idx].data;
                 return (
-                    <div className={`btn-container ${columnClass}`}>
+                    <div key='current price' className={`btn-container ${columnClass}`}>
                             {renderPriceButton(symbol, tradability, currentPrice)}
                     </div>
                 );
@@ -323,90 +435,134 @@ export const Statistics = props => {
 
         // render for returns
         // realized
-        if(history_specs[realized_obj_idx])
-            history_specs[realized_obj_idx].render = () => {
-                let data = history_specs[realized_obj_idx].data;
+        if(equity_specs[realized_obj_idx])
+            equity_specs[realized_obj_idx].render = () => {
+                let data = equity_specs[realized_obj_idx].data;
 
                 let realReturnString = utils.beautifyReturns(data);
-                let realizedClass = ''; 
+                let realizedClass = '';
                 if(parseFloat(data))
                     realizedClass = parseFloat(data) > 0 ? 'positive' : 'negative';
-            
-                return <div className={`cell text ${columnClass} ${realizedClass}`}>{realReturnString}</div>;
+
+                return <div key='realized profit' className={`cell text ${columnClass} ${realizedClass}`}>{realReturnString}</div>;
             };
         // unrealized
-        if(history_specs[unrealized_obj_idx])
-            history_specs[unrealized_obj_idx].render = () => {
-                let returns = history_specs[unrealized_obj_idx].data;
-                let percent_returns = history_specs[unrealized_percent_obj_idx].data;
+        if(equity_specs[unrealized_obj_idx])
+            equity_specs[unrealized_obj_idx].render = () => {
+                let returns = equity_specs[unrealized_obj_idx].data;
+                // let percent_returns = history_specs[unrealized_percent_obj_idx].data;
 
                 let unrealReturnString = `${utils.beautifyReturns(returns)}`
                 // if(unrealReturnString !== '-')
                 //     unrealReturnString += ` (${percent_returns >= 0 ? '+' : ''}${parseFloat(percent_returns).toFixed(2)}%)`;
-                let unrealizedClass = ''; 
+                let unrealizedClass = '';
                 if(parseFloat(returns))
                     unrealizedClass = parseFloat(returns) > 0 ? 'positive' : 'negative';
-            
-                return <div className={`cell text ${columnClass} ${unrealizedClass}`}>{unrealReturnString}</div>;
+
+                return <div key='unrealized profit' className={`cell text ${columnClass} ${unrealizedClass}`}>{unrealReturnString}</div>;
             };
 
         // equity
-        if(history_specs[equity_obj_idx])
-            history_specs[equity_obj_idx].render = () => {
-                return <div className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_specs[equity_obj_idx].data)}</div>;
+        if(equity_specs[equity_obj_idx])
+            equity_specs[equity_obj_idx].render = () => {
+                return <div key='equity' className={`cell text ${columnClass}`}>{utils.beautifyPrice(equity_specs[equity_obj_idx].data)}</div>;
             };
-    
+
 
         // render dividend
-        if(history_specs[dividend_obj_idx])
-            history_specs[dividend_obj_idx].render = () => {
-                return <div className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_specs[dividend_obj_idx].data)}</div>;
+        if(equity_specs[dividend_obj_idx])
+            equity_specs[dividend_obj_idx].render = () => {
+                return <div key='dividend' className={`cell text ${columnClass}`}>{utils.beautifyPrice(equity_specs[dividend_obj_idx].data)}</div>;
             };
 
 
         // average cost
-        if(history_specs[averageCost_obj_idx])
-            history_specs[averageCost_obj_idx].render = () => {
-                return <div className={`cell text ${columnClass}`}>{utils.beautifyPrice(history_specs[averageCost_obj_idx].data)}</div>;
+        if(equity_specs[averageCost_obj_idx])
+            equity_specs[averageCost_obj_idx].render = () => {
+                return <div key='average cost' className={`cell text ${columnClass}`}>{utils.beautifyPrice(equity_specs[averageCost_obj_idx].data)}</div>;
             };
 
         // earnings potential
-        if(history_specs[earningPotential_obj_idx])
-            history_specs[earningPotential_obj_idx].render = () => {
-                return <div className={`cell text ${columnClass}`}>-</div>
+        if(equity_specs[earningPotential_obj_idx])
+            equity_specs[earningPotential_obj_idx].render = () => {
+                return <div key='earnings potential' className={`cell text ${columnClass}`}>-</div>
             };
     }
 
-    function renderHistory(){
-        if(!history) return <div></div>;
+    function populateOptionsSpecRender(){
+        console.log(columnClass);
+        let symbol_obj_idx = findIdxByDFColumnName(options_specs, 'symbol'),
+        quantity_obj_idx = findIdxByDFColumnName(options_specs, 'quantity'),
+        currentPrice_obj_idx = findIdxByDFColumnName(options_specs, 'price'),
+        tradability_obj_idx = findIdxByDFColumnName(options_specs, 'tradability'),
+        realized_obj_idx = findIdxByDFColumnName(options_specs, 'realized profit'),
+        unrealized_obj_idx = findIdxByDFColumnName(options_specs, 'unrealized profit'),
+        unrealized_percent_obj_idx = findIdxByDFColumnName(options_specs, 'percent unrealized profit'),
+        dividend_obj_idx = findIdxByDFColumnName(options_specs, 'dividend'),
+        equity_obj_idx = findIdxByDFColumnName(options_specs, 'equity'),
+        averageCost_obj_idx = findIdxByDFColumnName(options_specs, 'average_open_price'),
+        earningPotential_obj_idx = findIdxByDFColumnName(options_specs, 'earning potential');
 
-        return history.map((dataRow) => {
-            for(let i = 0; i < history_specs.length; i++){
-                let obj = {...history_specs[i]};
-                if(obj.df_column_name){
-                    history_specs[i].data = dataRow[df_columns.indexOf(obj.df_column_name)];
-                    // console.log(obj.df_column_name);
-                    // console.log(df_columns.indexOf(obj.df_column_name));
-                    // console.log(history_specs[i].data);
-                }
-            }
+        // render for symbol
+        if(equity_specs[symbol_obj_idx]){
+            let quantity = options_specs[quantity_obj_idx].data || '0';
+            if(quantity !== '0')
+                quantity = quantity % 1 !== 0 ? parseFloat(quantity).toFixed(3) : parseInt(quantity);
 
-            populateHistorySpecRender();
 
-            return (
-                <div key={history_specs[findIdxByDFColumnName('symbol')].data}>
-                    <div className='row'>
-                        {history_specs.map((obj) => obj.render())}                        
+            options_specs[symbol_obj_idx].render = () => (
+                <div key='symbol' className={`value-container ${columnClass} cell`}>
+                    <div className='text' >{options_specs[symbol_obj_idx].data}</div>
+                    <div style={{fontSize: '12px',
+                                lineHeight: '16px',
+                                textDecorationLine: 'underline',
+                                color: '#747384'}}>
+                        {quantity} contracts
                     </div>
-                    <hr/>
                 </div>
             );
-        });
+        }
+
+        // render for average cost
+        if(options_specs[averageCost_obj_idx])
+            options_specs[averageCost_obj_idx].render = () => {
+                return <div key='average cost' className={`cell text ${columnClass}`}>{utils.beautifyPrice(options_specs[averageCost_obj_idx].data)}</div>;
+            };
+
+        if(options_specs[realized_obj_idx])
+            options_specs[realized_obj_idx].render = () => {
+                let data = options_specs[realized_obj_idx].data;
+
+                let realReturnString = utils.beautifyReturns(data);
+                let realizedClass = '';
+                if(parseFloat(data))
+                    realizedClass = parseFloat(data) > 0 ? 'positive' : 'negative';
+
+                return <div key='realized profit' className={`cell text ${columnClass} ${realizedClass}`}>{realReturnString}</div>;
+
+            }
     }
 
-    function sortDataByCategory(elem){
-        let idx = findIdxByDisplayColumnName(elem);
-        let df_col_name = history_specs[idx].df_column_name;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    function sortDataByCategory(spec, elem){
+        let idx = findIdxByDisplayColumnName(spec, elem);
+        let df_col_name = spec[idx].df_column_name;
         if(sortedBy === df_col_name){
             setAscending(!ascending);
         }
@@ -415,17 +571,144 @@ export const Statistics = props => {
         setSortedBy(df_col_name);
     }
 
+
+
+    function activateHistoryCategory(category){
+        setActiveCategory(category);
+    }
+
+    function renderTableColumnHeaders(){
+        let specs, columns_to_display;
+        if (activeCategory === 'equities'){
+            specs = equity_specs;
+            columns_to_display = equity_columns_to_display;
+        }
+        else if (activeCategory === 'options'){
+            specs = options_specs;
+            columns_to_display = options_columns_to_display;
+        }
+
+        return (
+            <div className='row'>
+                {columns_to_display.map((elem, idx) => {
+                    return (
+                        <div key={idx} className={`cell text row-header ${columnClass} category`}
+                            onClick={() => sortDataByCategory(specs, elem)}
+                        >
+                            <div className='cell text row-header history-column-btn'
+                                key={idx}
+                                >{elem}
+                            </div>
+                            <div
+                            style ={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}>
+                                <SortIcon className='sort-icon'/>
+                            </div>
+                        </div>
+
+                    );
+                })}
+            </div>
+        );
+    }
+
+
+    function renderOptionsHistory(){
+        if(!optionsHistory) return <div></div>;
+
+        return optionsHistory.map((dataRow) => {
+            for(let i = 0; i < options_specs.length; i++){
+                let obj = {...options_specs[i]};
+                if(obj.df_column_name){
+                    // console.log('column name:' + obj.df_column_name);
+                    options_specs[i].data = dataRow[options_df_columns.indexOf(obj.df_column_name)];
+                    // console.log(options_specs[i].data);
+                }
+            }
+
+            populateOptionsSpecRender();
+            // console.log(options_specs);
+            let key = options_specs[findIdxByDFColumnName(options_specs, 'symbol')].data;
+            return (
+                <div key={key}>
+                    <div className='row'>
+                        {options_specs.map((spec) => spec.render())}
+                    </div>
+                    <hr/>
+                </div>
+            );
+        })
+
+    }
+
+    function renderEquityHistory(){
+        if(!equityHistory) return <div></div>;
+
+        return equityHistory.map((dataRow) => {
+            for(let i = 0; i < equity_specs.length; i++){
+                let obj = {...equity_specs[i]};
+                if(obj.df_column_name){
+                    equity_specs[i].data = dataRow[equity_df_columns.indexOf(obj.df_column_name)];
+                }
+            }
+
+            populateEquitySpecRender();
+
+            return (
+                <div key={equity_specs[findIdxByDFColumnName(equity_specs, 'symbol')].data}>
+                    <div className='row'>
+                        {equity_specs.map((obj) => obj.render())}
+                    </div>
+                    <hr/>
+                </div>
+            );
+        });
+    }
+
+    function renderEquityTable(){
+        return (
+            <div className='table'>
+                {renderTableColumnHeaders(equity_specs)}
+                <hr/>
+                {renderEquityHistory()}
+            </div>
+        );
+    }
+
+    function renderOptionsTable(){
+        return (
+            <div className='table'>
+                {renderTableColumnHeaders(options_specs)}
+                <hr/>
+                {renderOptionsHistory()}
+            </div>
+        );
+    }
+
+    function renderTable(){
+        if (activeCategory === 'equities')
+            return renderEquityTable()
+        else if (activeCategory === 'options')
+            return renderOptionsTable();
+    }
+
+
+
+
     if (! loggedIn)
         return <Redirect to='/login' push={true}/>
 
-    return !history 
+    return !equityHistory
         ? <Loading />
         : (
-            <div>
+            <>
                 <Head />
-                <body>
+                <div>
                     <div className="top-container">
-                        <div className="stats-header"> 
+                        <div className="stats-header">
                             <div className="stats-box">
                                 <div className="stats-box-title text">Total Portfolio</div>
                                 <div className="stats-box-value condensed">{utils.beautifyPrice(parseFloat(totalInvested) + parseFloat(cash))}</div>
@@ -444,14 +727,14 @@ export const Statistics = props => {
                                 <div className="stats-box-data-row">
                                     <div className="data-row-categ text">Total Investment</div>
                                     <div className="data-row-value condensed">{utils.beautifyPrice(totalInvested)}</div>
-                                    
+
                                 </div>
                             </div>
-                            <div class='header-btns'>
+                            <div className='header-btns'>
                                 <div className='text stock-redir-btn reload-btn'
                                     type='button'
                                     onClick={() => {
-                                        setHistory(null);
+                                        setEquityHistory(null);
                                         setRefresh(refresh + 1);
                                     }}
                                 >
@@ -466,7 +749,7 @@ export const Statistics = props => {
                                     >Log out
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
 
@@ -474,39 +757,22 @@ export const Statistics = props => {
                         <div className='history-container'>
                             <div className="history-header updated-stats">Updated at {lastUpdatedAt}</div>
                             <div className="history-header table-title text">History</div>
-                            <div className='table'>
-                                <div className='row'>
-                                    {history_columns.map((elem, idx) => {
-                                        return (
-                                            <div className={`cell text row-header ${columnClass} category`}
-                                                onClick={() => sortDataByCategory(elem)}
-                                            >
-                                                <div className='cell text row-header history-column-btn'
-                                                    key={idx} 
-                                                    >{elem}
-                                                </div>
-                                                <div
-                                                style ={{
-                                                    display: 'flex',
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center',
-                                                }}>
-                                                    <SortIcon className='sort-icon'/>
-                                                    {/* <img className='sort-icon' src={require("../../UI/images/sort.svg")}/>     */}
-                                                </div>
-                                            </div>
-                                            
-                                        );
-                                    })}
-                                </div>
-                                <hr/>
-                                {renderHistory()}
-                                
+                            <div className='history-categories'>
+                                <div className={`history-category-btn ${activeCategory === 'equities' ? 'active-category' : 'inactive-category'}`}
+                                    onClick={() => {
+                                        activateHistoryCategory('equities');
+                                    }}
+                                >Equities</div>
+                                <div className={`history-category-btn ${activeCategory === 'options' ? 'active-category' : 'inactive-category'}`}
+                                    onClick={() => {
+                                        activateHistoryCategory('options');
+                                    }}>Options</div>
                             </div>
+                            {renderTable()}
                         </div>
                     </div>
-                </body>
-            </div>
+                </div>
+            </>
         );
 
 
