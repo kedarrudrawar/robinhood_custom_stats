@@ -258,7 +258,7 @@ hr {
 
 
 
-.category:hover{
+.category:hover, .history-category-btn:hover{
     cursor: pointer;
     transition: 0.3s ease;
 

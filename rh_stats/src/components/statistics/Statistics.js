@@ -104,12 +104,6 @@ export const Statistics = props => {
         'Authorization': `Bearer ${auth.bearer_token}`
     }
 
-
-    // const header = {
-    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
-    // }
-
-
     // const header = {
     //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
     // }
@@ -267,11 +261,6 @@ export const Statistics = props => {
         else {
             newMerged = newMerged.set('realized profit', utils.zeroesArray(merged.length));
         }
-
-
-
-
-
 
         // console.log(merged.toString());
         setOptionsHistoryDF(newMerged);
@@ -542,23 +531,6 @@ export const Statistics = props => {
 
             }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     function sortDataByCategory(spec, elem){
         let idx = findIdxByDisplayColumnName(spec, elem);
