@@ -2,14 +2,14 @@ import { Series, DataFrame } from 'pandas-js';
 import * as api from '../../api/api';
 import auth from '../../auth/auth';
 
-// export const HEADER = {
-//     'Authorization': `Bearer ${auth.bearer_token}`
-// }
-
-
 export const HEADER = {
-    'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    'Authorization': `Bearer ${auth.bearer_token}`
 }
+
+
+// export const HEADER = {
+//     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+// }
 
 
 // -------------------------------------------------- OPTIONS --------------------------------------------------

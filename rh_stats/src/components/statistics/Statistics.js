@@ -103,14 +103,14 @@ const findIdxByDisplayColumnName = (specs, display_column_name) => {
 
 export const Statistics = props => {
 
-    // const header = {
-    //     'Authorization': `Bearer ${auth.bearer_token}`
-    // }
-    
-    
     const header = {
-        'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+        'Authorization': `Bearer ${auth.bearer_token}`
     }
+    
+    
+    // const header = {
+    //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
+    // }
 
     const [loggedIn, setLoggedIn] = useState(true);
 
