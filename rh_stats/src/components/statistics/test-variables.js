@@ -77,6 +77,26 @@ export const positionsEquity = [
         "updated_at": "2020-04-07T14:16:31.074120Z",
         "created_at": "2020-02-21T15:36:44.671119Z"
     },
+    // GOOG - 0.38 shares
+    {
+        "url": "https://api.robinhood.com/positions/925501777/943c5009-a0bb-4665-8cf4-a95dab5874e4/",
+        "instrument": "https://api.robinhood.com/instruments/943c5009-a0bb-4665-8cf4-a95dab5874e4/",
+        "account": "https://api.robinhood.com/accounts/925501777/",
+        "account_number": "925501777",
+        "average_buy_price": "1437.6755",
+        "pending_average_buy_price": "1437.6755",
+        "quantity": "0.38256200",
+        "intraday_average_buy_price": "0.0000",
+        "intraday_quantity": "0.00000000",
+        "shares_held_for_buys": "0.00000000",
+        "shares_held_for_sells": "0.00000000",
+        "shares_held_for_stock_grants": "0.00000000",
+        "shares_held_for_options_collateral": "0.00000000",
+        "shares_held_for_options_events": "0.00000000",
+        "shares_pending_from_options_events": "0.00000000",
+        "updated_at": "2020-06-03T15:22:37.426930Z",
+        "created_at": "2020-06-03T15:22:34.861748Z"
+    },
 ];
 
 export const fullPositionsEquity = [
@@ -96,6 +116,10 @@ export const fullPositionsEquity = [
         "symbol": "MSFT",
         "tradability": "tradable", 
     },
+    {   ...positionsEquity[4],
+        "symbol": "GOOG",
+        "tradability": "tradable",
+    }
 ];
 
 export const singleBuyOrderEquity = [

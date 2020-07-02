@@ -209,7 +209,7 @@ export async function getPositionsEquity(header, active=false){
 
     const filterOptions = (data) => {
         if(active){
-            return data.filter(option => parseFloat(option['quantity']) >= 1)
+            return data.filter(position => parseFloat(position['quantity']) > 0)
         }
         return data;
     }

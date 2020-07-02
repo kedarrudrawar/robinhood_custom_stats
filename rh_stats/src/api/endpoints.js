@@ -8,9 +8,13 @@ export const OAUTH2 = BASE_PATH + 'oauth2/token/';
 // instruments
 export const INSTRUMENTS = BASE_PATH + 'instruments/';
 
+
+const positions = BASE_PATH + 'positions/';
+const positions_non_zero = positions + '?nonzero=true';
+
 export const equityPaths = {
-    POSITIONS: BASE_PATH + 'positions/',
-    POSITIONS_NON_ZERO: BASE_PATH + 'positions/' + '?nonzero=true', 
+    POSITIONS: positions,
+    POSITIONS_NON_ZERO: positions_non_zero,
     
     ORDERS: BASE_PATH + 'orders/',
     DIVIDENDS: BASE_PATH + 'dividends/',

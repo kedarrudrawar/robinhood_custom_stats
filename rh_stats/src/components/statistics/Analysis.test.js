@@ -20,6 +20,7 @@ jest.mock('../../api/api', () => ({
             "https://api.robinhood.com/instruments/b2e06903-5c44-46a4-bd42-2a696f9d68e1/": 'BABA',
             "https://api.robinhood.com/instruments/fc77229c-9134-4817-bd0c-588e672c15e7/": 'RHHBY',
             "https://api.robinhood.com/instruments/50810c35-d215-4866-9758-0ada4ac79ffa/": 'MSFT',
+            "https://api.robinhood.com/instruments/943c5009-a0bb-4665-8cf4-a95dab5874e4/": 'GOOG',
         };
         let out = [];
         for(const row of df){

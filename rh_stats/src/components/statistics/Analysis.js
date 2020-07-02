@@ -112,10 +112,10 @@ export async function getRealizedProfitOptions(buyOrders, sellOrders){
     // console.log('after selling:');
     // console.log('sell DF:');
     // console.log(sellDF.toString());
-    console.log('weighted_avg');
-    console.log(JSON.parse(JSON.stringify(weighted_avg)));
-    console.log('quantity_dict');
-    console.log(JSON.parse(JSON.stringify(quantity_dict))); ;
+    // console.log('weighted_avg');
+    // console.log(JSON.parse(JSON.stringify(weighted_avg)));
+    // console.log('quantity_dict');
+    // console.log(JSON.parse(JSON.stringify(quantity_dict))); ;
 
     // console.log('BUY DF:');
     // console.log(buyDF.toString());
@@ -297,8 +297,8 @@ export async function getUnrealizedProfit(df){
         let average_price = row.get('average_buy_price');
         let current_price = row.get('price');
         let currReturn = (current_price - average_price) * quantity;
-        let percentReturn = (quantity && average_price > 0) ? (current_price - average_price) / average_price * 100 : 0.00;
-        profit.push([symbol, currReturn, percentReturn]);
+        // let percentReturn = (quantity && average_price > 0) ? (current_price - average_price) / average_price * 100 : 0.00;
+        profit.push([symbol, currReturn]);
     }
     return profit;
 }

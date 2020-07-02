@@ -15,7 +15,7 @@ import { Redirect } from 'react-router-dom';
 
 
 
-const equity_df_columns = ['instrument', 'price', 'tradability', 'quantity','average_buy_price','dividend', 'realized profit', 'symbol', 'unrealized profit', 'percent unrealized profit', 'equity'];
+const equity_df_columns = ['instrument', 'price', 'tradability', 'quantity','average_buy_price','dividend', 'realized profit', 'symbol', 'unrealized profit', 'equity'];
 const equity_columns_to_display = ['Name', 'Average Cost', 'Equity', 'Dividend', 'Realized Return', 'Unrealized Return', 'Current Price'];
 const all_equity_fields = [...equity_columns_to_display, 'Tradability', 'Quantity', 'Unrealized Percent Return'];
 
@@ -196,7 +196,7 @@ export const Statistics = props => {
         // ----- unrealized profit -----
         let unreal = await analysis.getUnrealizedProfit(merged);
         let unrealDF = new DataFrame(unreal);
-        unrealDF.columns = ['symbol', 'unrealized profit', 'percent unrealized profit'];
+        unrealDF.columns = ['symbol', 'unrealized profit'];
         merged = merged.merge(unrealDF, ['symbol'], 'outer');
         // console.log(merged.toString());
 
@@ -226,9 +226,8 @@ export const Statistics = props => {
         let symbolSeries = new Series(symbols, 'symbol');
         merged = merged.set('symbol', symbolSeries);
 
-
-        // console.log(merged.toString());
         merged = merged.get(equity_df_columns);
+        console.log(merged.toString());
         setEquityHistoryDF(merged);
 
         setLastUpdatedAt(new Date().toLocaleTimeString());
