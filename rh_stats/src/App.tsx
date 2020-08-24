@@ -7,7 +7,8 @@ import { ChallengeLogin } from "./components/login/ChallengeLogin";
 import { Statistics } from "./components/statistics/Statistics";
 import auth from "./auth/auth";
 
-const ProtectedRoute = ({ component: Component, ...rest }) => {
+// TODO: Fix any types
+const ProtectedRoute = ({ component: Component, ...rest }: any) => {
   return (
     <Route
       {...rest}
@@ -22,7 +23,6 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
   );
 };
 
-// TODO: Fix any types
 const App = (props: any) => {
   const handleInitialSubmit = async (
     username: string,
@@ -34,7 +34,7 @@ const App = (props: any) => {
     return await auth.initialLogin(); // gets returned to <Login>'s handleSubmit
   };
 
-  const handleMFASubmit = async (mfa_code) => {
+  const handleMFASubmit = async (mfa_code: string): Promise<any> => {
     let success = await auth.loginMFA(mfa_code);
     return success;
   };
