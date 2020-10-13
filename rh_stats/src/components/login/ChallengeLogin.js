@@ -4,7 +4,7 @@ import { withRouter } from "react-router-dom";
 import { Head } from "../misc/html_head";
 import auth from "../../auth/auth";
 import "../../UI/css/Login.css";
-import * as api from "../../api/api";
+import * as authAPI from "../../api/auth";
 
 export const ChallengeLogin = (props) => {
   const [challengeCode, setChallengeCode] = useState("");
@@ -33,7 +33,7 @@ export const ChallengeLogin = (props) => {
   useEffect(() => {
     const inputChallengeType = async () => {
       if (challengeType) {
-        let challenge_id = await api.oauth2ChallengeTypeInput(
+        let challenge_id = await authAPI.oauth2ChallengeTypeInput(
           auth.username,
           auth.password,
           challengeType

@@ -3,7 +3,7 @@ import "../../UI/css/Statistics.css";
 import { ReactComponent as ArrowIcon } from "../../UI/images/arrow.svg";
 import { ReactComponent as SortIcon } from "../../UI/images/sort.svg";
 import { Head } from "../misc/html_head";
-import * as api from "../../api/api";
+import * as dataAPI from "../../api/data";
 import * as utils from "../../utils";
 import auth from "../../auth/auth";
 import Loading from "../misc/loading";
@@ -126,8 +126,8 @@ export const Statistics = (props) => {
   };
 
   // const header = {
-  //     'Authorization': `Bearer ${process.env.REACT_APP_BEARER}`
-  // }
+  //   Authorization: `Bearer ${process.env.REACT_APP_BEARER}`,
+  // };
 
   const [loggedIn, setLoggedIn] = useState(true);
 
@@ -158,14 +158,14 @@ export const Statistics = (props) => {
 
   // total invested
   const updateTotalInvested = async () => {
-    let inv = await api.getPortfolio(header);
+    let inv = await dataAPI.getPortfolio(header);
     let value = await inv["results"][0]["market_value"];
     setTotalInvested(parseFloat(value).toFixed(2));
   };
 
   // cash
   const updateCash = async () => {
-    let details = await api.getAccountDetails(header);
+    let details = await dataAPI.getAccountDetails(header);
     let cashStr = await details[0]["portfolio_cash"];
     setCash(parseFloat(cashStr).toFixed(2));
   };
@@ -184,7 +184,7 @@ export const Statistics = (props) => {
 
     // ----- positions -----
     let activeBool = true;
-    let pos = await api.getPositionsEquity(header, activeBool); // active equity positions
+    let pos = await dataAPI.getPositionsEquity(header, activeBool); // active equity positions
     let positionsDF = await analysis.positionsToDF(pos);
     positionsDF = positionsDF.get([
       "symbol",
@@ -195,8 +195,12 @@ export const Statistics = (props) => {
     merged = positionsDF;
 
     // ----- realized profit -----
-    let buyOrders = await api.getOrderHistoryEquity(header, ["filled"], "buy"); // equity buy orders
-    let sellOrders = await api.getOrderHistoryEquity(
+    let buyOrders = await dataAPI.getOrderHistoryEquity(
+      header,
+      ["filled"],
+      "buy"
+    ); // equity buy orders
+    let sellOrders = await dataAPI.getOrderHistoryEquity(
       header,
       ["filled"],
       "sell"
@@ -211,7 +215,7 @@ export const Statistics = (props) => {
       merged = merged.set("realized profit", utils.zeroesArray(merged.length));
     }
 
-    let currentPrices = await api.getCurrentPricesFromInstrumentsDF(
+    let currentPrices = await dataAPI.getCurrentPricesFromInstrumentsDF(
       header,
       merged
     );
@@ -227,7 +231,7 @@ export const Statistics = (props) => {
     // console.log(merged.toString());
 
     // ----- dividends -----
-    let div = await api.getDividends(header, ["paid", "reinvested"]);
+    let div = await dataAPI.getDividends(header, ["paid", "reinvested"]);
     if (div.length) {
       let divDF = analysis.dividendsToDF(div);
       merged = merged.merge(divDF, ["instrument"], "outer");
@@ -242,7 +246,7 @@ export const Statistics = (props) => {
     merged = merged.merge(equityDF, ["symbol"], "outer");
 
     // ----- tradability -----
-    let tradabilities = await api.getFieldFromInstrumentsDF(
+    let tradabilities = await dataAPI.getFieldFromInstrumentsDF(
       merged,
       "tradability"
     );
@@ -250,7 +254,7 @@ export const Statistics = (props) => {
     merged = merged.set("tradability", tradeSeries);
 
     // ----- symbols -----
-    let symbols = await api.getFieldFromInstrumentsDF(merged, "symbol");
+    let symbols = await dataAPI.getFieldFromInstrumentsDF(merged, "symbol");
     let symbolSeries = new Series(symbols, "symbol");
     merged = merged.set("symbol", symbolSeries);
 
@@ -267,7 +271,10 @@ export const Statistics = (props) => {
 
     // ----- positions -----
     let activeBool = true;
-    let optionsPositions = await api.getPositionsOptions(header, activeBool); // active options positions
+    let optionsPositions = await dataAPI.getPositionsOptions(
+      header,
+      activeBool
+    ); // active options positions
     // console.log(optionsPositions);
     let optionsPositionsDF = await analysis.positionsToDFOptions(
       optionsPositions
@@ -281,12 +288,12 @@ export const Statistics = (props) => {
       ]);
     let newMerged = optionsPositionsDF;
 
-    let buyOrders = await api.getOrderHistoryOptions(
+    let buyOrders = await dataAPI.getOrderHistoryOptions(
       header,
       ["filled"],
       "debit"
     );
-    let sellOrders = await api.getOrderHistoryOptions(
+    let sellOrders = await dataAPI.getOrderHistoryOptions(
       header,
       ["filled"],
       "credit"
