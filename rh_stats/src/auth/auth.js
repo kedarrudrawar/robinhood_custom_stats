@@ -2,7 +2,7 @@ import * as authAPI from "../api/auth";
 
 class Auth {
   constructor() {
-    this.authenticated = true;
+    this.authenticated = false;
     this.username = "";
     this.password = "";
     this.bearer_token = "";
