@@ -1,6 +1,6 @@
 import * as analysis from "./Analysis";
 import * as test_vars from "./test-variables";
-import { DataFrame, Series } from "pandas-js/dist/core";
+import { DataFrame } from "pandas-js/dist/core";
 import * as api from "../../api/api";
 
 jest.mock("axios");

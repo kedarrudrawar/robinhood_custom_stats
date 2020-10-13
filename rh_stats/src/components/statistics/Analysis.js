@@ -1,5 +1,5 @@
 import { Series, DataFrame } from "pandas-js";
-import * as api from "../../api/api";
+import * as dataAPI from "../../api/data";
 import auth from "../../auth/auth";
 
 export const HEADER = {
@@ -145,7 +145,7 @@ export async function getRealizedProfitOptions(buyOrders, sellOrders) {
       //    -  still active options that haven't sold
       //    -  options that expired worthless
       let expiration_date = new Date(
-        await api.getFieldFromInstrumentOption(
+        await dataAPI.getFieldFromInstrumentOption(
           HEADER,
           instrument,
           "expiration_date"
@@ -201,10 +201,10 @@ export async function positionsToDF(positions) {
   }
 
   let df = new DataFrame(positions);
-  let tickerResponse = await api.getFieldFromInstrumentsDF(df, "symbol");
+  let tickerResponse = await dataAPI.getFieldFromInstrumentsDF(df, "symbol");
   let tickerSeries = new Series(tickerResponse, "tickers");
 
-  let tradeableResponse = await api.getFieldFromInstrumentsDF(
+  let tradeableResponse = await dataAPI.getFieldFromInstrumentsDF(
     df,
     "tradability"
   );
@@ -216,7 +216,7 @@ export async function positionsToDF(positions) {
 }
 
 async function getExtraFields(df, field_in_response, field_name_for_df) {
-  let response = await api.getFieldFromInstrumentsDF(df, field_in_response);
+  let response = await dataAPI.getFieldFromInstrumentsDF(df, field_in_response);
   let series = new Series(response, "placeholder");
   df = df.set(field_name_for_df, series);
   return df;

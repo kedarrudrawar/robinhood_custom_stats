@@ -1,8 +1,8 @@
-import * as api from "../api/api";
+import * as authAPI from "../api/auth";
 
 class Auth {
   constructor() {
-    this.authenticated = false;
+    this.authenticated = true;
     this.username = "";
     this.password = "";
     this.bearer_token = "";
@@ -35,13 +35,13 @@ class Auth {
   async initialLogin() {
     let data;
     try {
-      data = await api.oauth2(this.username, this.password);
-      if (api.isMFA(await data)) {
+      data = await authAPI.oauth2(this.username, this.password);
+      if (authAPI.isMFA(await data)) {
         return {
           isMFA: true,
           isChallenge: false,
         };
-      } else if (api.isChallenge(await data)) {
+      } else if (authAPI.isChallenge(await data)) {
         return {
           isMFA: false,
           isChallenge: true,
@@ -62,7 +62,11 @@ class Auth {
 
   async loginMFA(mfa_code) {
     try {
-      let data = await api.oauth2_MFA(this.username, this.password, mfa_code);
+      let data = await authAPI.oauth2_MFA(
+        this.username,
+        this.password,
+        mfa_code
+      );
       let [bearer_token, refresh_token, expiry_time] = data;
 
       this.login(bearer_token, refresh_token, expiry_time);
@@ -75,14 +79,14 @@ class Auth {
 
   async loginChallenge(challenge_id, challenge_code, challenge_type) {
     try {
-      let success = await api.respondToChallenge(
+      let success = await authAPI.respondToChallenge(
         this.username,
         this.password,
         challenge_id,
         challenge_code
       );
       if (success) {
-        let data = await api.oauth2Challenge(
+        let data = await authAPI.oauth2Challenge(
           this.username,
           this.password,
           challenge_type,
