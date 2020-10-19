@@ -7,7 +7,6 @@ import { ChallengeLogin } from "./components/login/ChallengeLogin";
 import { Statistics } from "./components/statistics/Statistics";
 import auth from "./auth/auth";
 
-// TODO: Fix any types
 const ProtectedRoute = ({ component: Component, ...rest }: any) => {
   return (
     <Route

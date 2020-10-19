@@ -6,11 +6,12 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "@types/react-router": "^5.1.8",
+    "@types/uuid": "^8.3.0",
     "axios": "^0.19.2",
     "elliptic": "^6.5.3",
     "lodash": "^4.17.19",
     "pandas-js": "^0.2.4",
-    "prettier": "^2.1.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-helmet": "^6.0.0",
@@ -18,6 +19,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "serialize-javascript": "^3.1.0",
+    "typescript": "^4.0.3",
     "uuid": "^8.0.0"
   },
   "scripts": {
@@ -40,5 +42,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "resolutions": {
+    "**/@typescript-eslint/eslint-plugin": "^4.1.1",
+    "**/@typescript-eslint/parser": "^4.1.1"
   }
 }

@@ -9,7 +9,7 @@ export const INSTRUMENTS = BASE_PATH + "instruments/";
 const positions = BASE_PATH + "positions/";
 const positions_non_zero = positions + "?nonzero=true";
 
-export const equityPaths = {
+export const equityPaths: { [key: string]: string } = {
   POSITIONS: positions,
   POSITIONS_NON_ZERO: positions_non_zero,
 
@@ -18,10 +18,9 @@ export const equityPaths = {
 };
 
 // TODO: Identify aggregage_positions vs. positions endpoint (?)
-export const optionPaths = {
+export const optionPaths: { [key: string]: string } = {
   POSITIONS: OPTIONS_PATH + "aggregate_positions/",
-  POSITIONS_NON_ZERO: OPTIONS_PATH + "aggregate_positions/" + "?nonzero=true",
-
+  POSITIONS_NON_ZERO: OPTIONS_PATH + "aggregate_positions/?nonzero=true",
   ORDERS: OPTIONS_PATH + "orders/",
 };
 
@@ -35,9 +34,9 @@ export const ACCOUNTS = BASE_PATH + "accounts/";
 
 const QUOTES = BASE_PATH + "quotes/";
 
-export const build_quote_url = (ticker) => {
+export function buildQuoteUrl(ticker: string): string {
   return QUOTES + ticker + "/";
-};
+}
 
 /** Build challenge response url.
     Args:
@@ -45,6 +44,6 @@ export const build_quote_url = (ticker) => {
     Returns:
         The constructed URL with the challenge_id embedded in teh url path.
 */
-export const build_challenge = (challenge_id) => {
+export function build_challenge(challenge_id: string): string {
   return `${BASE_PATH}challenge/${challenge_id}/respond/`;
-};
+}

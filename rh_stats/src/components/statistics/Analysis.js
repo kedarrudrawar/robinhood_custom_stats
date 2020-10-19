@@ -246,6 +246,7 @@ async function filterOrdersDF(
  * @param {Array of sell order objects for equities} sellOrders
  */
 export async function getRealizedProfit(buyOrders, sellOrders) {
+  debugger;
   let buyDF = new DataFrame(buyOrders);
   let sellDF = new DataFrame(sellOrders);
 

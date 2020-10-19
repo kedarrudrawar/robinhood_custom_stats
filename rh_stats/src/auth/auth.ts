@@ -1,27 +1,24 @@
 import * as urls from "../api/endpoints";
 import axios from "axios";
 import qs from "qs";
+import { v4 as uuidv4 } from "uuid";
 
 const CLIENT_ID = "c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS";
-const { v4: uuidv4 } = require("uuid");
 
-export let HEADERS = {
+export let BASE_HEADERS: BaseHeader = {
   "Cache-Control": "no-cache",
   Accept: "*/*",
   "Accept-Language": "en;q=1, fr;q=0.9, de;q=0.8, ja;q=0.7, nl;q=0.6, it;q=0.5",
   "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
 };
 
-export function buildHeaders(header) {
-  let headers = { ...HEADERS, ...header };
-  return {
-    headers: headers,
-  };
+export function buildHeaders(
+  authHeader: AuthHeader
+): { headers: AuthWithBaseHeader } {
+  return { headers: { ...BASE_HEADERS, ...authHeader } };
 }
 
-export const BODY = {
-  password: "",
-  username: "",
+export const BODY: BaseRequestBody = {
   grant_type: "password",
   client_id: CLIENT_ID,
   expires_in: "86400",
@@ -29,17 +26,23 @@ export const BODY = {
   device_token: uuidv4(),
 };
 
-export async function oauth2(username, password, challenge_type = "") {
-  let data = {
-    headers: HEADERS,
+export async function oauth2(
+  username: string,
+  password: string,
+  challenge_type = ""
+) {
+  let payload: FullRequestBody = {
+    headers: BASE_HEADERS,
+    ...BODY,
+    username,
+    password,
   };
-  Object.assign(data, BODY);
-  data["username"] = username;
-  data["password"] = password;
-  if (challenge_type) data["challenge_type"] = challenge_type;
+  //   payload["username"] = username;
+  //   payload["password"] = password;
+  if (challenge_type) payload["challenge_type"] = challenge_type;
 
   try {
-    const response = await axios.post(urls.OAUTH2, data);
+    const response = await axios.post<any, OAuthResponse>(urls.OAUTH2, payload);
     return response.data;
   } catch (err) {
     return err.response.data;
@@ -63,7 +66,7 @@ export function getChallenge() {}
 export async function oauth2_MFA(username, password, mfa_code) {
   let BEARER_TOKEN, REFRESH_TOKEN, EXPIRY_TIME;
   let payload = {
-    headers: HEADERS,
+    headers: BASE_HEADERS,
   };
   Object.assign(payload, BODY);
   payload["username"] = username;
@@ -91,7 +94,10 @@ export async function oauth2Challenge(
   challenge_id
 ) {
   let headers = {
-    headers: { ...HEADERS, "x-robinhood-challenge-response-id": challenge_id },
+    headers: {
+      ...BASE_HEADERS,
+      "x-robinhood-challenge-response-id": challenge_id,
+    },
   };
   let payload = { ...BODY };
   payload["username"] = username;
@@ -122,7 +128,7 @@ export async function respondToChallenge(
   challengeCode
 ) {
   let payload = {
-    headers: HEADERS,
+    headers: BASE_HEADERS,
   };
   let url = urls.build_challenge(challenge_id);
   Object.assign(payload, BODY);
@@ -147,7 +153,7 @@ export async function oauth2ChallengeTypeInput(
   challenge_type
 ) {
   let payload = {
-    headers: HEADERS,
+    headers: BASE_HEADERS,
   };
   Object.assign(payload, BODY);
   payload["username"] = username;

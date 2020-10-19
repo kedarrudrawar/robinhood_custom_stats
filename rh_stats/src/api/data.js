@@ -187,7 +187,7 @@ export async function getCurrentPricesFromInstrumentsDF(header, df) {
 
       if (!tradeable) reject(new Error("untradeable stock: " + symbol));
       else {
-        let quoteURL = urls.build_quote_url(symbol);
+        let quoteURL = urls.buildQuoteUrl(symbol);
         try {
           let res = await axios.get(quoteURL, payload);
           data = processRHObject(res);
@@ -234,7 +234,7 @@ export const getCurrentPricesFromInstruments = async (header, instruments) => {
       if (!instrument["tradeable"])
         reject(new Error("untradeable stock: " + instrument["symbol"]));
       else {
-        let url = urls.build_quote_url(instrument["symbol"]);
+        let url = urls.buildQuoteUrl(instrument["symbol"]);
         try {
           let res = await axios.get(url, payload);
           let data = processRHObject(res);

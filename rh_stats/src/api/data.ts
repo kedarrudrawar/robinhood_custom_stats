@@ -32,10 +32,10 @@ export async function getPortfolio(header: any) {
  */
 export async function getPositionsEquity(header: any, active = false) {
   let payload = buildHeaders(header);
-  let url = active
+  let positionsUrl = active
     ? urls.equityPaths.POSITIONS_NON_ZERO
     : urls.equityPaths.POSITIONS;
-  let nextPosLink = await checkForNext(url, payload);
+  let nextPosLink = await checkForNext(positionsUrl, payload);
   let nextExists = true;
   let positions: any[] = [];
   let res, data;
@@ -53,14 +53,14 @@ export async function getPositionsEquity(header: any, active = false) {
   while (nextExists) {
     nextExists = nextPosLink !== null;
 
-    res = await axios.get(url, payload);
+    res = await axios.get<any>(positionsUrl, payload);
     data = processRHObject(res).results;
     data = filterOptions(data);
     positions = positions.concat(data);
 
     if (nextExists) {
-      url = nextPosLink;
-      nextPosLink = await checkForNext(url, payload);
+      positionsUrl = nextPosLink;
+      nextPosLink = await checkForNext(positionsUrl, payload);
     }
   }
 
@@ -151,8 +151,8 @@ export const getInstrumentsFromOrders = async (header: any, orders: any) => {
     return new Promise(async (resolve, reject) => {
       try {
         let res = await axios.get(instrumentURL, payload);
-        let data = processRHObject(await res);
-        resolve(await data);
+        let data = processRHObject(res);
+        resolve(data);
       } catch (err) {
         console.log(err);
         reject(err);
@@ -198,7 +198,7 @@ export async function getCurrentPricesFromInstrumentsDF(
 
       if (!tradeable) reject(new Error("untradeable stock: " + symbol));
       else {
-        let quoteURL = urls.build_quote_url(symbol);
+        let quoteURL = urls.buildQuoteUrl(symbol);
         try {
           let res = await axios.get(quoteURL, payload);
           data = processRHObject(res);
@@ -273,7 +273,7 @@ export const getCurrentPricesFromInstruments = async (
       if (!instrument["tradeable"])
         reject(new Error("untradeable stock: " + instrument["symbol"]));
       else {
-        let url = urls.build_quote_url(instrument["symbol"]);
+        let url = urls.buildQuoteUrl(instrument["symbol"]);
         try {
           let res = await axios.get(url, payload);
           let data = processRHObject(res);
