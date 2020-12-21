@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
+
 import DataTable from "./statistics/DataTable";
 import { SIMPLE_ORDERS } from "./statistics/OrdersFixtures";
 import {
   FULL_POSITIONS_RESPONSE_1,
   POSITION,
 } from "./statistics/PositionsFixtures";
-import InstrumentMap from "./statistics/processing/InterfaceMapping";
-import { addRealizedProfits } from "./statistics/processing/processOrders";
+import InstrumentMap from "./statistics/processing/instrumentMapping";
+import { addRealizedProfits } from "./statistics/processing/calculateProfits";
 import { processPositions } from "./statistics/processing/processPositions";
 import {
   RHOrdersResponse,

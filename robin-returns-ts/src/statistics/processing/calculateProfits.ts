@@ -1,6 +1,6 @@
 import { TableColumn } from "../DataTable";
 import { RHOrdersResponse, RHPosition, url, Response } from "../ResponseTypes";
-import InstrumentMap from "./InterfaceMapping";
+import InstrumentMap from "./instrumentMapping";
 import { BasePosition } from "./processPositions";
 
 // TODO kedar: rename file
