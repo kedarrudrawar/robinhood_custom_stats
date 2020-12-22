@@ -1,6 +1,6 @@
-import { RHOrdersResponse } from "./ResponseTypes";
+import { Response, RHOrder } from "./ResponseTypes";
 
-export const ORDERS_LARGE: RHOrdersResponse = {
+export const LARGE_ORDERS_RESPONSE: Response<RHOrder> = {
   next:
     "https://api.robinhood.com/orders/?cursor=cD0yMDIwLTEyLTAzKzE1JTNBMzQlM0E1Ny43MTIzMTQlMkIwMCUzQTAw",
   previous: null,
@@ -5514,7 +5514,7 @@ export const ORDERS_LARGE: RHOrdersResponse = {
   ],
 };
 
-export const SIMPLE_ORDERS: RHOrdersResponse = {
+export const SMALL_ORDERS_RESPONSE: Response<RHOrder> = {
   next: null,
   previous: null,
   results: [

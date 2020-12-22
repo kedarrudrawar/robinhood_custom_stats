@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 import { url, Response, isResponse } from "../ResponseTypes";
 import { HEADERS } from "../DAO/DAOConstants";
@@ -8,16 +8,16 @@ async function extractAllResults<ResultType>(
   url: url,
   reverse: boolean = false
 ): Promise<Array<ResultType>> {
-  let rv;
+  let rv: AxiosResponse;
   let data: Response<ResultType>;
   let nextUrl: url | null = url;
-  const results: Array<ResultType> = [];
+  let results: Array<ResultType> = [];
 
   while (nextUrl != null) {
     rv = await axios.get(nextUrl, { headers: HEADERS });
     data = rv.data;
     assert(isResponse<ResultType>(data), "Data should be of shape `Response`.");
-    results.concat(data.results);
+    results = results.concat(data.results);
 
     nextUrl = data.next;
   }
