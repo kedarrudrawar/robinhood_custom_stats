@@ -17,7 +17,7 @@ export interface Response<T> {
 /**
  * Type predicate to make sure server response is of right shape.
  * @param response
- * @param recurseAndCheck // TODO kedar: figure out how to assert that the subtype is valid too..
+ * @param recurseAndCheck // TODO kedar: figure out how to validate the generic type object
  */
 export function isResponse<T>(
   response: any,
@@ -28,6 +28,71 @@ export function isResponse<T>(
     response.hasOwnProperty("previous") &&
     response.hasOwnProperty("results")
   );
+}
+
+export function isQuote(quote: any): quote is RHQuote {
+  return quote.hasOwnProperty("last_trade_price");
+}
+
+export function isInactiveQuote(
+  inactiveQuote: any
+): inactiveQuote is RHQuoteInactive {
+  return inactiveQuote.hasOwnProperty("inactive_instruments");
+}
+
+export type RHQuote = {
+  ask_price: string;
+  ask_size: number;
+  bid_price: string;
+  bid_size: 1;
+  last_trade_price: string;
+  last_extended_hours_trade_price: null;
+  previous_close: string;
+  adjusted_previous_close: string;
+  previous_close_date: string;
+  symbol: string;
+  trading_halted: false;
+  has_traded: true;
+  last_trade_price_source: string;
+  updated_at: string;
+  instrument: url;
+};
+
+export type RHQuoteInactive = {
+  inactive_instruments: Array<string>;
+};
+
+export function isInstrument(instrument: any): instrument is RHInstrument {
+  return (
+    instrument.hasOwnProperty("symbol") && instrument.hasOwnProperty("quote")
+  );
+}
+
+export interface RHInstrument {
+  id: string;
+  url: url;
+  quote: url;
+  fundamentals: url;
+  splits: url;
+  state: "active";
+  market: url;
+  simple_name: string;
+  name: string;
+  tradeable: boolean;
+  tradability: string;
+  symbol: string;
+  bloomberg_unique: string;
+  margin_initial_ratio: string;
+  maintenance_ratio: string;
+  country: string;
+  day_trade_ratio: string;
+  list_date: string;
+  min_tick_size: null;
+  type: string;
+  tradable_chain_id: string;
+  rhs_tradability: string;
+  fractional_tradability: string;
+  default_collar_fraction: string;
 }
 
 export interface RHOrder {
@@ -110,5 +175,28 @@ export interface RHPosition {
   created_at: string;
 }
 
-export type RHOrdersResponse = Response<RHOrder>;
-export type RHPositionsResponse = Response<RHPosition>;
+export interface RHDividend {
+  id: string;
+  url: url;
+  account: url;
+  instrument: url;
+  amount: string;
+  rate: string;
+  position: string;
+  withholding: string;
+  record_date: string;
+  payable_date: string;
+  paid_at: string | null;
+  state: "pending" | "voided" | "reinvested" | "paid" | "reverted";
+  drip_order_id?: string;
+  drip_order_quantity?: string;
+  drip_order_execution_price?: {
+    currency_id: string;
+    currency_code: string;
+    amount: string;
+  };
+  drip_enabled: boolean;
+  drip_order_state?: "filled";
+  drip_skipped_reason?: "no_fractional_tradability";
+  nra_withholding: "0";
+}

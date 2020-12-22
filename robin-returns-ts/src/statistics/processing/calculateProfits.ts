@@ -1,16 +1,7 @@
-import getAllOrders from "../DAO/getAllOrders";
 import { TableColumn } from "../DataTable";
-import {
-  RHOrdersResponse,
-  RHPosition,
-  url,
-  Response,
-  RHOrder,
-} from "../ResponseTypes";
-import InstrumentMap, { createInstrumentMapping } from "./instrumentMapping";
-import { BasePosition } from "./processPositions";
-
-// TODO kedar: rename file
+import { RHPosition, url, RHOrder } from "../ResponseTypes";
+import InstrumentMap from "./instrumentMapping";
+import { BasePosition } from "./generateBasePositions";
 
 interface OrderData {
   instrument: url;
@@ -33,17 +24,15 @@ interface BasePositionWithUnrealizedProfits extends BasePosition {
   [TableColumn.UNREALIZED_PROFIT]: number;
 }
 
-export async function addRealizedProfits(
-  orders: Array<RHOrder>,
-  basePositions: Array<BasePosition> // TODO kedar: extract into type
-): Promise<Array<BasePositionWithRealizedProfits>> {
-  const instrumentToBasePosition = createInstrumentMapping(basePositions);
-
-  // Separate into buy / sell orders.
-  const instrumentToOrders: InstrumentMap<{
-    buyOrders: Array<OrderData>;
-    sellOrders: Array<OrderData>;
-  }> = {};
+interface SeparatedOrderData {
+  buyOrderData: Array<OrderData>;
+  sellOrderData: Array<OrderData>;
+}
+function separateOrdersIntoBuyAndSell(
+  orders: Array<RHOrder>
+): SeparatedOrderData {
+  const buyOrderData: Array<OrderData> = [];
+  const sellOrderData: Array<OrderData> = [];
 
   for (const {
     instrument,
@@ -71,79 +60,99 @@ export async function addRealizedProfits(
       created_at: new Date(created_at),
     };
 
-    if (!instrumentToOrders.hasOwnProperty(instrument)) {
-      instrumentToOrders[instrument] = { buyOrders: [], sellOrders: [] };
-    }
     if (side === "buy") {
-      instrumentToOrders[instrument].buyOrders.push(orderData);
+      buyOrderData.push(orderData);
     } else {
-      instrumentToOrders[instrument].sellOrders.push(orderData);
+      sellOrderData.push(orderData);
     }
   }
 
+  return { buyOrderData, sellOrderData };
+}
+
+function filterOutBuyOrdersOccurringAfterLastSell({
+  buyOrderData,
+  sellOrderData,
+}: SeparatedOrderData): SeparatedOrderData {
+  const lastSell = sellOrderData[sellOrderData.length - 1];
+  // Pop off buy order if after last sell date
+  while (
+    buyOrderData.length > 0 &&
+    buyOrderData[buyOrderData.length - 1].created_at > lastSell.created_at
+  ) {
+    buyOrderData.pop();
+  }
+  return { buyOrderData, sellOrderData };
+}
+
+/**
+ *
+ * @param instrumentToOrders Mapping from instrument to all orders of that instrument. Must be in chronological order (earliest to latest)
+ * @param basePositions
+ */
+export function addRealizedProfits(
+  instrumentToOrders: InstrumentMap<Array<RHOrder>>,
+  basePositions: InstrumentMap<BasePosition>
+): InstrumentMap<BasePositionWithRealizedProfits> {
   const basePositionsWithRealizedProfits: InstrumentMap<BasePositionWithRealizedProfits> = {};
 
-  // Remove all the buy orders that occur after the last sell order
-  for (const [instrument, { buyOrders, sellOrders }] of Object.entries(
-    instrumentToOrders
-  )) {
-    const lastSell = sellOrders[sellOrders.length - 1];
-    // Pop off buy order if after last sell date
-    while (
-      buyOrders.length > 0 &&
-      buyOrders[buyOrders.length - 1].created_at > lastSell.created_at
-    ) {
-      buyOrders.pop();
-    }
-    instrumentToOrders[instrument].buyOrders = buyOrders;
+  for (const [instrument, orders] of Object.entries(instrumentToOrders)) {
+    const separatedOrderData = separateOrdersIntoBuyAndSell(orders);
+    // Remove all the buy orders that occur after the last sell order
+    const {
+      buyOrderData,
+      sellOrderData,
+    } = filterOutBuyOrdersOccurringAfterLastSell(separatedOrderData);
 
-    // Calculate average buy / sell prices of all the equity that was sold
+    // Calculate average buy / sell prices of all the equity that's been sold already
     let sumCost = 0;
     let sumQuantityBought = 0;
-    buyOrders.forEach((orderData: OrderData) => {
+
+    let sumProfit = 0;
+    let sumQuantitySold = 0;
+
+    buyOrderData.forEach((orderData: OrderData) => {
       sumCost += parseFloat(orderData.executed_notional.amount);
       sumQuantityBought += parseFloat(orderData.cumulative_quantity);
     });
 
-    let averageBuyPrice = sumCost / sumQuantityBought;
+    const averageBuyPrice = sumCost / sumQuantityBought;
 
-    let sumProfit = 0;
-    let sumQuantitySold = 0;
-    sellOrders.forEach((orderData: OrderData) => {
+    sellOrderData.forEach((orderData: OrderData) => {
       sumProfit += parseFloat(orderData.executed_notional.amount);
       sumQuantitySold += parseFloat(orderData.cumulative_quantity);
     });
 
-    let averageSellPrice = sumProfit / sumQuantitySold;
+    const averageSellPrice = sumProfit / sumQuantitySold;
 
     // Copy base position with realized profits added
     basePositionsWithRealizedProfits[instrument] = {
-      ...instrumentToBasePosition[instrument],
+      ...basePositions[instrument],
       [TableColumn.REALIZED_PROFIT]:
         (averageSellPrice - averageBuyPrice) * sumQuantitySold,
     };
   }
 
-  return Array.from(Object.values(basePositionsWithRealizedProfits));
+  return basePositionsWithRealizedProfits;
 }
 
 export function addUnrealizedProfits(
   positionsFromServer: InstrumentMap<RHPosition>,
-  basePositions: InstrumentMap<BasePosition>,
-  currentPrices: InstrumentMap<number>
+  basePositions: InstrumentMap<BasePosition>
 ): InstrumentMap<BasePositionWithUnrealizedProfits> {
   const basePositionWithUnrealizedProfits: InstrumentMap<BasePositionWithUnrealizedProfits> = {};
-  for (const instrument of Object.keys(basePositions)) {
-    const {
-      average_buy_price: averageBuyPrice,
-      quantity,
-    } = positionsFromServer[instrument];
+
+  for (const [instrument, basePosition] of Object.entries(basePositions)) {
+    const { average_buy_price: averageBuyPrice } = positionsFromServer[
+      instrument
+    ];
+    const quantity = basePosition[TableColumn.QUANTITY];
+    const currentPrice = basePosition[TableColumn.CURRENT_PRICE];
 
     basePositionWithUnrealizedProfits[instrument] = {
-      ...basePositions[instrument],
+      ...basePosition,
       [TableColumn.UNREALIZED_PROFIT]:
-        (currentPrices[instrument] - parseFloat(averageBuyPrice)) *
-        parseFloat(quantity),
+        (currentPrice - parseFloat(averageBuyPrice)) * quantity,
     };
   }
 

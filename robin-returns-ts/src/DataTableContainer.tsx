@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { getAllCurrentPrices } from "./statistics/DAO/getAllCurrentPrices";
 import getAllOrders from "./statistics/DAO/getAllOrders";
 import getAllPositions from "./statistics/DAO/getAllPositions";
 
@@ -11,17 +12,16 @@ import {
   addRealizedProfits,
   addUnrealizedProfits,
 } from "./statistics/processing/calculateProfits";
-import InstrumentMap from "./statistics/processing/instrumentMapping";
+import InstrumentMap, {
+  createInstrumentToArrayMapping,
+  createInstrumentToItemMapping,
+} from "./statistics/processing/instrumentMapping";
+import { populateDividends } from "./statistics/processing/populateDividends";
 import {
   BasePosition,
-  convertToBasePositions,
-} from "./statistics/processing/processPositions";
-import {
-  RHOrder,
-  RHOrdersResponse,
-  RHPosition,
-  RHPositionsResponse,
-} from "./statistics/ResponseTypes";
+  generateBasePositions,
+} from "./statistics/processing/generateBasePositions";
+import { RHOrder, RHPosition, url } from "./statistics/ResponseTypes";
 
 const ALL_POSITIONS_MAPPING: InstrumentMap<RHPosition> = {};
 for (const position of FULL_POSITIONS_RESPONSE_1.results) {
@@ -29,53 +29,63 @@ for (const position of FULL_POSITIONS_RESPONSE_1.results) {
 }
 
 function DataTableContainer(): JSX.Element {
-  const [ordersFromServer, setOrdersFromServer] = useState<Array<RHOrder>>([]);
+  const [ordersFromServer, setOrdersFromServer] = useState<
+    InstrumentMap<Array<RHOrder>>
+  >({});
 
   const [positionsFromServer, setPositionsFromServer] = useState<
-    Array<RHPosition>
-  >([]);
+    InstrumentMap<RHPosition>
+  >({});
 
-  const [basePositions, setBasePositions] = useState<Array<BasePosition>>([]);
+  const [basePositions, setBasePositions] = useState<
+    InstrumentMap<BasePosition>
+  >({});
 
-  const [currentPrices, setCurrentPrices] = useState<InstrumentMap<number>>({});
+  // const [hydratedPositions, setHydratedPosition] = useState<>();
 
-  async function fetchAndSetPositions(): Promise<Array<RHPosition>> {
+  async function fetchAndSetPositionsFromServer(): Promise<void> {
     const positions = await getAllPositions();
-    setPositionsFromServer(positions);
-    return positions;
+    setPositionsFromServer(createInstrumentToItemMapping(positions));
   }
 
-  async function fetchAndSetOrders(): Promise<Array<RHOrder>> {
+  async function fetchAndSetOrdersFromServer(): Promise<void> {
     const orders = await getAllOrders();
-    setOrdersFromServer(orders);
-    return orders;
+    const instrumentMapping = createInstrumentToArrayMapping<RHOrder>(orders);
+    debugger;
+    setOrdersFromServer(instrumentMapping);
   }
 
-  // Fetch server data
-  useEffect(() => {
-    // TODO kedar: cache previous
+  async function fetchAndSetBasePositions(): Promise<void> {
+    const basePositions = await generateBasePositions(positionsFromServer);
+    setBasePositions(basePositions);
+  }
 
+  // Fetch full positions and orders from server
+  useEffect(() => {
     // Fetch positions
-    fetchAndSetPositions();
+    fetchAndSetPositionsFromServer();
 
     // Fetch orders
-    fetchAndSetOrders();
-  }, [fetchAndSetPositions, fetchAndSetOrders]);
+    fetchAndSetOrdersFromServer();
+  }, []);
 
-  // Process positions and orders
+  // Fetch current prices and create base positions
   useEffect(() => {
-    const basePositions = convertToBasePositions(positionsFromServer);
-    setBasePositions(basePositions);
+    fetchAndSetBasePositions();
+  }, [positionsFromServer]);
 
+  // Calculate profits and dividends
+  useEffect(() => {
     const basePositionsWithRealizedProfits = addRealizedProfits(
       ordersFromServer,
       basePositions
     );
-    // const positionsWithProfits = addUnrealizedProfits();
-  }, [positionsFromServer]);
-
-  // Process orders
-  useEffect(() => {}, [ordersFromServer]);
+    const positionsWithProfits = addUnrealizedProfits(
+      positionsFromServer,
+      basePositions
+    );
+    // const hydratedPositions = populateDividends(positionsWithProfits);
+  }, [ordersFromServer]);
 
   return <DataTable positions={[POSITION, POSITION]} />;
 }

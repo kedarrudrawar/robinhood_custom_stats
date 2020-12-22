@@ -1,8 +1,8 @@
 import { Position } from "../../Position";
 import { TableColumn } from "../DataTable";
-import { RHPositionsResponse } from "../ResponseTypes";
+import { Response, RHPosition } from "../ResponseTypes";
 
-export const FULL_POSITIONS_RESPONSE_1: RHPositionsResponse = {
+export const FULL_POSITIONS_RESPONSE_1: Response<RHPosition> = {
   next: null,
   previous: null,
   results: [
@@ -722,7 +722,7 @@ export const FULL_POSITIONS_RESPONSE_1: RHPositionsResponse = {
   ],
 };
 
-export const SIMPLE_POSITIONS_RESPONSE: RHPositionsResponse = {
+export const SIMPLE_POSITIONS_RESPONSE: Response<RHPosition> = {
   next: null,
   previous: null,
   results: [
