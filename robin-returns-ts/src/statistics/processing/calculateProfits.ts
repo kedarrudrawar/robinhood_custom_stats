@@ -1,3 +1,4 @@
+import getAllOrders from "../DAO/getOrders";
 import { TableColumn } from "../DataTable";
 import { RHOrdersResponse, RHPosition, url, Response } from "../ResponseTypes";
 import InstrumentMap from "./instrumentMapping";
@@ -26,10 +27,12 @@ interface BasePositionWithUnrealizedProfits extends BasePosition {
   [TableColumn.UNREALIZED_PROFIT]: number;
 }
 
-export function addRealizedProfits(
+export async function addRealizedProfits(
   ordersResponse: RHOrdersResponse,
   basePositions: InstrumentMap<BasePosition> // TODO kedar: extract into type
-): InstrumentMap<BasePositionWithRealizedProfits> {
+): Promise<InstrumentMap<BasePositionWithRealizedProfits>> {
+  const res = await getAllOrders();
+
   // TODO kedar: extract all orders by iterating through the paginated results
   const { results } = ordersResponse;
 

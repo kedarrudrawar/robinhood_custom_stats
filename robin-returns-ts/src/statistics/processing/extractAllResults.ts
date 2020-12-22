@@ -1,40 +1,33 @@
 import axios from "axios";
 
-import { url, Response } from "../ResponseTypes";
+import { url, Response, isResponse } from "../ResponseTypes";
+import { HEADERS } from "../DAO/DAOConstants";
+import { assert } from "../../asserts";
 
-// async function checkForNext(url: string, payload: unknown) {
-//   let res = await axios.get(url, payload);
-//   let next = data.next;
-//   return next;
-// }
-
-function extractAllResults<ResultType>(
-  response: Response<ResultType>,
+async function extractAllResults<ResultType>(
   url: url,
   reverse: boolean = false
-): Array<ResultType> {
-  //   let nextOrdersLink = await checkForNext(url, payload);
-  //   let nextExists = true;
-  //   let results: Array<ResultType> = [];
-  //   let res, data, filtered;
+): Promise<Array<ResultType>> {
+  let rv;
+  let data: Response<ResultType>;
+  let nextUrl: url | null = url;
+  const results: Array<ResultType> = [];
 
-  //   while (nextExists) {
-  //     nextExists = nextOrdersLink !== null;
+  while (nextUrl != null) {
+    rv = await axios.get(nextUrl, { headers: HEADERS });
+    data = rv.data;
+    assert(isResponse<ResultType>(data), "Data should be of shape `Response`.");
+    results.concat(data.results);
 
-  //     res = await axios.get(url, payload);
-  //     data = processRHObject(res).results;
-  //     results = results.concat(data);
+    nextUrl = data.next;
+  }
 
-  //     if (nextExists) {
-  //       url = nextOrdersLink;
-  //       nextOrdersLink = await checkForNext(url, payload);
-  //     }
-  //   }
+  // orders are returned by API anti-chronologically
+  if (reverse) {
+    results.reverse();
+  }
 
-  //   // orders are returned by API anti-chronologically
-  //   results.reverse();
-  const ret: Array<ResultType> = [];
-  return ret;
+  return results;
 }
 
 export default extractAllResults;

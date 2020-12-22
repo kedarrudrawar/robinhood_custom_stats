@@ -14,6 +14,22 @@ export interface Response<T> {
   results: Array<T>;
 }
 
+/**
+ * Type predicate to make sure server response is of right shape.
+ * @param response
+ * @param recurseAndCheck // TODO kedar: figure out how to assert that the subtype is valid too..
+ */
+export function isResponse<T>(
+  response: any,
+  recurseAndCheck?: (subtype: any) => subtype is T
+): response is Response<T> {
+  return (
+    response.hasOwnProperty("next") &&
+    response.hasOwnProperty("previous") &&
+    response.hasOwnProperty("results")
+  );
+}
+
 export interface RHOrder {
   id: string;
   ref_id: string | null;
