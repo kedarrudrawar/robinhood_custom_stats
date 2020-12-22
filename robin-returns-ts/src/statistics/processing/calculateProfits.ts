@@ -1,4 +1,4 @@
-import { TableColumn } from "../DataTable";
+import { TableColumn } from "../../components/DataTable";
 import { RHPosition, url, RHOrder } from "../ResponseTypes";
 import InstrumentMap from "./instrumentMapping";
 import { BasePosition } from "./generateBasePositions";

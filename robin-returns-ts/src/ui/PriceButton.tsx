@@ -1,6 +1,6 @@
 import { Action } from "material-table";
-import { Position } from "../Position";
-import { TableColumn } from "./DataTable";
+import { Position } from "../statistics/Position";
+import { TableColumn } from "../components/DataTable";
 
 interface PriceButtonProps {
   action: Action<Position>;

@@ -1,6 +1,6 @@
 import React from "react";
-import { Position } from "../Position";
-import { TableColumn } from "./DataTable";
+import { Position } from "../statistics/Position";
+import { TableColumn } from "../components/DataTable";
 import { TableCell } from "./TableCell";
 
 export interface TableRowProps {

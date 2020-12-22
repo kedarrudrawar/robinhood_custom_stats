@@ -1,8 +1,8 @@
 import MaterialTable, { Column as MaterialTableColumn } from "material-table";
 import _ from "underscore";
 
-import { Position } from "../Position";
-import { PriceButton } from "./PriceButton";
+import { Position } from "../statistics/Position";
+import { PriceButton } from "../ui/PriceButton";
 
 interface DataTableProps {
   positions: Array<Position>;

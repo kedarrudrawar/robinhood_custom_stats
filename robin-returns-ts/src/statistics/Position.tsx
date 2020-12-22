@@ -1,5 +1,5 @@
-import { TableColumn } from "./statistics/DataTable";
-import { url } from "./statistics/ResponseTypes";
+import { TableColumn } from "../components/DataTable";
+import { url } from "./ResponseTypes";
 
 export type PositionValue = string | number;
 

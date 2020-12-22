@@ -1,5 +1,5 @@
 import { RHPosition, url } from "../ResponseTypes";
-import { TableColumn } from "../DataTable";
+import { TableColumn } from "../../components/DataTable";
 import InstrumentMap, {
   createInstrumentToItemMapping,
 } from "./instrumentMapping";

@@ -1,27 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { getAllCurrentPrices } from "./statistics/DAO/getAllCurrentPrices";
-import getAllOrders from "./statistics/DAO/getAllOrders";
-import getAllPositions from "./statistics/DAO/getAllPositions";
+import { getAllCurrentPrices } from "../statistics/DAO/getAllCurrentPrices";
+import getAllOrders from "../statistics/DAO/getAllOrders";
+import getAllPositions from "../statistics/DAO/getAllPositions";
 
-import DataTable from "./statistics/DataTable";
+import DataTable from "./DataTable";
 import {
   FULL_POSITIONS_RESPONSE_1,
   POSITION,
-} from "./statistics/fixtures/PositionsFixtures";
+} from "../statistics/fixtures/PositionsFixtures";
 import {
   addRealizedProfits,
   addUnrealizedProfits,
-} from "./statistics/processing/calculateProfits";
+} from "../statistics/processing/calculateProfits";
 import InstrumentMap, {
   createInstrumentToArrayMapping,
   createInstrumentToItemMapping,
-} from "./statistics/processing/instrumentMapping";
-import { populateDividends } from "./statistics/processing/populateDividends";
+} from "../statistics/processing/instrumentMapping";
+import { populateDividends } from "../statistics/processing/populateDividends";
 import {
   BasePosition,
   generateBasePositions,
-} from "./statistics/processing/generateBasePositions";
-import { RHOrder, RHPosition, url } from "./statistics/ResponseTypes";
+} from "../statistics/processing/generateBasePositions";
+import { RHOrder, RHPosition, url } from "../statistics/ResponseTypes";
 
 const ALL_POSITIONS_MAPPING: InstrumentMap<RHPosition> = {};
 for (const position of FULL_POSITIONS_RESPONSE_1.results) {

@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 
 import { url, Response, isResponse } from "../ResponseTypes";
 import { AXIOS_HEADERS } from "./DAOConstants";
-import { assert } from "../../asserts";
+import { assert } from "../../util/asserts";
 
 async function extractAllResults<ResultType>(
   url: url,

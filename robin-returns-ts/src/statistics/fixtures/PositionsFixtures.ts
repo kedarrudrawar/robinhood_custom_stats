@@ -1,5 +1,5 @@
-import { Position } from "../../Position";
-import { TableColumn } from "../DataTable";
+import { Position } from "../Position";
+import { TableColumn } from "../../components/DataTable";
 import { Response, RHPosition } from "../ResponseTypes";
 
 export const FULL_POSITIONS_RESPONSE_1: Response<RHPosition> = {

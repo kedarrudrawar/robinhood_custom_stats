@@ -1,4 +1,4 @@
-import { PositionValue } from "../Position";
+import { PositionValue } from "../statistics/Position";
 
 export interface TableCellProps {
   value: PositionValue;

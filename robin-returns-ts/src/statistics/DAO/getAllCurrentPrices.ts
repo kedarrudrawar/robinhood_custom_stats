@@ -1,5 +1,5 @@
 import axios from "axios";
-import { assert } from "../../asserts";
+import { assert } from "../../util/asserts";
 import InstrumentMap, {
   createInstrumentToItemMapping,
 } from "../processing/instrumentMapping";

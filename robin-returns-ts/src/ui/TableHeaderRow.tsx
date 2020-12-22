@@ -1,4 +1,4 @@
-import { TableColumn } from "./DataTable";
+import { TableColumn } from "../components/DataTable";
 import { TableHeaderCell } from "./TableHeaderCell";
 
 interface TableHeaderRowProps {
