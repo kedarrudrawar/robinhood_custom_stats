@@ -1,21 +1,28 @@
-import chai from "chai";
 import axios from "axios";
+import chai from "chai";
 import dirtyChai from "dirty-chai";
-import { RHOrder, Response } from "../../ResponseTypes";
-import { SMALL_ORDERS_RESPONSE } from "../../OrdersFixtures";
-import extractAllResults from "../extractAllResults";
-import { ORDERS_URL } from "../../DAO/urls";
+import { SinonStub } from "sinon";
 
-var sandbox = require("sinon").createSandbox();
+import { ORDERS_URL, POSITIONS_URL } from "../../DAO/urls";
+import { SMALL_ORDERS_RESPONSE } from "../../fixtures/OrdersFixtures";
+import { FULL_POSITIONS_RESPONSE_1 } from "../../fixtures/PositionsFixtures";
+import extractAllResults from "../../DAO/extractAllResults";
 
 chai.use(dirtyChai);
 
+var sandbox = require("sinon").createSandbox();
+
 describe("extractAllResults", () => {
-  it("successfully fetches and concatenates all paginated results from server", async () => {
+  let getStub: SinonStub;
+
+  before(() => {
+    getStub = sandbox.stub(axios, "get");
+  });
+
+  it("fetches all paginated orders from the server", async () => {
     const firstUrl = ORDERS_URL;
     const secondUrl = "secondURL";
 
-    const getStub = sandbox.stub(axios, "get");
     getStub.withArgs(firstUrl).returns({
       data: {
         next: secondUrl,
@@ -32,6 +39,14 @@ describe("extractAllResults", () => {
       },
     });
 
+    // Should NOT be in reversed order.
+    chai
+      .expect(await extractAllResults(ORDERS_URL))
+      .deep.equal([
+        SMALL_ORDERS_RESPONSE.results[0],
+        SMALL_ORDERS_RESPONSE.results[1],
+      ]);
+
     // Should be in reversed order.
     chai
       .expect(await extractAllResults(ORDERS_URL, true))
@@ -39,5 +54,31 @@ describe("extractAllResults", () => {
         SMALL_ORDERS_RESPONSE.results[1],
         SMALL_ORDERS_RESPONSE.results[0],
       ]);
+  });
+
+  it("fetches all paginated positions from the server", async () => {
+    const firstUrl = POSITIONS_URL;
+    const secondUrl = "secondURL";
+
+    getStub.withArgs(firstUrl).returns({
+      data: {
+        next: secondUrl,
+        previous: null,
+        results: FULL_POSITIONS_RESPONSE_1.results.slice(0, 3),
+      },
+    });
+
+    getStub.withArgs(secondUrl).returns({
+      data: {
+        next: null,
+        previous: firstUrl,
+        results: FULL_POSITIONS_RESPONSE_1.results.slice(3, 6),
+      },
+    });
+
+    // Should NOT be in reversed order.
+    chai
+      .expect(await extractAllResults(POSITIONS_URL))
+      .deep.equal(FULL_POSITIONS_RESPONSE_1.results.slice(0, 6));
   });
 });

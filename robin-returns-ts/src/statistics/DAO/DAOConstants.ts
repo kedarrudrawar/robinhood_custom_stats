@@ -1,3 +1,8 @@
+import { v4 as uuidv4 } from "uuid";
+
+const CLIENT_ID = "c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS";
+const uuid = uuidv4();
+
 interface Header {
   "Accept-Language": string;
   "Content-Type": string;

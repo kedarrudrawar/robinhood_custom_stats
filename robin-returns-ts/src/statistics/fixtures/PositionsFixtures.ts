@@ -1,6 +1,6 @@
-import { Position } from "../Position";
-import { TableColumn } from "./DataTable";
-import { RHPositionsResponse } from "./ResponseTypes";
+import { Position } from "../../Position";
+import { TableColumn } from "../DataTable";
+import { RHPositionsResponse } from "../ResponseTypes";
 
 export const FULL_POSITIONS_RESPONSE_1: RHPositionsResponse = {
   next: null,

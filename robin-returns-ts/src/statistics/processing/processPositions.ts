@@ -1,5 +1,6 @@
 import { RHPosition, RHPositionsResponse, url } from "../ResponseTypes";
 import { TableColumn } from "../DataTable";
+import InstrumentMap from "./instrumentMapping";
 
 export interface BasePosition {
   [TableColumn.AVERAGE_COST]: string;
@@ -16,16 +17,14 @@ export interface BasePosition {
  * Creates a mapping from a a position's instrument url to the base position itself.
  * @param positionsResponse - full RHPositionsResponse from Robinhood's server.
  */
-export function processPositions(
-  positionsResponse: RHPositionsResponse
-): { [instrument: string]: BasePosition } {
+export function convertToBasePositions(
+  positions: Array<RHPosition>
+): Array<BasePosition> {
   // TODO kedar: extract all positions by iterating over paginated results
-
-  const { results } = positionsResponse;
 
   const instrumentToBasePosition: { [instrument: string]: BasePosition } = {};
 
-  for (const position of results) {
+  for (const position of positions) {
     instrumentToBasePosition[position.instrument] = {
       [TableColumn.AVERAGE_COST]: position.average_buy_price,
       [TableColumn.QUANTITY]: parseFloat(position.quantity),
@@ -34,5 +33,5 @@ export function processPositions(
     };
   }
 
-  return instrumentToBasePosition;
+  return Array.from(Object.values(instrumentToBasePosition));
 }

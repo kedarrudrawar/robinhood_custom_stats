@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 
 import { url, Response, isResponse } from "../ResponseTypes";
-import { HEADERS } from "../DAO/DAOConstants";
+import { HEADERS } from "./DAOConstants";
 import { assert } from "../../asserts";
 
 async function extractAllResults<ResultType>(
@@ -17,6 +17,7 @@ async function extractAllResults<ResultType>(
     rv = await axios.get(nextUrl, { headers: HEADERS });
     data = rv.data;
     assert(isResponse<ResultType>(data), "Data should be of shape `Response`.");
+    // TODO kedar: Need to assert shape of actual result, not just response
     results = results.concat(data.results);
 
     nextUrl = data.next;

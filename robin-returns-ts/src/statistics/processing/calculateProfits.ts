@@ -1,7 +1,13 @@
-import getAllOrders from "../DAO/getOrders";
+import getAllOrders from "../DAO/getAllOrders";
 import { TableColumn } from "../DataTable";
-import { RHOrdersResponse, RHPosition, url, Response } from "../ResponseTypes";
-import InstrumentMap from "./instrumentMapping";
+import {
+  RHOrdersResponse,
+  RHPosition,
+  url,
+  Response,
+  RHOrder,
+} from "../ResponseTypes";
+import InstrumentMap, { createInstrumentMapping } from "./instrumentMapping";
 import { BasePosition } from "./processPositions";
 
 // TODO kedar: rename file
@@ -28,16 +34,10 @@ interface BasePositionWithUnrealizedProfits extends BasePosition {
 }
 
 export async function addRealizedProfits(
-  ordersResponse: RHOrdersResponse,
-  basePositions: InstrumentMap<BasePosition> // TODO kedar: extract into type
-): Promise<InstrumentMap<BasePositionWithRealizedProfits>> {
-  const res = await getAllOrders();
-
-  // TODO kedar: extract all orders by iterating through the paginated results
-  const { results } = ordersResponse;
-
-  // Put in chronological order
-  const orders = results.reverse();
+  orders: Array<RHOrder>,
+  basePositions: Array<BasePosition> // TODO kedar: extract into type
+): Promise<Array<BasePositionWithRealizedProfits>> {
+  const instrumentToBasePosition = createInstrumentMapping(basePositions);
 
   // Separate into buy / sell orders.
   const instrumentToOrders: InstrumentMap<{
@@ -118,13 +118,13 @@ export async function addRealizedProfits(
 
     // Copy base position with realized profits added
     basePositionsWithRealizedProfits[instrument] = {
-      ...basePositions[instrument],
+      ...instrumentToBasePosition[instrument],
       [TableColumn.REALIZED_PROFIT]:
         (averageSellPrice - averageBuyPrice) * sumQuantitySold,
     };
   }
 
-  return basePositionsWithRealizedProfits;
+  return Array.from(Object.values(basePositionsWithRealizedProfits));
 }
 
 export function addUnrealizedProfits(

@@ -1,5 +1,4 @@
 import MaterialTable, { Column as MaterialTableColumn } from "material-table";
-import React from "react";
 import _ from "underscore";
 
 import { Position } from "../Position";

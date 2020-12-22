@@ -1,4 +1,4 @@
-import { Response, RHOrder } from "./ResponseTypes";
+import { Response, RHOrder } from "../ResponseTypes";
 
 export const LARGE_ORDERS_RESPONSE: Response<RHOrder> = {
   next:
