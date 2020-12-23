@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { filter } from "underscore";
 
 import getAllOrders from "../statistics/DAO/getAllOrders";
 import getAllPositions from "../statistics/DAO/getAllPositions";
-import { Position } from "../statistics/Position";
+import { UserFriendlyPosition } from "../statistics/Position";
 import {
   addRealizedProfits,
   addUnrealizedProfits,
@@ -19,6 +20,7 @@ import InstrumentMap, {
 import { populateDividends } from "../statistics/processing/populateDividends";
 import removeWatchlistPositions from "../statistics/processing/removeWatchlistPositions";
 import { RHOrder, RHPosition } from "../statistics/ResponseTypes";
+import beautifyPositions from "./beautifyPositions";
 import DataTable from "./DataTable";
 
 function DataTableContainer(): JSX.Element {
@@ -34,9 +36,9 @@ function DataTableContainer(): JSX.Element {
     InstrumentMap<BasePosition>
   >({});
 
-  const [hydratedPositions, setHydratedPositions] = useState<Array<Position>>(
-    []
-  );
+  const [hydratedPositions, setHydratedPositions] = useState<
+    Array<UserFriendlyPosition>
+  >([]);
 
   async function fetchAndSetPositionsFromServer(): Promise<void> {
     const positions = await getAllPositions();
@@ -81,9 +83,12 @@ function DataTableContainer(): JSX.Element {
     const allPositionsWithEarnings = populateDividends(positionsWithProfits);
 
     // Filter out watchlist positions
-    const hydratedPositions = removeWatchlistPositions(
+    const filteredPositions = removeWatchlistPositions(
       instrumentMapToArray(allPositionsWithEarnings)
     );
+
+    // Convert position fields to user-friendly formats
+    const hydratedPositions = beautifyPositions(filteredPositions);
 
     setHydratedPositions(hydratedPositions);
   }, [basePositions, ordersFromServer, positionsFromServer]);

@@ -1,11 +1,11 @@
 import MaterialTable, { Column as MaterialTableColumn } from "material-table";
 import _ from "underscore";
 
-import { Position } from "../statistics/Position";
+import { Position, UserFriendlyPosition } from "../statistics/Position";
 import { PriceButton } from "../ui/PriceButton";
 
 interface DataTableProps {
-  positions: Array<Position>;
+  positions: Array<UserFriendlyPosition>;
 }
 
 export enum TableColumn {
@@ -29,12 +29,12 @@ const COLUMNS: Array<TableColumn> = [
 
 const ACTION_COLUMN = TableColumn.CURRENT_PRICE;
 
-const materialTableColumns: Array<MaterialTableColumn<Position>> = COLUMNS.map(
-  (column) => ({
-    title: column,
-    field: column,
-  })
-);
+const materialTableColumns: Array<
+  MaterialTableColumn<UserFriendlyPosition>
+> = COLUMNS.map((column) => ({
+  title: column,
+  field: column,
+}));
 
 function DataTable(props: DataTableProps): JSX.Element {
   const { positions } = props;
