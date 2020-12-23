@@ -9,15 +9,15 @@ import {
 } from "../DAO/getAllCurrentPrices";
 
 export interface BasePosition {
-  [TableColumn.AVERAGE_COST]: string;
+  [TableColumn.AVERAGE_COST]: number;
   [TableColumn.QUANTITY]: number;
   [TableColumn.TICKER]: string;
-  [TableColumn.CURRENT_PRICE]: number;
+  [TableColumn.CURRENT_PRICE]: number | null;
   instrument: url;
   // These will be populated later.
-  [TableColumn.DIVIDEND]?: number;
-  [TableColumn.UNREALIZED_PROFIT]?: number;
-  [TableColumn.REALIZED_PROFIT]?: number;
+  [TableColumn.DIVIDEND]?: number | null;
+  [TableColumn.UNREALIZED_PROFIT]?: number | null;
+  [TableColumn.REALIZED_PROFIT]?: number | null;
 }
 
 /**
@@ -37,7 +37,7 @@ export async function generateBasePositions(
     return {
       [TableColumn.TICKER]: symbol,
       [TableColumn.QUANTITY]: parseFloat(quantity),
-      [TableColumn.AVERAGE_COST]: average_buy_price,
+      [TableColumn.AVERAGE_COST]: parseFloat(average_buy_price),
       [TableColumn.CURRENT_PRICE]: currentPrice,
       instrument,
     };

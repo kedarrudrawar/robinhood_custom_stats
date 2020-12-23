@@ -756,12 +756,12 @@ const { quantity, average_buy_price } = SIMPLE_POSITIONS_RESPONSE.results[0];
 
 export const POSITION: Position = {
   [TableColumn.TICKER]: "AAPL",
-  [TableColumn.QUANTITY]: quantity,
-  [TableColumn.AVERAGE_COST]: average_buy_price,
+  [TableColumn.QUANTITY]: parseFloat(quantity),
+  [TableColumn.AVERAGE_COST]: parseFloat(average_buy_price),
   [TableColumn.DIVIDEND]: 115,
   [TableColumn.UNREALIZED_PROFIT]: 100,
   [TableColumn.REALIZED_PROFIT]: 100,
-  [TableColumn.CURRENT_PRICE]: "$100",
+  [TableColumn.CURRENT_PRICE]: 100,
   instrument:
     "https://api.robinhood.com/instruments/450dfc6d-5510-4d40-abfb-f633b7d9be3e/",
 };

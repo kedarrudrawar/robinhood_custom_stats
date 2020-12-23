@@ -1,32 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { getAllCurrentPrices } from "../statistics/DAO/getAllCurrentPrices";
+import React, { useCallback, useEffect, useState } from "react";
+
 import getAllOrders from "../statistics/DAO/getAllOrders";
 import getAllPositions from "../statistics/DAO/getAllPositions";
-
-import DataTable from "./DataTable";
-import {
-  FULL_POSITIONS_RESPONSE_1,
-  POSITION,
-} from "../statistics/fixtures/PositionsFixtures";
+import { Position } from "../statistics/Position";
 import {
   addRealizedProfits,
   addUnrealizedProfits,
 } from "../statistics/processing/calculateProfits";
-import InstrumentMap, {
-  createInstrumentToArrayMapping,
-  createInstrumentToItemMapping,
-} from "../statistics/processing/instrumentMapping";
-import { populateDividends } from "../statistics/processing/populateDividends";
 import {
   BasePosition,
   generateBasePositions,
 } from "../statistics/processing/generateBasePositions";
-import { RHOrder, RHPosition, url } from "../statistics/ResponseTypes";
-
-const ALL_POSITIONS_MAPPING: InstrumentMap<RHPosition> = {};
-for (const position of FULL_POSITIONS_RESPONSE_1.results) {
-  ALL_POSITIONS_MAPPING[position.instrument] = position;
-}
+import InstrumentMap, {
+  createInstrumentToArrayMapping,
+  createInstrumentToItemMapping,
+  instrumentMapToArray,
+} from "../statistics/processing/instrumentMapping";
+import { populateDividends } from "../statistics/processing/populateDividends";
+import removeWatchlistPositions from "../statistics/processing/removeWatchlistPositions";
+import { RHOrder, RHPosition } from "../statistics/ResponseTypes";
+import DataTable from "./DataTable";
 
 function DataTableContainer(): JSX.Element {
   const [ordersFromServer, setOrdersFromServer] = useState<
@@ -41,7 +34,9 @@ function DataTableContainer(): JSX.Element {
     InstrumentMap<BasePosition>
   >({});
 
-  // const [hydratedPositions, setHydratedPosition] = useState<>();
+  const [hydratedPositions, setHydratedPositions] = useState<Array<Position>>(
+    []
+  );
 
   async function fetchAndSetPositionsFromServer(): Promise<void> {
     const positions = await getAllPositions();
@@ -51,28 +46,27 @@ function DataTableContainer(): JSX.Element {
   async function fetchAndSetOrdersFromServer(): Promise<void> {
     const orders = await getAllOrders();
     const instrumentMapping = createInstrumentToArrayMapping<RHOrder>(orders);
-    debugger;
     setOrdersFromServer(instrumentMapping);
   }
 
-  async function fetchAndSetBasePositions(): Promise<void> {
-    const basePositions = await generateBasePositions(positionsFromServer);
-    setBasePositions(basePositions);
-  }
+  const fetchAndSetBasePositions = useCallback(
+    async (positionsFromServer: InstrumentMap<RHPosition>): Promise<void> => {
+      const basePositions = await generateBasePositions(positionsFromServer);
+      setBasePositions(basePositions);
+    },
+    []
+  );
 
   // Fetch full positions and orders from server
   useEffect(() => {
-    // Fetch positions
     fetchAndSetPositionsFromServer();
-
-    // Fetch orders
     fetchAndSetOrdersFromServer();
   }, []);
 
   // Fetch current prices and create base positions
   useEffect(() => {
-    fetchAndSetBasePositions();
-  }, [positionsFromServer]);
+    fetchAndSetBasePositions(positionsFromServer);
+  }, [fetchAndSetBasePositions, positionsFromServer]);
 
   // Calculate profits and dividends
   useEffect(() => {
@@ -82,12 +76,19 @@ function DataTableContainer(): JSX.Element {
     );
     const positionsWithProfits = addUnrealizedProfits(
       positionsFromServer,
-      basePositions
+      basePositionsWithRealizedProfits
     );
-    // const hydratedPositions = populateDividends(positionsWithProfits);
-  }, [ordersFromServer]);
+    const allPositionsWithEarnings = populateDividends(positionsWithProfits);
 
-  return <DataTable positions={[POSITION, POSITION]} />;
+    // Filter out watchlist positions
+    const hydratedPositions = removeWatchlistPositions(
+      instrumentMapToArray(allPositionsWithEarnings)
+    );
+
+    setHydratedPositions(hydratedPositions);
+  }, [basePositions, ordersFromServer, positionsFromServer]);
+
+  return <DataTable positions={hydratedPositions} />;
 }
 
 export default DataTableContainer;

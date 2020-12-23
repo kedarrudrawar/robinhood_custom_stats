@@ -1,7 +1,5 @@
-import { PositionValue } from "../statistics/Position";
-
 export interface TableCellProps {
-  value: PositionValue;
+  value: string | number | null;
 }
 
 export function TableCell(props: TableCellProps) {

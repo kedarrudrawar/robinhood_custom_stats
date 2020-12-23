@@ -17,11 +17,12 @@ interface OrderData {
 }
 
 interface BasePositionWithRealizedProfits extends BasePosition {
-  [TableColumn.REALIZED_PROFIT]: number;
+  [TableColumn.REALIZED_PROFIT]: number | null;
 }
 
-interface BasePositionWithUnrealizedProfits extends BasePosition {
-  [TableColumn.UNREALIZED_PROFIT]: number;
+export interface BasePositionWithProfits extends BasePosition {
+  [TableColumn.REALIZED_PROFIT]: number | null;
+  [TableColumn.UNREALIZED_PROFIT]: number | null;
 }
 
 interface SeparatedOrderData {
@@ -74,6 +75,10 @@ function filterOutBuyOrdersOccurringAfterLastSell({
   buyOrderData,
   sellOrderData,
 }: SeparatedOrderData): SeparatedOrderData {
+  if (sellOrderData.length === 0) {
+    return { buyOrderData, sellOrderData };
+  }
+
   const lastSell = sellOrderData[sellOrderData.length - 1];
   // Pop off buy order if after last sell date
   while (
@@ -82,6 +87,7 @@ function filterOutBuyOrdersOccurringAfterLastSell({
   ) {
     buyOrderData.pop();
   }
+
   return { buyOrderData, sellOrderData };
 }
 
@@ -98,38 +104,47 @@ export function addRealizedProfits(
 
   for (const [instrument, orders] of Object.entries(instrumentToOrders)) {
     const separatedOrderData = separateOrdersIntoBuyAndSell(orders);
-    // Remove all the buy orders that occur after the last sell order
-    const {
-      buyOrderData,
-      sellOrderData,
-    } = filterOutBuyOrdersOccurringAfterLastSell(separatedOrderData);
-
-    // Calculate average buy / sell prices of all the equity that's been sold already
     let sumCost = 0;
     let sumQuantityBought = 0;
-
     let sumProfit = 0;
     let sumQuantitySold = 0;
 
-    buyOrderData.forEach((orderData: OrderData) => {
-      sumCost += parseFloat(orderData.executed_notional.amount);
-      sumQuantityBought += parseFloat(orderData.cumulative_quantity);
-    });
+    let realizedProfit: number | null = 0;
 
-    const averageBuyPrice = sumCost / sumQuantityBought;
+    if (separatedOrderData.sellOrderData.length === 0) {
+      realizedProfit = null;
+    } else {
+      // Remove all the buy orders that occur after the last sell order
+      const {
+        buyOrderData,
+        sellOrderData,
+      } = filterOutBuyOrdersOccurringAfterLastSell(separatedOrderData);
 
-    sellOrderData.forEach((orderData: OrderData) => {
-      sumProfit += parseFloat(orderData.executed_notional.amount);
-      sumQuantitySold += parseFloat(orderData.cumulative_quantity);
-    });
+      // Calculate average buy / sell prices of all the equity that's been sold already
 
-    const averageSellPrice = sumProfit / sumQuantitySold;
+      buyOrderData.forEach((orderData: OrderData) => {
+        sumCost += parseFloat(orderData.executed_notional.amount);
+        sumQuantityBought += parseFloat(orderData.cumulative_quantity);
+      });
+
+      // This accounts for gift stocks that were not bought, but may have been sold.
+      const averageBuyPrice =
+        sumQuantityBought > 0 ? sumCost / sumQuantityBought : sumCost;
+
+      sellOrderData.forEach((orderData: OrderData) => {
+        sumProfit += parseFloat(orderData.executed_notional.amount);
+        sumQuantitySold += parseFloat(orderData.cumulative_quantity);
+      });
+
+      const averageSellPrice = sumProfit / sumQuantitySold;
+
+      realizedProfit = (averageSellPrice - averageBuyPrice) * sumQuantitySold;
+    }
 
     // Copy base position with realized profits added
     basePositionsWithRealizedProfits[instrument] = {
       ...basePositions[instrument],
-      [TableColumn.REALIZED_PROFIT]:
-        (averageSellPrice - averageBuyPrice) * sumQuantitySold,
+      [TableColumn.REALIZED_PROFIT]: realizedProfit,
     };
   }
 
@@ -138,9 +153,9 @@ export function addRealizedProfits(
 
 export function addUnrealizedProfits(
   positionsFromServer: InstrumentMap<RHPosition>,
-  basePositions: InstrumentMap<BasePosition>
-): InstrumentMap<BasePositionWithUnrealizedProfits> {
-  const basePositionWithUnrealizedProfits: InstrumentMap<BasePositionWithUnrealizedProfits> = {};
+  basePositions: InstrumentMap<BasePositionWithRealizedProfits>
+): InstrumentMap<BasePositionWithProfits> {
+  const basePositionWithUnrealizedProfits: InstrumentMap<BasePositionWithProfits> = {};
 
   for (const [instrument, basePosition] of Object.entries(basePositions)) {
     const { average_buy_price: averageBuyPrice } = positionsFromServer[
@@ -152,7 +167,9 @@ export function addUnrealizedProfits(
     basePositionWithUnrealizedProfits[instrument] = {
       ...basePosition,
       [TableColumn.UNREALIZED_PROFIT]:
-        (currentPrice - parseFloat(averageBuyPrice)) * quantity,
+        currentPrice != null && quantity > 0
+          ? (currentPrice - parseFloat(averageBuyPrice)) * quantity
+          : null,
     };
   }
 

@@ -4,6 +4,12 @@ export default interface InstrumentMap<T> {
   [instrument: string]: T;
 }
 
+export function instrumentMapToArray<T>(
+  instrumentMap: InstrumentMap<T>
+): Array<T> {
+  return Object.values(instrumentMap);
+}
+
 export function createInstrumentToItemMapping<T>(
   args: Array<T & { instrument: url }>
 ): InstrumentMap<T> {
