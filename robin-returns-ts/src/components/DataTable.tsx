@@ -1,12 +1,17 @@
 import MaterialTable, { Column as MaterialTableColumn } from "material-table";
-import _ from "underscore";
+import React from "react";
 
-import { Position, UserFriendlyPosition } from "../statistics/Position";
+import { Position } from "../statistics/Position";
 import { PriceButton } from "../ui/PriceButton";
+import {
+  beautifyPrice,
+  beautifyQuantity,
+  beautifyReturns,
+} from "./beautifyPositions";
 
 const TABLE_TITLE = "History";
 interface DataTableProps {
-  positions: Array<UserFriendlyPosition>;
+  positions: Array<Position>;
 }
 
 export enum TableColumn {
@@ -31,17 +36,75 @@ const COLUMNS: Array<TableColumn> = [
 
 // const ACTION_COLUMN = TableColumn.CURRENT_PRICE;
 
-const materialTableColumns: Array<
-  MaterialTableColumn<UserFriendlyPosition>
-> = COLUMNS.map((column) => ({
-  title: column,
-  field: column,
-}));
+const materialTableColumns: Array<MaterialTableColumn<Position>> = COLUMNS.map(
+  (column) => {
+    let render: (position: Position) => JSX.Element;
+    switch (column) {
+      case TableColumn.TICKER:
+        render = (position: Position) => {
+          return <div>{position[TableColumn.TICKER]}</div>;
+        };
+        break;
+
+      case TableColumn.QUANTITY:
+        render = (position: Position) => {
+          return <div>{beautifyQuantity(position[TableColumn.QUANTITY])}</div>;
+        };
+        break;
+
+      case TableColumn.AVERAGE_COST:
+        render = (position: Position) => {
+          return <div>{beautifyPrice(position[TableColumn.AVERAGE_COST])}</div>;
+        };
+        break;
+
+      case TableColumn.DIVIDEND:
+        render = (position: Position) => {
+          return <div>{beautifyReturns(position[TableColumn.DIVIDEND])}</div>;
+        };
+        break;
+
+      case TableColumn.UNREALIZED_PROFIT:
+        render = (position: Position) => {
+          return (
+            <div>
+              {beautifyReturns(position[TableColumn.UNREALIZED_PROFIT])}
+            </div>
+          );
+        };
+        break;
+
+      case TableColumn.REALIZED_PROFIT:
+        render = (position: Position) => {
+          return (
+            <div>{beautifyReturns(position[TableColumn.REALIZED_PROFIT])}</div>
+          );
+        };
+        break;
+
+      case TableColumn.CURRENT_PRICE:
+        render = (position: Position) => <PriceButton position={position} />;
+        //   return (
+        //     <div>{beautifyPrice(position[TableColumn.CURRENT_PRICE])}</div>
+        //   );
+        // };
+        break;
+
+      default:
+        throw new Error(`Found a column of type: ${column}`);
+    }
+    return {
+      title: column,
+      field: column,
+      render,
+    };
+  }
+);
 
 function DataTable(props: DataTableProps): JSX.Element {
   const { positions } = props;
   return (
-    <MaterialTable
+    <MaterialTable<Position>
       title={TABLE_TITLE}
       data={positions}
       columns={materialTableColumns}

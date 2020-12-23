@@ -1,10 +1,9 @@
-import { Action } from "material-table";
 import { Position } from "../statistics/Position";
 import { TableColumn } from "../components/DataTable";
+import { beautifyPrice } from "../components/beautifyPositions";
 
 interface PriceButtonProps {
-  action: Action<Position>;
-  data: Position;
+  position: Position;
 }
 
 export function PriceButton(props: PriceButtonProps) {
@@ -15,11 +14,11 @@ export function PriceButton(props: PriceButtonProps) {
       type="button"
       onClick={(e) =>
         window.open(
-          "http://robinhood.com/stocks/" + props.data[TableColumn.TICKER]
+          "http://robinhood.com/stocks/" + props.position[TableColumn.TICKER]
         )
       }
     >
-      {props.data[TableColumn.CURRENT_PRICE]}
+      {beautifyPrice(props.position[TableColumn.CURRENT_PRICE])}
       {/* <ArrowIcon className="arrow" /> */}
       {/* <img alt={"Arrow"} className="arrow" src={require(logo512.png")}></img> */}
     </button>

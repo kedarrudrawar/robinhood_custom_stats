@@ -3,7 +3,7 @@ import { filter } from "underscore";
 
 import getAllOrders from "../statistics/DAO/getAllOrders";
 import getAllPositions from "../statistics/DAO/getAllPositions";
-import { UserFriendlyPosition } from "../statistics/Position";
+import { Position, UserFriendlyPosition } from "../statistics/Position";
 import {
   addRealizedProfits,
   addUnrealizedProfits,
@@ -37,9 +37,9 @@ function DataTableContainer(): JSX.Element {
   >({});
 
   // TODO kedar: Change back to regular position, and change how it's rendered in DataTable.tsx
-  const [hydratedPositions, setHydratedPositions] = useState<
-    Array<UserFriendlyPosition>
-  >([]);
+  const [hydratedPositions, setHydratedPositions] = useState<Array<Position>>(
+    []
+  );
 
   async function fetchAndSetPositionsFromServer(): Promise<void> {
     const positions = await getAllPositions();
@@ -84,12 +84,12 @@ function DataTableContainer(): JSX.Element {
     const allPositionsWithEarnings = populateDividends(positionsWithProfits);
 
     // Filter out watchlist positions
-    const filteredPositions = removeWatchlistPositions(
+    const hydratedPositions = removeWatchlistPositions(
       instrumentMapToArray(allPositionsWithEarnings)
     );
 
     // Convert position fields to user-friendly formats
-    const hydratedPositions = beautifyPositions(filteredPositions);
+    // const hydratedPositions = beautifyPositions(filteredPositions);
 
     setHydratedPositions(hydratedPositions);
   }, [basePositions, ordersFromServer, positionsFromServer]);

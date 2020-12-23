@@ -5,7 +5,7 @@ function numberWithCommas(num: number | string): string {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function beautifyReturns(num: number | null): string {
+export function beautifyReturns(num: number | null): string {
   if (num == null) return "-";
 
   return num >= 0
@@ -13,7 +13,7 @@ function beautifyReturns(num: number | null): string {
     : "-$" + numberWithCommas(Math.abs(num).toFixed(2));
 }
 
-function beautifyPrice(num: number | null): string {
+export function beautifyPrice(num: number | null): string {
   return num != null && num !== 0
     ? "$" + numberWithCommas(num.toFixed(2))
     : "-";
@@ -24,13 +24,17 @@ function beautifyPercent(percentage: number): string {
   return `${sign}${percentage.toFixed(2)}%`;
 }
 
+export function beautifyQuantity(qty: number): string {
+  return qty.toFixed(2);
+}
+
 export default function beautifyPositions(
   positions: Array<Position>
 ): Array<UserFriendlyPosition> {
   return positions.map((position) => {
     return {
       ...position,
-      [TableColumn.QUANTITY]: position[TableColumn.QUANTITY].toFixed(2),
+      [TableColumn.QUANTITY]: beautifyQuantity(position[TableColumn.QUANTITY]),
       [TableColumn.AVERAGE_COST]: beautifyPrice(
         position[TableColumn.AVERAGE_COST]
       ),
