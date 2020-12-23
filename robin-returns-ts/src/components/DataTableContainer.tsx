@@ -36,6 +36,7 @@ function DataTableContainer(): JSX.Element {
     InstrumentMap<BasePosition>
   >({});
 
+  // TODO kedar: Change back to regular position, and change how it's rendered in DataTable.tsx
   const [hydratedPositions, setHydratedPositions] = useState<
     Array<UserFriendlyPosition>
   >([]);
