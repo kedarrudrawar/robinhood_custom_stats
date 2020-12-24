@@ -722,7 +722,7 @@ export const FULL_POSITIONS_RESPONSE_1: Response<RHPosition> = {
   ],
 };
 
-export const POSITION_1: RHPosition = {
+export const RH_POSITION_1: RHPosition = {
   url:
     "https://api.robinhood.com/positions/925501777/450dfc6d-5510-4d40-abfb-f633b7d9be3e/",
   instrument:
@@ -749,7 +749,7 @@ export const POSITION_1: RHPosition = {
 export const SIMPLE_POSITIONS_RESPONSE: Response<RHPosition> = {
   next: null,
   previous: null,
-  results: [POSITION_1],
+  results: [RH_POSITION_1],
 };
 
 const { quantity, average_buy_price } = SIMPLE_POSITIONS_RESPONSE.results[0];

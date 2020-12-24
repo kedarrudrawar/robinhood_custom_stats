@@ -1,3 +1,5 @@
+import { HasInstrument } from "./processing/instrumentMapping";
+
 export interface Execution {
   price: string;
   quantity: string;
@@ -95,14 +97,13 @@ export interface RHInstrument {
   default_collar_fraction: string;
 }
 
-export interface RHOrder {
+export interface RHOrder extends HasInstrument {
   id: string;
   ref_id: string | null;
   url: url;
   account: url;
   position: url;
   cancel: url | null;
-  instrument: url;
   cumulative_quantity: string;
   average_price: string | null;
   fees: string;
@@ -153,9 +154,8 @@ export interface RHOrder {
   investment_schedule_id: string | null;
 }
 
-export interface RHPosition {
+export interface RHPosition extends HasInstrument {
   url: url;
-  instrument: url;
   account: url;
   account_number: string;
   average_buy_price: string;
@@ -175,11 +175,10 @@ export interface RHPosition {
   created_at: string;
 }
 
-export interface RHDividend {
+export interface RHDividend extends HasInstrument {
   id: string;
   url: url;
   account: url;
-  instrument: url;
   amount: string;
   rate: string;
   position: string;

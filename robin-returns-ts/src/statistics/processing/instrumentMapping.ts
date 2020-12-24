@@ -1,7 +1,12 @@
+import _ from "underscore";
 import { url } from "../ResponseTypes";
 
 export default interface InstrumentMap<T> {
   [instrument: string]: T;
+}
+
+export interface HasInstrument {
+  instrument: url;
 }
 
 export function instrumentMapToArray<T>(

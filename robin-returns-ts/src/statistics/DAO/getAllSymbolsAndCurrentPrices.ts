@@ -1,8 +1,5 @@
 import axios from "axios";
 import { assert } from "../../util/asserts";
-import InstrumentMap, {
-  createInstrumentToItemMapping,
-} from "../processing/instrumentMapping";
 import {
   url,
   isQuote,
@@ -25,7 +22,7 @@ export async function getSymbolAndCurrentPrice(
   const { data: instrumentData } = await axios.get(instrument, AXIOS_HEADERS);
   assert(
     isInstrument(instrumentData),
-    "Instrument Endpoint should return an RHInstrument"
+    `Instrument Endpoint should return an RHInstrument. Instead returned: ${instrumentData}`
   );
 
   const { quote } = instrumentData;
@@ -59,12 +56,12 @@ export async function getSymbolAndCurrentPrice(
   throw new Error("Found an invalid quote: " + quoteData);
 }
 
-export async function getSymbolsAndCurrentPrices(
+export async function getAllSymbolsAndCurrentPrices(
   instruments: Array<url>
-): Promise<InstrumentMap<SymbolAndCurrentPrice>> {
+): Promise<Array<SymbolAndCurrentPrice>> {
   const promises = instruments.map((instrument) => {
     return getSymbolAndCurrentPrice(instrument);
   });
 
-  return createInstrumentToItemMapping(await Promise.all(promises));
+  return await Promise.all(promises);
 }

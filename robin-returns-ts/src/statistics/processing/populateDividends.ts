@@ -1,21 +1,59 @@
 import { TableColumn } from "../../components/DataTable";
+import { ServerData } from "../../components/DataTableContainer";
 import { Position } from "../Position";
-import { BasePositionWithProfits } from "./calculateProfits";
+import { RHDividend } from "../ResponseTypes";
 import InstrumentMap from "./instrumentMapping";
 
-// TODO kedar:
 export function populateDividends(
-  positions: InstrumentMap<BasePositionWithProfits>
+  instrumentToPosition: InstrumentMap<Position>,
+  instrumentToDividend: InstrumentMap<RHDividend>
 ): InstrumentMap<Position> {
-  // const results = await extractAllResults(DIVIDENDS_URL);
+  const instrumentToPositionWithDividend: InstrumentMap<Position> = {};
 
-  const instrumentToFullPosition: InstrumentMap<Position> = {};
-  for (const position of Object.values(positions)) {
-    instrumentToFullPosition[position.instrument] = {
-      ...position,
-      [TableColumn.DIVIDEND]: 0,
-    };
+  for (const position of Object.values(instrumentToPosition)) {
+    const { instrument } = position;
+    const dividendString = instrumentToDividend[instrument]?.amount;
+    if (dividendString != null) {
+      const dividend = dividendString ? parseFloat(dividendString) : null;
+
+      instrumentToPosition[instrument][TableColumn.DIVIDEND] = dividend;
+    }
   }
 
-  return instrumentToFullPosition;
+  return instrumentToPositionWithDividend;
+}
+
+export function populateDividendsFromServerData(
+  serverData: ServerData,
+  instrumentToPosition: InstrumentMap<Position>
+): InstrumentMap<Position> {
+  const { dividends: instrumentToDividend } = serverData;
+
+  const instrumentToPositionWithDividend: InstrumentMap<Position> = {};
+  for (const position of Object.values(instrumentToPosition)) {
+    const { instrument } = position;
+    instrumentToPositionWithDividend[instrument] = {
+      ...position,
+    };
+
+    const dividends: Array<RHDividend> = instrumentToDividend[instrument] ?? [];
+    for (const { amount: dividendString } of dividends) {
+      const dividend = parseFloat(dividendString);
+      if (
+        instrumentToPositionWithDividend[instrument][TableColumn.DIVIDEND] ==
+        null
+      ) {
+        instrumentToPositionWithDividend[instrument][
+          TableColumn.DIVIDEND
+        ] = dividend;
+      } else {
+        // @ts-expect-error - TypeScript not recognizing null-check in the conditional.
+        instrumentToPositionWithDividend[instrument][
+          TableColumn.DIVIDEND
+        ] += dividend;
+      }
+    }
+  }
+
+  return instrumentToPositionWithDividend;
 }

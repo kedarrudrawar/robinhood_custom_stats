@@ -1,27 +1,28 @@
 import chai from "chai";
-import dirtyChai from "dirty-chai";
-import { SinonStub } from "sinon";
+import sinon, { SinonStub } from "sinon";
+import sinonChai from "sinon-chai";
 
 import { TableColumn } from "../../../components/DataTable";
-import * as getSymbolAndCurrentPrices from "../getSymbolsAndCurrentPrices";
+import * as getAllSymbolAndCurrentPrices from "../getAllSymbolsAndCurrentPrices";
 import { INSTRUMENT_1 } from "../../fixtures/InstrumentFixtures";
-import { POSITION_1 } from "../../fixtures/PositionsFixtures";
-import {
-  BasePosition,
-  generateBasePositions,
-} from "../../processing/generateBasePositions";
+import { RH_POSITION_1 } from "../../fixtures/PositionsFixtures";
+import { generateBasePositions } from "../../processing/generateBasePositions";
 import { createInstrumentToItemMapping } from "../../processing/instrumentMapping";
+import { BasePosition } from "../../Position";
 
-chai.use(dirtyChai);
-var sandbox = require("sinon").createSandbox();
+chai.use(sinonChai);
+var sandbox = sinon.createSandbox();
 
 describe("generateBasePositions", () => {
-  let getSymbolsAndCurrentPricesStub: SinonStub;
+  let getAllSymbolsAndCurrentPrices: SinonStub<
+    [instrument: Array<string>],
+    Promise<Array<getAllSymbolAndCurrentPrices.SymbolAndCurrentPrice>>
+  >;
 
   beforeEach(() => {
-    getSymbolsAndCurrentPricesStub = sandbox.stub(
-      getSymbolAndCurrentPrices,
-      "getSymbolsAndCurrentPrices"
+    getAllSymbolsAndCurrentPrices = sandbox.stub(
+      getAllSymbolAndCurrentPrices,
+      "getAllSymbolsAndCurrentPrices"
     );
   });
 
@@ -29,27 +30,21 @@ describe("generateBasePositions", () => {
     sandbox.restore();
   });
 
-  it("should query for current prices", () => {
-    getSymbolsAndCurrentPricesStub.returns({
-      [INSTRUMENT_1.url]: {
-        instrument: INSTRUMENT_1.url,
-        symbol: INSTRUMENT_1.symbol,
-        currentPrice: 100,
-      },
-    });
-    // TODO kedar:
-  });
   it("should convert positions from server to a base position", async () => {
-    getSymbolsAndCurrentPricesStub.returns({
-      [INSTRUMENT_1.url]: {
-        instrument: INSTRUMENT_1.url,
-        symbol: INSTRUMENT_1.symbol,
-        currentPrice: 100,
-      },
-    });
+    getAllSymbolsAndCurrentPrices.returns(
+      new Promise((resolve) =>
+        resolve([
+          {
+            instrument: INSTRUMENT_1.url,
+            symbol: INSTRUMENT_1.symbol,
+            currentPrice: 100,
+          },
+        ])
+      )
+    );
 
     const positionsFromServer = [
-      { ...POSITION_1, instrument: INSTRUMENT_1.url },
+      { ...RH_POSITION_1, instrument: INSTRUMENT_1.url },
     ];
 
     const actualBasePositions = await generateBasePositions(
@@ -58,9 +53,12 @@ describe("generateBasePositions", () => {
 
     const expectedBasePosition: BasePosition = {
       [TableColumn.TICKER]: INSTRUMENT_1.symbol,
-      [TableColumn.QUANTITY]: parseFloat(POSITION_1.quantity),
+      [TableColumn.QUANTITY]: parseFloat(RH_POSITION_1.quantity),
       [TableColumn.CURRENT_PRICE]: 100,
-      [TableColumn.AVERAGE_COST]: parseFloat(POSITION_1.average_buy_price),
+      [TableColumn.AVERAGE_COST]: parseFloat(RH_POSITION_1.average_buy_price),
+      [TableColumn.REALIZED_PROFIT]: null,
+      [TableColumn.UNREALIZED_PROFIT]: null,
+      [TableColumn.DIVIDEND]: null,
       instrument: INSTRUMENT_1.url,
     };
 

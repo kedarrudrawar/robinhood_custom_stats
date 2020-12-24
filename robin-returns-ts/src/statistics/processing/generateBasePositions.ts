@@ -1,47 +1,76 @@
-import { RHPosition, url } from "../ResponseTypes";
+import { RHPosition } from "../ResponseTypes";
 import { TableColumn } from "../../components/DataTable";
 import InstrumentMap, {
   createInstrumentToItemMapping,
 } from "./instrumentMapping";
 import {
-  getSymbolsAndCurrentPrices,
+  getAllSymbolsAndCurrentPrices,
   SymbolAndCurrentPrice,
-} from "../DAO/getSymbolsAndCurrentPrices";
-
-export interface BasePosition {
-  [TableColumn.AVERAGE_COST]: number;
-  [TableColumn.QUANTITY]: number;
-  [TableColumn.TICKER]: string;
-  [TableColumn.CURRENT_PRICE]: number | null;
-  instrument: url;
-  // These will be populated later.
-  [TableColumn.DIVIDEND]?: number | null;
-  [TableColumn.UNREALIZED_PROFIT]?: number | null;
-  [TableColumn.REALIZED_PROFIT]?: number | null;
-}
+} from "../DAO/getAllSymbolsAndCurrentPrices";
+import { BasePosition, Position } from "../Position";
+import { ServerData } from "../../components/DataTableContainer";
 
 /**
- * Creates a mapping from a a position's instrument url to the base position itself.
+ * Creates a mapping from a position's instrument url to the base position itself.
+ * Initializes dividends, unrealized profit, and realized profit as null.
  * @param positionsResponse - full RHPositionsResponse from Robinhood's server.
  */
 export async function generateBasePositions(
   positionsFromServer: InstrumentMap<RHPosition>
 ): Promise<InstrumentMap<BasePosition>> {
-  const instrumentToPricesAndSymbols: InstrumentMap<SymbolAndCurrentPrice> = await getSymbolsAndCurrentPrices(
-    Object.keys(positionsFromServer)
+  const instrumentToPricesAndSymbols: InstrumentMap<SymbolAndCurrentPrice> = createInstrumentToItemMapping(
+    await getAllSymbolsAndCurrentPrices(Object.keys(positionsFromServer))
   );
 
-  const basePositions = Object.values(positionsFromServer).map((rhPosition) => {
-    const { instrument, quantity, average_buy_price } = rhPosition;
-    const { currentPrice, symbol } = instrumentToPricesAndSymbols[instrument];
-    return {
-      [TableColumn.TICKER]: symbol,
-      [TableColumn.QUANTITY]: parseFloat(quantity),
-      [TableColumn.AVERAGE_COST]: parseFloat(average_buy_price),
-      [TableColumn.CURRENT_PRICE]: currentPrice,
-      instrument,
-    };
-  });
+  const basePositions: Array<BasePosition> = Object.values(
+    positionsFromServer
+  ).map(
+    (rhPosition): BasePosition => {
+      const { instrument, quantity, average_buy_price } = rhPosition;
 
-  return createInstrumentToItemMapping(basePositions);
+      console.log(instrument);
+      console.log(instrumentToPricesAndSymbols);
+
+      const { currentPrice, symbol } = instrumentToPricesAndSymbols[instrument];
+      return {
+        [TableColumn.TICKER]: symbol,
+        [TableColumn.QUANTITY]: parseFloat(quantity),
+        [TableColumn.AVERAGE_COST]: parseFloat(average_buy_price),
+        [TableColumn.CURRENT_PRICE]: currentPrice,
+        [TableColumn.DIVIDEND]: null,
+        [TableColumn.UNREALIZED_PROFIT]: null,
+        [TableColumn.REALIZED_PROFIT]: null,
+        instrument,
+      };
+    }
+  );
+
+  return createInstrumentToItemMapping<BasePosition>(basePositions);
+}
+
+export function generateBasePositionsFromServerData(
+  serverData: ServerData
+): InstrumentMap<BasePosition> {
+  const { symbolAndCurrentPrice, positions: positionsFromServer } = serverData;
+
+  const basePositions: Array<BasePosition> = Object.values(
+    positionsFromServer
+  ).map(
+    (rhPosition): BasePosition => {
+      const { instrument, quantity, average_buy_price } = rhPosition;
+      const { currentPrice, symbol } = symbolAndCurrentPrice[instrument];
+      return {
+        [TableColumn.TICKER]: symbol,
+        [TableColumn.QUANTITY]: parseFloat(quantity),
+        [TableColumn.AVERAGE_COST]: parseFloat(average_buy_price),
+        [TableColumn.CURRENT_PRICE]: currentPrice,
+        [TableColumn.DIVIDEND]: null,
+        [TableColumn.UNREALIZED_PROFIT]: null,
+        [TableColumn.REALIZED_PROFIT]: null,
+        instrument,
+      };
+    }
+  );
+
+  return createInstrumentToItemMapping<BasePosition>(basePositions);
 }

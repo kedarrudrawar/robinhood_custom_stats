@@ -8,9 +8,9 @@ import { QUOTE_1 } from "../../fixtures/QuoteFixtures";
 
 import {
   getSymbolAndCurrentPrice,
-  getSymbolsAndCurrentPrices,
+  getAllSymbolsAndCurrentPrices,
   SymbolAndCurrentPrice,
-} from "../getSymbolsAndCurrentPrices";
+} from "../getAllSymbolsAndCurrentPrices";
 
 chai.use(dirtyChai);
 
@@ -49,9 +49,9 @@ describe("getAllCurrentPrices", () => {
       axiosGetStub.withArgs(INSTRUMENT_1.url).returns({ data: INSTRUMENT_1 });
       axiosGetStub.withArgs(INSTRUMENT_1.quote).returns({ data: QUOTE_1 });
 
-      expect(await getSymbolsAndCurrentPrices([INSTRUMENT_1.url])).deep.equal({
-        [INSTRUMENT_1.url]: expectedPriceAndSymbol,
-      });
+      expect(
+        await getAllSymbolsAndCurrentPrices([INSTRUMENT_1.url])
+      ).deep.equal([expectedPriceAndSymbol]);
     });
   });
 });

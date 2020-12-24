@@ -1,7 +1,8 @@
 import { TableColumn } from "../../components/DataTable";
+import { ServerData } from "../../components/DataTableContainer";
+import { BasePosition, Position } from "../Position";
 import { RHPosition, url, RHOrder } from "../ResponseTypes";
 import InstrumentMap from "./instrumentMapping";
-import { BasePosition } from "./generateBasePositions";
 
 interface OrderData {
   instrument: url;
@@ -15,16 +16,6 @@ interface OrderData {
   cumulative_quantity: string;
   created_at: Date;
 }
-
-interface BasePositionWithRealizedProfits extends BasePosition {
-  [TableColumn.REALIZED_PROFIT]: number | null;
-}
-
-export interface BasePositionWithProfits extends BasePosition {
-  [TableColumn.REALIZED_PROFIT]: number | null;
-  [TableColumn.UNREALIZED_PROFIT]: number | null;
-}
-
 interface SeparatedOrderData {
   buyOrderData: Array<OrderData>;
   sellOrderData: Array<OrderData>;
@@ -96,11 +87,11 @@ function filterOutBuyOrdersOccurringAfterLastSell({
  * @param instrumentToOrders Mapping from instrument to all orders of that instrument. Must be in chronological order (earliest to latest)
  * @param basePositions
  */
-export function addRealizedProfits(
+function populateRealizedProfits(
   instrumentToOrders: InstrumentMap<Array<RHOrder>>,
   basePositions: InstrumentMap<BasePosition>
-): InstrumentMap<BasePositionWithRealizedProfits> {
-  const basePositionsWithRealizedProfits: InstrumentMap<BasePositionWithRealizedProfits> = {};
+): InstrumentMap<Position> {
+  const basePositionsWithRealizedProfits: InstrumentMap<Position> = {};
 
   for (const [instrument, orders] of Object.entries(instrumentToOrders)) {
     const separatedOrderData = separateOrdersIntoBuyAndSell(orders);
@@ -112,34 +103,37 @@ export function addRealizedProfits(
     let realizedProfit: number | null = 0;
 
     if (separatedOrderData.sellOrderData.length === 0) {
-      realizedProfit = null;
-    } else {
-      // Remove all the buy orders that occur after the last sell order
-      const {
-        buyOrderData,
-        sellOrderData,
-      } = filterOutBuyOrdersOccurringAfterLastSell(separatedOrderData);
-
-      // Calculate average buy / sell prices of all the equity that's been sold already
-
-      buyOrderData.forEach((orderData: OrderData) => {
-        sumCost += parseFloat(orderData.executed_notional.amount);
-        sumQuantityBought += parseFloat(orderData.cumulative_quantity);
-      });
-
-      // This accounts for gift stocks that were not bought, but may have been sold.
-      const averageBuyPrice =
-        sumQuantityBought > 0 ? sumCost / sumQuantityBought : sumCost;
-
-      sellOrderData.forEach((orderData: OrderData) => {
-        sumProfit += parseFloat(orderData.executed_notional.amount);
-        sumQuantitySold += parseFloat(orderData.cumulative_quantity);
-      });
-
-      const averageSellPrice = sumProfit / sumQuantitySold;
-
-      realizedProfit = (averageSellPrice - averageBuyPrice) * sumQuantitySold;
+      // Realized profit already initialized to null in `generateBasePositions`, so we can just continue.
+      basePositionsWithRealizedProfits[instrument] = {
+        ...basePositions[instrument],
+      };
+      continue;
     }
+
+    // Remove all the buy orders that occur after the last sell order
+    const {
+      buyOrderData,
+      sellOrderData,
+    } = filterOutBuyOrdersOccurringAfterLastSell(separatedOrderData);
+
+    // Calculate average buy / sell prices of all the equity that's been sold already
+    for (const { executed_notional, cumulative_quantity } of buyOrderData) {
+      sumCost += parseFloat(executed_notional.amount);
+      sumQuantityBought += parseFloat(cumulative_quantity);
+    }
+
+    // This accounts for gift stocks that have been sold. (There is no corresponding buy order.)
+    const averageBuyPrice =
+      sumQuantityBought > 0 ? sumCost / sumQuantityBought : sumCost;
+
+    for (const { executed_notional, cumulative_quantity } of sellOrderData) {
+      sumProfit += parseFloat(executed_notional.amount);
+      sumQuantitySold += parseFloat(cumulative_quantity);
+    }
+
+    const averageSellPrice = sumProfit / sumQuantitySold;
+
+    realizedProfit = (averageSellPrice - averageBuyPrice) * sumQuantitySold;
 
     // Copy base position with realized profits added
     basePositionsWithRealizedProfits[instrument] = {
@@ -151,16 +145,17 @@ export function addRealizedProfits(
   return basePositionsWithRealizedProfits;
 }
 
-export function addUnrealizedProfits(
-  positionsFromServer: InstrumentMap<RHPosition>,
-  basePositions: InstrumentMap<BasePositionWithRealizedProfits>
-): InstrumentMap<BasePositionWithProfits> {
-  const basePositionWithUnrealizedProfits: InstrumentMap<BasePositionWithProfits> = {};
-
-  for (const [instrument, basePosition] of Object.entries(basePositions)) {
-    const { average_buy_price: averageBuyPrice } = positionsFromServer[
-      instrument
-    ];
+function populateUnrealizedProfits(
+  instrumentToPositionFromServer: InstrumentMap<RHPosition>,
+  instrumentToPositionWithRealizedProfits: InstrumentMap<Position>
+): InstrumentMap<Position> {
+  const basePositionWithUnrealizedProfits: InstrumentMap<Position> = {};
+  for (const [instrument, basePosition] of Object.entries(
+    instrumentToPositionWithRealizedProfits
+  )) {
+    const {
+      average_buy_price: averageBuyPrice,
+    } = instrumentToPositionFromServer[instrument];
     const quantity = basePosition[TableColumn.QUANTITY];
     const currentPrice = basePosition[TableColumn.CURRENT_PRICE];
 
@@ -174,4 +169,44 @@ export function addUnrealizedProfits(
   }
 
   return basePositionWithUnrealizedProfits;
+}
+
+export function populateProfits(
+  instrumentToOrders: InstrumentMap<Array<RHOrder>>,
+  instrumentToPosition: InstrumentMap<RHPosition>,
+  instrumentToBasePosition: InstrumentMap<BasePosition>
+) {
+  const instrumentToPositionWithRealizedProfit = populateRealizedProfits(
+    instrumentToOrders,
+    instrumentToBasePosition
+  );
+
+  const instrumentToPositionWithProfits = populateUnrealizedProfits(
+    instrumentToPosition,
+    instrumentToPositionWithRealizedProfit
+  );
+
+  return instrumentToPositionWithProfits;
+}
+
+export function populateProfitsFromServerData(
+  serverData: ServerData,
+  instrumentToBasePosition: InstrumentMap<BasePosition>
+) {
+  const {
+    ordersArrays: instrumentToOrders,
+    positions: instrumentToPosition,
+  } = serverData;
+
+  const instrumentToPositionWithRealizedProfit = populateRealizedProfits(
+    instrumentToOrders,
+    instrumentToBasePosition
+  );
+
+  const instrumentToPositionWithProfits = populateUnrealizedProfits(
+    instrumentToPosition,
+    instrumentToPositionWithRealizedProfit
+  );
+
+  return instrumentToPositionWithProfits;
 }

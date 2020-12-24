@@ -1,98 +1,124 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { filter } from "underscore";
+import { server } from "sinon";
 
 import getAllOrders from "../statistics/DAO/getAllOrders";
 import getAllPositions from "../statistics/DAO/getAllPositions";
-import { Position, UserFriendlyPosition } from "../statistics/Position";
+import { getAllServerData } from "../statistics/DAO/getAllServerData";
+import { SymbolAndCurrentPrice } from "../statistics/DAO/getAllSymbolsAndCurrentPrices";
+import { getPaidDividends } from "../statistics/DAO/getDividends";
 import {
-  addRealizedProfits,
-  addUnrealizedProfits,
+  POSITION,
+  RH_POSITION_1,
+} from "../statistics/fixtures/PositionsFixtures";
+import { BasePosition, Position } from "../statistics/Position";
+import {
+  populateProfits,
+  populateProfitsFromServerData,
 } from "../statistics/processing/calculateProfits";
 import {
-  BasePosition,
   generateBasePositions,
+  generateBasePositionsFromServerData,
 } from "../statistics/processing/generateBasePositions";
 import InstrumentMap, {
   createInstrumentToArrayMapping,
   createInstrumentToItemMapping,
   instrumentMapToArray,
 } from "../statistics/processing/instrumentMapping";
-import { populateDividends } from "../statistics/processing/populateDividends";
-import removeWatchlistPositions from "../statistics/processing/removeWatchlistPositions";
-import { RHOrder, RHPosition } from "../statistics/ResponseTypes";
-import beautifyPositions from "./beautifyPositions";
+import { populateDividendsFromServerData } from "../statistics/processing/populateDividends";
+import { RHDividend, RHOrder, RHPosition } from "../statistics/ResponseTypes";
 import DataTable from "./DataTable";
 
+export interface ServerData {
+  ordersArrays: InstrumentMap<Array<RHOrder>>;
+  positions: InstrumentMap<RHPosition>;
+  dividends: InstrumentMap<Array<RHDividend>>;
+  symbolAndCurrentPrice: InstrumentMap<SymbolAndCurrentPrice>;
+}
+
 function DataTableContainer(): JSX.Element {
-  const [ordersFromServer, setOrdersFromServer] = useState<
-    InstrumentMap<Array<RHOrder>>
-  >({});
-
-  const [positionsFromServer, setPositionsFromServer] = useState<
-    InstrumentMap<RHPosition>
-  >({});
-
-  const [basePositions, setBasePositions] = useState<
-    InstrumentMap<BasePosition>
-  >({});
-
-  // TODO kedar: Change back to regular position, and change how it's rendered in DataTable.tsx
   const [hydratedPositions, setHydratedPositions] = useState<Array<Position>>(
     []
   );
 
-  async function fetchAndSetPositionsFromServer(): Promise<void> {
-    const positions = await getAllPositions();
-    setPositionsFromServer(createInstrumentToItemMapping(positions));
-  }
+  const [serverData, setServerData] = useState<ServerData>({
+    ordersArrays: {},
+    positions: {},
+    dividends: {},
+    symbolAndCurrentPrice: {},
+  });
 
-  async function fetchAndSetOrdersFromServer(): Promise<void> {
-    const orders = await getAllOrders();
-    const instrumentMapping = createInstrumentToArrayMapping<RHOrder>(orders);
-    setOrdersFromServer(instrumentMapping);
+  async function fetchAndSetServerData(): Promise<ServerData> {
+    const data = await getAllServerData();
+    setServerData(data);
+    return data;
   }
-
-  const fetchAndSetBasePositions = useCallback(
-    async (positionsFromServer: InstrumentMap<RHPosition>): Promise<void> => {
-      const basePositions = await generateBasePositions(positionsFromServer);
-      setBasePositions(basePositions);
-    },
-    []
-  );
 
   // Fetch full positions and orders from server
   useEffect(() => {
-    fetchAndSetPositionsFromServer();
-    fetchAndSetOrdersFromServer();
+    fetchAndSetServerData();
+    // async function hydratePositions() {
+    //   const serverData = await fetchAndSetServerData();
+    //   const basePositions = generateBasePositionsFromServerData(serverData);
+
+    //   const positionsWithProfits = populateProfitsFromServerData(
+    //     serverData,
+    //     basePositions
+    //   );
+
+    //   const allPositionsWithEarnings = populateDividendsFromServerData(
+    //     serverData,
+    //     positionsWithProfits
+    //   );
+
+    //   // Filter out watchlist positions
+    //   const finalPositions = removeWatchlistPositions(
+    //     instrumentMapToArray(allPositionsWithEarnings)
+    //   );
+
+    //   setHydratedPositions(finalPositions);
+    // }
+
+    // hydratePositions();
   }, []);
 
-  // Fetch current prices and create base positions
   useEffect(() => {
-    fetchAndSetBasePositions(positionsFromServer);
-  }, [fetchAndSetBasePositions, positionsFromServer]);
+    // const basePositions = generateBasePositionsFromServerData(serverData);
 
-  // Calculate profits and dividends
-  useEffect(() => {
-    const basePositionsWithRealizedProfits = addRealizedProfits(
-      ordersFromServer,
+    // const positionsWithProfits = populateProfitsFromServerData(
+    //   serverData,
+    //   basePositions
+    // );
+
+    // const allPositionsWithEarnings = populateDividendsFromServerData(
+    //   serverData,
+    //   positionsWithProfits
+    // );
+
+    // // Filter out watchlist positions
+    // const finalPositions = removeWatchlistPositions(
+    //   instrumentMapToArray(allPositionsWithEarnings)
+    // );
+
+    // fetchAndSetServerData().then((serverData) => {
+    const basePositions = generateBasePositionsFromServerData(serverData);
+
+    const positionsWithProfits = populateProfitsFromServerData(
+      serverData,
       basePositions
     );
-    const positionsWithProfits = addUnrealizedProfits(
-      positionsFromServer,
-      basePositionsWithRealizedProfits
+
+    const allPositionsWithEarnings = populateDividendsFromServerData(
+      serverData,
+      positionsWithProfits
     );
-    const allPositionsWithEarnings = populateDividends(positionsWithProfits);
 
     // Filter out watchlist positions
-    const hydratedPositions = removeWatchlistPositions(
-      instrumentMapToArray(allPositionsWithEarnings)
-    );
-
-    // Convert position fields to user-friendly formats
-    // const hydratedPositions = beautifyPositions(filteredPositions);
-
-    setHydratedPositions(hydratedPositions);
-  }, [basePositions, ordersFromServer, positionsFromServer]);
+    // const finalPositions = removeWatchlistPositions(
+    //   instrumentMapToArray(allPositionsWithEarnings)
+    // );
+    setHydratedPositions(instrumentMapToArray(allPositionsWithEarnings));
+    // });
+  }, [serverData]);
 
   return <DataTable positions={hydratedPositions} />;
 }

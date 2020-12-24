@@ -99,6 +99,7 @@ const materialTableColumns: Array<MaterialTableColumn<Position>> = COLUMNS.map(
 
 function DataTable(props: DataTableProps): JSX.Element {
   const { positions } = props;
+  console.log(positions);
   return (
     <MaterialTable<Position>
       title={TABLE_TITLE}

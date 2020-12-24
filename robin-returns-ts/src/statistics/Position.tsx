@@ -1,16 +1,28 @@
 import { TableColumn } from "../components/DataTable";
+import { HasInstrument } from "./processing/instrumentMapping";
 import { url } from "./ResponseTypes";
+
+// Includes ticker, quantity, avg cost, and current price.
+// Profits & Dividend are intentionally null.
+export type BasePosition = {
+  [TableColumn.TICKER]: string;
+  [TableColumn.QUANTITY]: number;
+  [TableColumn.AVERAGE_COST]: number;
+  [TableColumn.CURRENT_PRICE]: number | null;
+  [TableColumn.REALIZED_PROFIT]: null;
+  [TableColumn.UNREALIZED_PROFIT]: null;
+  [TableColumn.DIVIDEND]: null;
+} & HasInstrument;
 
 export type Position = {
   [TableColumn.TICKER]: string;
   [TableColumn.QUANTITY]: number;
+  [TableColumn.AVERAGE_COST]: number;
+  [TableColumn.CURRENT_PRICE]: number | null;
   [TableColumn.REALIZED_PROFIT]: number | null;
   [TableColumn.UNREALIZED_PROFIT]: number | null;
-  [TableColumn.CURRENT_PRICE]: number | null;
   [TableColumn.DIVIDEND]: number | null;
-  [TableColumn.AVERAGE_COST]: number;
-  instrument: url;
-};
+} & HasInstrument;
 
 export type UserFriendlyPosition = {
   [TableColumn.TICKER]: string;
