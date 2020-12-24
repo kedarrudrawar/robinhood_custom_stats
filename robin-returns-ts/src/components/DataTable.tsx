@@ -84,10 +84,6 @@ const materialTableColumns: Array<MaterialTableColumn<Position>> = COLUMNS.map(
 
       case TableColumn.CURRENT_PRICE:
         render = (position: Position) => <PriceButton position={position} />;
-        //   return (
-        //     <div>{beautifyPrice(position[TableColumn.CURRENT_PRICE])}</div>
-        //   );
-        // };
         break;
 
       default:

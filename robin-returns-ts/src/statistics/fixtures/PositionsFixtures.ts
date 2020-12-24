@@ -722,34 +722,34 @@ export const FULL_POSITIONS_RESPONSE_1: Response<RHPosition> = {
   ],
 };
 
+export const POSITION_1: RHPosition = {
+  url:
+    "https://api.robinhood.com/positions/925501777/450dfc6d-5510-4d40-abfb-f633b7d9be3e/",
+  instrument:
+    "https://api.robinhood.com/instruments/450dfc6d-5510-4d40-abfb-f633b7d9be3e/",
+  account: "https://api.robinhood.com/accounts/925501777/",
+  account_number: "925501777",
+  average_buy_price: "91.3659",
+  pending_average_buy_price: "91.3659",
+  quantity: "14.05874700",
+  intraday_average_buy_price: "0.0000",
+  intraday_quantity: "0.00000000",
+  shares_available_for_exercise: "14.05874700",
+  shares_held_for_buys: "0.00000000",
+  shares_held_for_sells: "0.00000000",
+  shares_held_for_stock_grants: "0.00000000",
+  shares_held_for_options_collateral: "0.00000000",
+  shares_held_for_options_events: "0.00000000",
+  shares_pending_from_options_events: "0.00000000",
+  shares_available_for_closing_short_position: "0.00000000",
+  updated_at: "2020-11-13T14:52:26.376189Z",
+  created_at: "2020-04-30T17:32:59.643955Z",
+};
+
 export const SIMPLE_POSITIONS_RESPONSE: Response<RHPosition> = {
   next: null,
   previous: null,
-  results: [
-    {
-      url:
-        "https://api.robinhood.com/positions/925501777/450dfc6d-5510-4d40-abfb-f633b7d9be3e/",
-      instrument:
-        "https://api.robinhood.com/instruments/450dfc6d-5510-4d40-abfb-f633b7d9be3e/",
-      account: "https://api.robinhood.com/accounts/925501777/",
-      account_number: "925501777",
-      average_buy_price: "91.3659",
-      pending_average_buy_price: "91.3659",
-      quantity: "14.05874700",
-      intraday_average_buy_price: "0.0000",
-      intraday_quantity: "0.00000000",
-      shares_available_for_exercise: "14.05874700",
-      shares_held_for_buys: "0.00000000",
-      shares_held_for_sells: "0.00000000",
-      shares_held_for_stock_grants: "0.00000000",
-      shares_held_for_options_collateral: "0.00000000",
-      shares_held_for_options_events: "0.00000000",
-      shares_pending_from_options_events: "0.00000000",
-      shares_available_for_closing_short_position: "0.00000000",
-      updated_at: "2020-11-13T14:52:26.376189Z",
-      created_at: "2020-04-30T17:32:59.643955Z",
-    },
-  ],
+  results: [POSITION_1],
 };
 
 const { quantity, average_buy_price } = SIMPLE_POSITIONS_RESPONSE.results[0];
