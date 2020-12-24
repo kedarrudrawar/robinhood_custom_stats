@@ -13,15 +13,15 @@ import {
 } from "../ResponseTypes";
 import { AXIOS_HEADERS } from "./DAOConstants";
 
-export interface CurrentPriceAndSymbol {
+export interface SymbolAndCurrentPrice {
   instrument: url;
   currentPrice: number | null;
   symbol: string;
 }
 
-async function getCurrentPrice(
+export async function getSymbolAndCurrentPrice(
   instrument: url
-): Promise<CurrentPriceAndSymbol> {
+): Promise<SymbolAndCurrentPrice> {
   const { data: instrumentData } = await axios.get(instrument, AXIOS_HEADERS);
   assert(
     isInstrument(instrumentData),
@@ -59,11 +59,11 @@ async function getCurrentPrice(
   throw new Error("Found an invalid quote: " + quoteData);
 }
 
-export async function getAllCurrentPrices(
+export async function getSymbolsAndCurrentPrices(
   instruments: Array<url>
-): Promise<InstrumentMap<CurrentPriceAndSymbol>> {
+): Promise<InstrumentMap<SymbolAndCurrentPrice>> {
   const promises = instruments.map((instrument) => {
-    return getCurrentPrice(instrument);
+    return getSymbolAndCurrentPrice(instrument);
   });
 
   return createInstrumentToItemMapping(await Promise.all(promises));

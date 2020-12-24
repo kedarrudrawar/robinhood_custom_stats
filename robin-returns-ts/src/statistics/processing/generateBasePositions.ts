@@ -4,9 +4,9 @@ import InstrumentMap, {
   createInstrumentToItemMapping,
 } from "./instrumentMapping";
 import {
-  CurrentPriceAndSymbol,
-  getAllCurrentPrices,
-} from "../DAO/getAllCurrentPrices";
+  getSymbolsAndCurrentPrices,
+  SymbolAndCurrentPrice,
+} from "../DAO/getSymbolsAndCurrentPrices";
 
 export interface BasePosition {
   [TableColumn.AVERAGE_COST]: number;
@@ -27,7 +27,7 @@ export interface BasePosition {
 export async function generateBasePositions(
   positionsFromServer: InstrumentMap<RHPosition>
 ): Promise<InstrumentMap<BasePosition>> {
-  const instrumentToPricesAndSymbols: InstrumentMap<CurrentPriceAndSymbol> = await getAllCurrentPrices(
+  const instrumentToPricesAndSymbols: InstrumentMap<SymbolAndCurrentPrice> = await getSymbolsAndCurrentPrices(
     Object.keys(positionsFromServer)
   );
 

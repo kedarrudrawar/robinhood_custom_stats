@@ -1,28 +1,36 @@
 import chai from "chai";
 import dirtyChai from "dirty-chai";
-import * as getAllCurrentPrices from "../../DAO/getAllCurrentPrices";
+import { SinonStub } from "sinon";
+
+import { TableColumn } from "../../../components/DataTable";
+import * as getSymbolAndCurrentPrices from "../getSymbolsAndCurrentPrices";
 import { INSTRUMENT_1 } from "../../fixtures/InstrumentFixtures";
 import { POSITION_1 } from "../../fixtures/PositionsFixtures";
-import { createInstrumentToItemMapping } from "../instrumentMapping";
-import { BasePosition, generateBasePositions } from "../generateBasePositions";
-import { TableColumn } from "../../../components/DataTable";
-import { SinonStub } from "sinon";
+import {
+  BasePosition,
+  generateBasePositions,
+} from "../../processing/generateBasePositions";
+import { createInstrumentToItemMapping } from "../../processing/instrumentMapping";
 
 chai.use(dirtyChai);
 var sandbox = require("sinon").createSandbox();
 
 describe("generateBasePositions", () => {
-  let getAllCurrentPricesStub: SinonStub;
+  let getSymbolsAndCurrentPricesStub: SinonStub;
 
-  before(() => {
-    getAllCurrentPricesStub = sandbox.stub(
-      getAllCurrentPrices,
-      "getAllCurrentPrices"
+  beforeEach(() => {
+    getSymbolsAndCurrentPricesStub = sandbox.stub(
+      getSymbolAndCurrentPrices,
+      "getSymbolsAndCurrentPrices"
     );
   });
 
+  afterEach(() => {
+    sandbox.restore();
+  });
+
   it("should query for current prices", () => {
-    getAllCurrentPricesStub.returns({
+    getSymbolsAndCurrentPricesStub.returns({
       [INSTRUMENT_1.url]: {
         instrument: INSTRUMENT_1.url,
         symbol: INSTRUMENT_1.symbol,
@@ -32,7 +40,7 @@ describe("generateBasePositions", () => {
     // TODO kedar:
   });
   it("should convert positions from server to a base position", async () => {
-    getAllCurrentPricesStub.returns({
+    getSymbolsAndCurrentPricesStub.returns({
       [INSTRUMENT_1.url]: {
         instrument: INSTRUMENT_1.url,
         symbol: INSTRUMENT_1.symbol,

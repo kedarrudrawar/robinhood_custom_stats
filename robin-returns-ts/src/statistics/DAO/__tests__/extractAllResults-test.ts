@@ -1,7 +1,7 @@
 import axios from "axios";
 import chai from "chai";
 import dirtyChai from "dirty-chai";
-import { SinonStub } from "sinon";
+import sinon, { SinonStub } from "sinon";
 
 import { ORDERS_URL, POSITIONS_URL } from "../../DAO/urls";
 import { SMALL_ORDERS_RESPONSE } from "../../fixtures/OrdersFixtures";
@@ -10,13 +10,17 @@ import extractAllResults from "../../DAO/extractAllResults";
 
 chai.use(dirtyChai);
 
-var sandbox = require("sinon").createSandbox();
+var sandbox = sinon.createSandbox();
 
 describe("extractAllResults", () => {
   let getStub: SinonStub;
 
-  before(() => {
+  beforeEach(() => {
     getStub = sandbox.stub(axios, "get");
+  });
+
+  afterEach(() => {
+    sandbox.restore();
   });
 
   it("fetches all paginated orders from the server", async () => {
