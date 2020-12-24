@@ -1,27 +1,11 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { server } from "sinon";
+import React, { useEffect, useState } from "react";
 
-import getAllOrders from "../statistics/DAO/getAllOrders";
-import getAllPositions from "../statistics/DAO/getAllPositions";
 import { getAllServerData } from "../statistics/DAO/getAllServerData";
 import { SymbolAndCurrentPrice } from "../statistics/DAO/getAllSymbolsAndCurrentPrices";
-import { getPaidDividends } from "../statistics/DAO/getDividends";
-import {
-  POSITION,
-  RH_POSITION_1,
-} from "../statistics/fixtures/PositionsFixtures";
-import { BasePosition, Position } from "../statistics/Position";
-import {
-  populateProfits,
-  populateProfitsFromServerData,
-} from "../statistics/processing/calculateProfits";
-import {
-  generateBasePositions,
-  generateBasePositionsFromServerData,
-} from "../statistics/processing/generateBasePositions";
+import { Position } from "../statistics/Position";
+import { populateProfitsFromServerData } from "../statistics/processing/calculateProfits";
+import { generateBasePositionsFromServerData } from "../statistics/processing/generateBasePositions";
 import InstrumentMap, {
-  createInstrumentToArrayMapping,
-  createInstrumentToItemMapping,
   instrumentMapToArray,
 } from "../statistics/processing/instrumentMapping";
 import { populateDividendsFromServerData } from "../statistics/processing/populateDividends";
@@ -56,50 +40,9 @@ function DataTableContainer(): JSX.Element {
   // Fetch full positions and orders from server
   useEffect(() => {
     fetchAndSetServerData();
-    // async function hydratePositions() {
-    //   const serverData = await fetchAndSetServerData();
-    //   const basePositions = generateBasePositionsFromServerData(serverData);
-
-    //   const positionsWithProfits = populateProfitsFromServerData(
-    //     serverData,
-    //     basePositions
-    //   );
-
-    //   const allPositionsWithEarnings = populateDividendsFromServerData(
-    //     serverData,
-    //     positionsWithProfits
-    //   );
-
-    //   // Filter out watchlist positions
-    //   const finalPositions = removeWatchlistPositions(
-    //     instrumentMapToArray(allPositionsWithEarnings)
-    //   );
-
-    //   setHydratedPositions(finalPositions);
-    // }
-
-    // hydratePositions();
   }, []);
 
   useEffect(() => {
-    // const basePositions = generateBasePositionsFromServerData(serverData);
-
-    // const positionsWithProfits = populateProfitsFromServerData(
-    //   serverData,
-    //   basePositions
-    // );
-
-    // const allPositionsWithEarnings = populateDividendsFromServerData(
-    //   serverData,
-    //   positionsWithProfits
-    // );
-
-    // // Filter out watchlist positions
-    // const finalPositions = removeWatchlistPositions(
-    //   instrumentMapToArray(allPositionsWithEarnings)
-    // );
-
-    // fetchAndSetServerData().then((serverData) => {
     const basePositions = generateBasePositionsFromServerData(serverData);
 
     const positionsWithProfits = populateProfitsFromServerData(
@@ -111,13 +54,7 @@ function DataTableContainer(): JSX.Element {
       serverData,
       positionsWithProfits
     );
-
-    // Filter out watchlist positions
-    // const finalPositions = removeWatchlistPositions(
-    //   instrumentMapToArray(allPositionsWithEarnings)
-    // );
     setHydratedPositions(instrumentMapToArray(allPositionsWithEarnings));
-    // });
   }, [serverData]);
 
   return <DataTable positions={hydratedPositions} />;

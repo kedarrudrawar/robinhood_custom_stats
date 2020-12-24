@@ -8,6 +8,7 @@ import {
   beautifyQuantity,
   beautifyReturns,
 } from "./beautifyPositions";
+import "../ui/css/styles.css";
 
 const TABLE_TITLE = "History";
 interface DataTableProps {
@@ -34,7 +35,17 @@ const COLUMNS: Array<TableColumn> = [
   TableColumn.CURRENT_PRICE,
 ];
 
-// const ACTION_COLUMN = TableColumn.CURRENT_PRICE;
+function renderProfits(profit: number | null) {
+  let positiveOrNegative = "";
+  if (profit != null) {
+    positiveOrNegative = profit >= 0 ? "positive" : "negative";
+  }
+  return (
+    <div className={`text ${positiveOrNegative}`}>
+      {beautifyReturns(profit)}
+    </div>
+  );
+}
 
 const materialTableColumns: Array<MaterialTableColumn<Position>> = COLUMNS.map(
   (column) => {
@@ -42,43 +53,50 @@ const materialTableColumns: Array<MaterialTableColumn<Position>> = COLUMNS.map(
     switch (column) {
       case TableColumn.TICKER:
         render = (position: Position) => {
-          return <div>{position[TableColumn.TICKER]}</div>;
+          return <div className={"text"}>{position[TableColumn.TICKER]}</div>;
         };
         break;
 
       case TableColumn.QUANTITY:
         render = (position: Position) => {
-          return <div>{beautifyQuantity(position[TableColumn.QUANTITY])}</div>;
-        };
-        break;
-
-      case TableColumn.AVERAGE_COST:
-        render = (position: Position) => {
-          return <div>{beautifyPrice(position[TableColumn.AVERAGE_COST])}</div>;
-        };
-        break;
-
-      case TableColumn.DIVIDEND:
-        render = (position: Position) => {
-          return <div>{beautifyReturns(position[TableColumn.DIVIDEND])}</div>;
-        };
-        break;
-
-      case TableColumn.UNREALIZED_PROFIT:
-        render = (position: Position) => {
           return (
-            <div>
-              {beautifyReturns(position[TableColumn.UNREALIZED_PROFIT])}
+            <div className={"text"}>
+              {beautifyQuantity(position[TableColumn.QUANTITY])}
             </div>
           );
         };
         break;
 
-      case TableColumn.REALIZED_PROFIT:
+      case TableColumn.AVERAGE_COST:
         render = (position: Position) => {
           return (
-            <div>{beautifyReturns(position[TableColumn.REALIZED_PROFIT])}</div>
+            <div className={"text"}>
+              {beautifyPrice(position[TableColumn.AVERAGE_COST])}
+            </div>
           );
+        };
+        break;
+
+      case TableColumn.DIVIDEND:
+        render = (position: Position) => {
+          return (
+            <div className={"text"}>
+              {beautifyReturns(position[TableColumn.DIVIDEND])}
+            </div>
+          );
+        };
+        break;
+
+      case TableColumn.UNREALIZED_PROFIT: {
+        render = (position: Position) => {
+          return renderProfits(position[TableColumn.UNREALIZED_PROFIT]);
+        };
+        break;
+      }
+
+      case TableColumn.REALIZED_PROFIT:
+        render = (position: Position) => {
+          return renderProfits(position[TableColumn.REALIZED_PROFIT]);
         };
         break;
 
@@ -99,7 +117,6 @@ const materialTableColumns: Array<MaterialTableColumn<Position>> = COLUMNS.map(
 
 function DataTable(props: DataTableProps): JSX.Element {
   const { positions } = props;
-  console.log(positions);
   return (
     <MaterialTable<Position>
       title={TABLE_TITLE}
@@ -108,16 +125,7 @@ function DataTable(props: DataTableProps): JSX.Element {
       options={{
         search: false,
         paging: false,
-        // actionsColumnIndex: -1,
       }}
-      // localization={{ header: { actions: ACTION_COLUMN } }}
-      // actions={[
-      //   {
-      //     icon: "save",
-      //     onClick: _.noop,
-      //   },
-      // ]}
-      // components={{ Action: PriceButton }}
     />
   );
 }

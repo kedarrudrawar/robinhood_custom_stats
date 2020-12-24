@@ -1,12 +1,18 @@
 import { Position } from "../statistics/Position";
 import { TableColumn } from "../components/DataTable";
 import { beautifyPrice } from "../components/beautifyPositions";
-
+import "../ui/css/styles.css";
+import { ReactComponent as ArrowIcon } from "../ui/images/arrow.svg";
 interface PriceButtonProps {
   position: Position;
 }
 
-export function PriceButton(props: PriceButtonProps) {
+export function PriceButton(props: PriceButtonProps): JSX.Element {
+  const currentPrice = props.position[TableColumn.CURRENT_PRICE];
+  if (currentPrice == null) {
+    return <div></div>;
+  }
+
   return (
     <button
       //   target="_blank"
@@ -18,9 +24,9 @@ export function PriceButton(props: PriceButtonProps) {
         )
       }
     >
-      {beautifyPrice(props.position[TableColumn.CURRENT_PRICE])}
-      {/* <ArrowIcon className="arrow" /> */}
-      {/* <img alt={"Arrow"} className="arrow" src={require(logo512.png")}></img> */}
+      {beautifyPrice(currentPrice)}
+      {<ArrowIcon className="arrow" />}
+      {/* {<img alt={"Arrow"} className="arrow" src={require("logo512.png")}></img>} */}
     </button>
   );
 }
