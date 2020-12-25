@@ -1,5 +1,5 @@
 import { StatsSummaryData } from "./DataPage";
-import { StatsBox, StatsBoxProps } from "./StatsBox";
+import { StatsBox } from "./StatsBox";
 
 interface StatsSummaryProps extends StatsSummaryData {}
 

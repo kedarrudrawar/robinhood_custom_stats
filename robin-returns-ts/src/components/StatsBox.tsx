@@ -1,5 +1,8 @@
-import { beautifyPrice, beautifyReturns } from "./beautifyUtils";
+import React from "react";
+import { beautifyPrice } from "./beautifyUtils";
 import { StatsSummaryData } from "./DataPage";
+import { StatsBoxCategory } from "./StatsBoxCategory";
+import { StatsBoxReturns } from "./StatsBoxReturns";
 
 export interface StatsBoxProps extends StatsSummaryData {}
 
@@ -18,33 +21,21 @@ export function StatsBox(props: StatsBoxProps) {
         {beautifyPrice(totalInvested + totalCash)}
       </div>
       <div className={"stats-box-data-row"}>
-        <div className="data-row-categ text">Realized Return</div>
-        <div
-          className={`data-row-value condensed ${
-            totalRealizedReturn > 0 ? "positive" : "negative"
-          }`}
-        >
-          {beautifyReturns(totalRealizedReturn)}
-        </div>
+        <StatsBoxCategory category={"Realized Return"} />
+        <StatsBoxReturns returnsValue={totalRealizedReturn} />
       </div>
       <div className="stats-box-data-row">
-        <div className="data-row-categ text">Unrealized Return</div>
-        <div
-          className={`data-row-value condensed ${
-            totalUnrealizedReturn > 0 ? "positive" : "negative"
-          }`}
-        >
-          {beautifyReturns(totalUnrealizedReturn)}
-        </div>
+        <StatsBoxCategory category={"Unrealized Return"} />
+        <StatsBoxReturns returnsValue={totalUnrealizedReturn} />
       </div>
       <div className="stats-box-data-row">
-        <div className="data-row-categ text">Buying Power</div>
+        <StatsBoxCategory category={"Buying Power"} />
         <div className="data-row-value condensed">
           {beautifyPrice(totalCash)}
         </div>
       </div>
       <div className="stats-box-data-row">
-        <div className="data-row-categ text">Total Investment</div>
+        <StatsBoxCategory category={"Total Investment"} />
         <div className="data-row-value condensed">
           {beautifyPrice(totalInvested)}
         </div>

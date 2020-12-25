@@ -11,12 +11,14 @@ import InstrumentMap, {
   instrumentMapToArray,
 } from "../statistics/processing/instrumentMapping";
 import { populateDividendsFromServerData } from "../statistics/processing/populateDividends";
+import removeWatchlistPositions from "../statistics/processing/removeWatchlistPositions";
 import { RHDividend, RHOrder, RHPosition } from "../statistics/ResponseTypes";
 import { TableColumn } from "./DataTable";
 import DataTableContainer from "./DataTableContainer";
+import LoadingLottie from "./LoadingLottie";
 import { StatsSummary } from "./StatsSummary";
 
-const DEBUG = false;
+const DEBUG = true;
 
 export interface ServerData {
   ordersArrays: InstrumentMap<Array<RHOrder>>;
@@ -33,6 +35,8 @@ export interface StatsSummaryData {
 }
 
 export function DataPage(): JSX.Element {
+  const [loadingState, setLoadingState] = useState<boolean>(true);
+
   const [hydratedPositions, setHydratedPositions] = useState<Array<Position>>(
     []
   );
@@ -78,7 +82,12 @@ export function DataPage(): JSX.Element {
       serverData,
       positionsWithProfits
     );
-    setHydratedPositions(instrumentMapToArray(allPositionsWithEarnings));
+
+    const filteredPositions = removeWatchlistPositions(
+      instrumentMapToArray(allPositionsWithEarnings)
+    );
+
+    setHydratedPositions(filteredPositions);
   }, [serverData]);
 
   useEffect(() => {
@@ -99,7 +108,15 @@ export function DataPage(): JSX.Element {
     }
 
     setStatsSummaryData(statsSummary);
+    // TODO kedar: figure out a better way to set loading
+    if (hydratedPositions.length > 0) {
+      setLoadingState(false);
+    }
   }, [hydratedPositions]);
+
+  if (loadingState) {
+    return <LoadingLottie />;
+  }
 
   return (
     <div>

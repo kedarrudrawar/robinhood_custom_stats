@@ -7,7 +7,7 @@ import {
   getAllSymbolsAndCurrentPrices,
   SymbolAndCurrentPrice,
 } from "../DAO/getAllSymbolsAndCurrentPrices";
-import { BasePosition, Position } from "../Position";
+import { BasePosition } from "../Position";
 import { ServerData } from "../../components/DataPage";
 
 /**
