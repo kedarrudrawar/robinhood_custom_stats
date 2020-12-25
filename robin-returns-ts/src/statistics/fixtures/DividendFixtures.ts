@@ -27,7 +27,7 @@ export const DIVIDEND_DRIP = {
   nra_withholding: "0",
 };
 
-export const DIVIDEND = {
+export const DIVIDEND_1: RHDividend = {
   id: "25e45794-bc0b-54da-9dc7-5978abfd5a36",
   url:
     "https://api.robinhood.com/dividends/25e45794-bc0b-54da-9dc7-5978abfd5a36/",

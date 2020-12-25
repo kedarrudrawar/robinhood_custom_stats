@@ -1,10 +1,10 @@
 import React from "react";
-import DataTableContainer from "./DataTableContainer";
+import { DataPage } from "./DataPage";
 
 function App() {
   return (
     <div className="App">
-      <DataTableContainer />
+      <DataPage />
     </div>
   );
 }

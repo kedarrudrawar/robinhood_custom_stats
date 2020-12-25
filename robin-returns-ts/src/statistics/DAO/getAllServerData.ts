@@ -2,7 +2,7 @@ import getAllOrders from "./getAllOrders";
 import getAllPositions from "./getAllPositions";
 import { getPaidDividends } from "./getDividends";
 import { getAllSymbolsAndCurrentPrices } from "./getAllSymbolsAndCurrentPrices";
-import { ServerData } from "../../components/DataTableContainer";
+import { ServerData } from "../../components/DataPage";
 import {
   createInstrumentToArrayMapping,
   createInstrumentToItemMapping,

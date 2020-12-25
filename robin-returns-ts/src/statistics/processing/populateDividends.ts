@@ -1,5 +1,5 @@
 import { TableColumn } from "../../components/DataTable";
-import { ServerData } from "../../components/DataTableContainer";
+import { ServerData } from "../../components/DataPage";
 import { Position } from "../Position";
 import { RHDividend } from "../ResponseTypes";
 import InstrumentMap from "./instrumentMapping";

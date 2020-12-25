@@ -7,7 +7,7 @@ import {
   beautifyPrice,
   beautifyQuantity,
   beautifyReturns,
-} from "./beautifyPositions";
+} from "./beautifyUtils";
 import "../ui/css/styles.css";
 
 const TABLE_TITLE = "History";
@@ -115,7 +115,7 @@ const materialTableColumns: Array<MaterialTableColumn<Position>> = COLUMNS.map(
   }
 );
 
-function DataTable(props: DataTableProps): JSX.Element {
+export function DataTable(props: DataTableProps): JSX.Element {
   const { positions } = props;
   return (
     <MaterialTable<Position>

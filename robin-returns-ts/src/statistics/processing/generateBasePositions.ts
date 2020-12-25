@@ -8,7 +8,7 @@ import {
   SymbolAndCurrentPrice,
 } from "../DAO/getAllSymbolsAndCurrentPrices";
 import { BasePosition, Position } from "../Position";
-import { ServerData } from "../../components/DataTableContainer";
+import { ServerData } from "../../components/DataPage";
 
 /**
  * Creates a mapping from a position's instrument url to the base position itself.

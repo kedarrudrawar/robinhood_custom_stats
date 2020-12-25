@@ -1,5 +1,5 @@
 import { TableColumn } from "../../components/DataTable";
-import { ServerData } from "../../components/DataTableContainer";
+import { ServerData } from "../../components/DataPage";
 import { BasePosition, Position } from "../Position";
 import { RHPosition, url, RHOrder } from "../ResponseTypes";
 import InstrumentMap from "./instrumentMapping";
