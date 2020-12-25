@@ -1,8 +1,8 @@
 import { Position } from "../Position";
 import { TableColumn } from "../../components/DataTable";
-import { Response, RHPosition } from "../ResponseTypes";
+import { PaginatedResultsResponse, RHPosition } from "../ResponseTypes";
 
-export const FULL_POSITIONS_RESPONSE_1: Response<RHPosition> = {
+export const FULL_POSITIONS_RESPONSE_1: PaginatedResultsResponse<RHPosition> = {
   next: null,
   previous: null,
   results: [
@@ -746,7 +746,7 @@ export const RH_POSITION_1: RHPosition = {
   created_at: "2020-04-30T17:32:59.643955Z",
 };
 
-export const SIMPLE_POSITIONS_RESPONSE: Response<RHPosition> = {
+export const SIMPLE_POSITIONS_RESPONSE: PaginatedResultsResponse<RHPosition> = {
   next: null,
   previous: null,
   results: [RH_POSITION_1],

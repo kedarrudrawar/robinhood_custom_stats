@@ -16,4 +16,8 @@ export const SERVER_DATA_1: ServerData = {
       currentPrice: 10,
     },
   },
+  accountInfo: {
+    portfolioCash: 10000,
+    totalMarketValue: 20000,
+  },
 };

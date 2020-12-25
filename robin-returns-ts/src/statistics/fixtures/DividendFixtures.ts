@@ -1,4 +1,4 @@
-import { Response, RHDividend } from "../ResponseTypes";
+import { PaginatedResultsResponse, RHDividend } from "../ResponseTypes";
 
 export const DIVIDEND_DRIP = {
   id: "f1e3e308-92d6-531f-b9c7-384a02acc876",
@@ -46,7 +46,7 @@ export const DIVIDEND_1: RHDividend = {
   nra_withholding: "0",
 };
 
-export const DIVIDENDS_RESPONSE: Response<RHDividend> = {
+export const DIVIDENDS_RESPONSE: PaginatedResultsResponse<RHDividend> = {
   next: null,
   previous: null,
   results: [

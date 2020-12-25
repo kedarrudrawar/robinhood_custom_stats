@@ -8,6 +8,7 @@ import {
   createInstrumentToItemMapping,
 } from "../processing/instrumentMapping";
 import { RHDividend, RHOrder, RHPosition } from "../ResponseTypes";
+import getAccountInfo from "./getAccountInfo";
 
 export async function getAllServerData(): Promise<ServerData> {
   const positions = createInstrumentToItemMapping<RHPosition>(
@@ -30,10 +31,13 @@ export async function getAllServerData(): Promise<ServerData> {
     await getAllSymbolsAndCurrentPrices(allInstruments)
   );
 
+  const accountInfo = await getAccountInfo();
+
   return {
     ordersArrays,
     dividends,
     positions,
     symbolAndCurrentPrice,
+    accountInfo,
   };
 }

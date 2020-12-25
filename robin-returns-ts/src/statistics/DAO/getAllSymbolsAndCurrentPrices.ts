@@ -7,6 +7,7 @@ import {
   isInactiveQuote,
   RHQuote,
   RHQuoteInactive,
+  RHInstrument,
 } from "../ResponseTypes";
 import { AXIOS_HEADERS } from "./DAOConstants";
 
@@ -19,7 +20,10 @@ export interface SymbolAndCurrentPrice {
 export async function getSymbolAndCurrentPrice(
   instrument: url
 ): Promise<SymbolAndCurrentPrice> {
-  const { data: instrumentData } = await axios.get(instrument, AXIOS_HEADERS);
+  const { data: instrumentData } = await axios.get<RHInstrument>(
+    instrument,
+    AXIOS_HEADERS
+  );
   assert(
     isInstrument(instrumentData),
     `Instrument Endpoint should return an RHInstrument. Instead returned: ${instrumentData}`
@@ -28,7 +32,9 @@ export async function getSymbolAndCurrentPrice(
   const { quote } = instrumentData;
   let quoteData: RHQuote | RHQuoteInactive;
   try {
-    quoteData = (await axios.get(quote, AXIOS_HEADERS)).data;
+    quoteData = (
+      await axios.get<RHQuote | RHQuoteInactive>(quote, AXIOS_HEADERS)
+    ).data;
   } catch (err) {
     quoteData = err.response.data;
     if (isInactiveQuote(quoteData)) {

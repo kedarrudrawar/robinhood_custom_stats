@@ -1,0 +1,26 @@
+import { RHPortfolio } from "../ResponseTypes";
+
+export const PORTFOLIO_1: RHPortfolio = {
+  url: "https://api.robinhood.com/portfolios/925501777/",
+  account: "https://api.robinhood.com/accounts/925501777/",
+  start_date: "2019-08-02",
+  market_value: "25012.6644",
+  equity: "26474.8644",
+  extended_hours_market_value: "25008.5930",
+  extended_hours_equity: "26470.7930",
+  extended_hours_portfolio_equity: "26470.7930",
+  last_core_market_value: "25012.6644",
+  last_core_equity: "26474.8644",
+  last_core_portfolio_equity: "26474.8644",
+  excess_margin: "12832.4272",
+  excess_maintenance: "18005.0349",
+  excess_margin_with_uncleared_deposits: "12832.4272",
+  excess_maintenance_with_uncleared_deposits: "18005.0349",
+  equity_previous_close: "26632.1396",
+  portfolio_equity_previous_close: "26632.1396",
+  adjusted_equity_previous_close: "26632.1396",
+  adjusted_portfolio_equity_previous_close: "26632.1396",
+  withdrawable_amount: "1462.2000",
+  unwithdrawable_deposits: "0.0000",
+  unwithdrawable_grants: "0.0000",
+};

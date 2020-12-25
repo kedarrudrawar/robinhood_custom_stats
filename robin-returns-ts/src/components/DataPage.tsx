@@ -18,13 +18,19 @@ import DataTableContainer from "./DataTableContainer";
 import LoadingLottie from "./LoadingLottie";
 import { StatsSummary } from "./StatsSummary";
 
-const DEBUG = true;
+const DEBUG = false;
+
+export interface AccountInfo {
+  portfolioCash: number;
+  totalMarketValue: number;
+}
 
 export interface ServerData {
   ordersArrays: InstrumentMap<Array<RHOrder>>;
   positions: InstrumentMap<RHPosition>;
   dividends: InstrumentMap<Array<RHDividend>>;
   symbolAndCurrentPrice: InstrumentMap<SymbolAndCurrentPrice>;
+  accountInfo: AccountInfo;
 }
 
 export interface StatsSummaryData {
@@ -50,6 +56,10 @@ export function DataPage(): JSX.Element {
     positions: {},
     dividends: {},
     symbolAndCurrentPrice: {},
+    accountInfo: {
+      totalMarketValue: 0,
+      portfolioCash: 0,
+    },
   });
 
   async function fetchAndSetServerData(
@@ -88,31 +98,30 @@ export function DataPage(): JSX.Element {
     );
 
     setHydratedPositions(filteredPositions);
-  }, [serverData]);
 
-  useEffect(() => {
-    const statsSummary: StatsSummaryData = {
-      totalCash: 0,
-      totalRealizedReturn: 0,
-      totalUnrealizedReturn: 0,
-      totalInvested: 0,
-    };
-    for (const position of hydratedPositions) {
-      statsSummary.totalRealizedReturn +=
-        position[TableColumn.REALIZED_PROFIT] ?? 0;
-      statsSummary.totalUnrealizedReturn +=
-        position[TableColumn.UNREALIZED_PROFIT] ?? 0;
-      statsSummary.totalInvested +=
-        position[TableColumn.QUANTITY] *
-        (position[TableColumn.CURRENT_PRICE] ?? 0);
+    const totalCash = serverData.accountInfo.portfolioCash;
+    const totalInvested = serverData.accountInfo.totalMarketValue + totalCash;
+
+    let totalRealizedReturn = 0;
+    let totalUnrealizedReturn = 0;
+
+    for (const position of filteredPositions) {
+      totalRealizedReturn += position[TableColumn.REALIZED_PROFIT] ?? 0;
+      totalUnrealizedReturn += position[TableColumn.UNREALIZED_PROFIT] ?? 0;
     }
 
-    setStatsSummaryData(statsSummary);
+    setStatsSummaryData({
+      totalCash,
+      totalInvested,
+      totalRealizedReturn,
+      totalUnrealizedReturn,
+    });
+
     // TODO kedar: figure out a better way to set loading
-    if (hydratedPositions.length > 0) {
+    if (filteredPositions.length > 0) {
       setLoadingState(false);
     }
-  }, [hydratedPositions]);
+  }, [serverData]);
 
   if (loadingState) {
     return <LoadingLottie />;

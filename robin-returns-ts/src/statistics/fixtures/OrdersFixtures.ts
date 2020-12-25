@@ -1,6 +1,6 @@
-import { Response, RHOrder } from "../ResponseTypes";
+import { PaginatedResultsResponse, RHOrder } from "../ResponseTypes";
 
-export const LARGE_ORDERS_RESPONSE: Response<RHOrder> = {
+export const LARGE_ORDERS_RESPONSE: PaginatedResultsResponse<RHOrder> = {
   next:
     "https://api.robinhood.com/orders/?cursor=cD0yMDIwLTEyLTAzKzE1JTNBMzQlM0E1Ny43MTIzMTQlMkIwMCUzQTAw",
   previous: null,
@@ -5514,7 +5514,7 @@ export const LARGE_ORDERS_RESPONSE: Response<RHOrder> = {
   ],
 };
 
-export const SMALL_ORDERS_RESPONSE: Response<RHOrder> = {
+export const SMALL_ORDERS_RESPONSE: PaginatedResultsResponse<RHOrder> = {
   next: null,
   previous: null,
   results: [

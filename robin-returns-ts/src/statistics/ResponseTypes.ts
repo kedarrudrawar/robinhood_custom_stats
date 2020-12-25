@@ -10,10 +10,12 @@ export interface Execution {
 
 export type url = string;
 
-export interface Response<T> {
+export interface ResultsResponse<T> {
+  results: Array<T>;
+}
+export interface PaginatedResultsResponse<T> extends ResultsResponse<T> {
   next: url | null;
   previous: url | null;
-  results: Array<T>;
 }
 
 /**
@@ -21,10 +23,10 @@ export interface Response<T> {
  * @param response
  * @param recurseAndCheck // TODO kedar: figure out how to validate the generic type object
  */
-export function isResponse<T>(
+export function isPaginatedResultsResponse<T>(
   response: any,
   recurseAndCheck?: (subtype: any) => subtype is T
-): response is Response<T> {
+): response is PaginatedResultsResponse<T> {
   return (
     response.hasOwnProperty("next") &&
     response.hasOwnProperty("previous") &&
@@ -198,4 +200,29 @@ export interface RHDividend extends HasInstrument {
   drip_order_state?: "filled";
   drip_skipped_reason?: "no_fractional_tradability";
   nra_withholding: "0";
+}
+
+export interface RHPortfolio {
+  url: url;
+  account: url;
+  start_date: string;
+  market_value: string;
+  equity: string;
+  extended_hours_market_value: string;
+  extended_hours_equity: string;
+  extended_hours_portfolio_equity: string;
+  last_core_market_value: string;
+  last_core_equity: string;
+  last_core_portfolio_equity: string;
+  excess_margin: string;
+  excess_maintenance: string;
+  excess_margin_with_uncleared_deposits: string;
+  excess_maintenance_with_uncleared_deposits: string;
+  equity_previous_close: string;
+  portfolio_equity_previous_close: string;
+  adjusted_equity_previous_close: string;
+  adjusted_portfolio_equity_previous_close: string;
+  withdrawable_amount: string;
+  unwithdrawable_deposits: string;
+  unwithdrawable_grants: string;
 }

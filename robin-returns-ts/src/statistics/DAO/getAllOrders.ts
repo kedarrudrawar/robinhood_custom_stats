@@ -1,5 +1,4 @@
-import axios from "axios";
-import { RHOrder, url, Response } from "../ResponseTypes";
+import { RHOrder } from "../ResponseTypes";
 import { ORDERS_URL } from "./urls";
 import extractAllResults from "./extractAllResults";
 

@@ -1,6 +1,10 @@
 import axios, { AxiosResponse } from "axios";
 
-import { url, Response, isResponse } from "../ResponseTypes";
+import {
+  url,
+  PaginatedResultsResponse,
+  isPaginatedResultsResponse,
+} from "../ResponseTypes";
 import { AXIOS_HEADERS } from "./DAOConstants";
 import { assert } from "../../util/asserts";
 
@@ -9,14 +13,20 @@ async function extractAllResults<ResultType>(
   reverse: boolean = false
 ): Promise<Array<ResultType>> {
   let rv: AxiosResponse;
-  let data: Response<ResultType>;
+  let data: PaginatedResultsResponse<ResultType>;
   let nextUrl: url | null = url;
   let results: Array<ResultType> = [];
 
   while (nextUrl != null) {
-    rv = await axios.get(nextUrl, AXIOS_HEADERS);
+    rv = await axios.get<PaginatedResultsResponse<ResultType>>(
+      nextUrl,
+      AXIOS_HEADERS
+    );
     data = rv.data;
-    assert(isResponse<ResultType>(data), "Data should be of shape `Response`.");
+    assert(
+      isPaginatedResultsResponse<ResultType>(data),
+      "Data should be of shape `PaginatedResultsResponse`."
+    );
     // TODO kedar: Need to assert shape of actual result, not just response
     results = results.concat(data.results);
 
