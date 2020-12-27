@@ -7,7 +7,7 @@ import {
   beautifyPrice,
   beautifyQuantity,
   beautifyReturns,
-} from "./beautifyUtils";
+} from "../util/beautifyForRender";
 import "../ui/css/styles.css";
 
 const TABLE_TITLE = "History";

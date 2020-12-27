@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import _ from "underscore";
 
 import { getAllServerData } from "../statistics/DAO/getAllServerData";
 import { SymbolAndCurrentPrice } from "../statistics/DAO/getAllSymbolsAndCurrentPrices";
@@ -16,9 +17,9 @@ import { RHDividend, RHOrder, RHPosition } from "../statistics/ResponseTypes";
 import { TableColumn } from "./DataTable";
 import DataTableContainer from "./DataTableContainer";
 import LoadingLottie from "./LoadingLottie";
-import { StatsSummary } from "./StatsSummary";
+import { StatsHeader } from "./StatsHeader";
 
-const DEBUG = false;
+const DEBUG = true;
 
 export interface AccountInfo {
   portfolioCash: number;
@@ -69,7 +70,7 @@ export function DataPage(): JSX.Element {
     if (!options.debug) {
       data = await getAllServerData();
     } else {
-      data = SERVER_DATA_1;
+      data = { ...SERVER_DATA_1 };
     }
     setServerData(data);
     return data;
@@ -99,8 +100,11 @@ export function DataPage(): JSX.Element {
 
     setHydratedPositions(filteredPositions);
 
-    const totalCash = serverData.accountInfo.portfolioCash;
-    const totalInvested = serverData.accountInfo.totalMarketValue + totalCash;
+    const {
+      portfolioCash: totalCash,
+      totalMarketValue,
+    } = serverData.accountInfo;
+    const totalInvested = totalMarketValue + totalCash;
 
     let totalRealizedReturn = 0;
     let totalUnrealizedReturn = 0;
@@ -126,10 +130,21 @@ export function DataPage(): JSX.Element {
   if (loadingState) {
     return <LoadingLottie />;
   }
-
   return (
     <div>
-      <StatsSummary {...statsSummaryData} />
+      <StatsHeader
+        {...statsSummaryData}
+        headerButtons={[
+          {
+            content: "Refresh",
+            onClick: () => {
+              setLoadingState(true);
+              fetchAndSetServerData({ debug: DEBUG });
+            },
+          },
+          // { content: "Log out", onClick: _.noop },
+        ]}
+      />
       <DataTableContainer positions={hydratedPositions} />
     </div>
   );

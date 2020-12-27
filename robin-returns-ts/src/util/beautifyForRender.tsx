@@ -1,5 +1,5 @@
 import { Position, UserFriendlyPosition } from "../statistics/Position";
-import { TableColumn } from "./DataTable";
+import { TableColumn } from "../components/DataTable";
 
 function numberWithCommas(num: number | string): string {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

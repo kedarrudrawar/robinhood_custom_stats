@@ -15,7 +15,7 @@ body {
     border: 2px solid orange;
 } */
 
-.stats-header {
+.header {
   /* border: 3px solid red; */
   display: flex;
   justify-content: space-between;
@@ -59,7 +59,11 @@ body {
   fill: white;
 }
 
-.reload-btn {
+.stock-redir-btn:focus {
+  outline: none;
+}
+
+.header-btn {
   display: flex;
   border: 1px white solid;
   margin-left: 20px;
@@ -69,6 +73,17 @@ body {
   font-weight: 900;
   font-size: 12px;
   line-height: 16px;
+  background-color: white;
+}
+.header-btn:hover {
+  transition: all 0.1s ease;
+  color: #00c804;
+  border: 1px solid white;
+  cursor: pointer;
+}
+
+.header-btn:focus {
+  outline: 0;
 }
 
 .positive {
