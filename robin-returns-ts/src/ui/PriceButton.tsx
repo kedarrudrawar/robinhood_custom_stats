@@ -1,5 +1,5 @@
 import { Position } from "../statistics/Position";
-import { TableColumn } from "../components/DataTable";
+import { TableColumn } from "../components/statistics/DataTable";
 import { beautifyPrice } from "../util/beautifyForRender";
 import "../ui/css/styles.css";
 import { ReactComponent as ArrowIcon } from "../ui/images/arrow.svg";

@@ -1,4 +1,4 @@
-import { TableColumn } from "../../components/DataTable";
+import { TableColumn } from "../../components/statistics/DataTable";
 import { ServerData } from "../../components/DataPage";
 import { BasePosition, Position } from "../Position";
 import { RHPosition, RobinhoodURL, RHOrder } from "../ResponseTypes";

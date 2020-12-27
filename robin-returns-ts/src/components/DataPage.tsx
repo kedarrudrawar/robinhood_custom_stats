@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { getAllServerData } from "statistics/DAO/getAllServerData";
 import { SymbolAndCurrentPrice } from "statistics/DAO/getAllSymbolsAndCurrentPrices";
@@ -13,10 +13,10 @@ import InstrumentMap, {
 import { populateDividendsFromServerData } from "statistics/processing/populateDividends";
 import removeWatchlistPositions from "statistics/processing/removeWatchlistPositions";
 import { RHOrder, RHPosition, RHDividend } from "statistics/ResponseTypes";
-import { TableColumn } from "./DataTable";
-import DataTableContainer from "./DataTableContainer";
+import { TableColumn } from "./statistics/DataTable";
 import LoadingLottie from "./LoadingLottie";
-import { StatsHeader } from "./StatsHeader";
+import { StatsHeader } from "./statistics/StatsHeader";
+import DataTableContainer from "./statistics/DataTableContainer";
 
 const DEBUG = true;
 

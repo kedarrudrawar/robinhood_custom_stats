@@ -1,5 +1,5 @@
 import React from "react";
-import { StatsSummaryData } from "./DataPage";
+import { StatsSummaryData } from "../DataPage";
 import { StatsSummary } from "./StatsSummary";
 
 export interface StatsHeaderProps extends StatsSummaryData {

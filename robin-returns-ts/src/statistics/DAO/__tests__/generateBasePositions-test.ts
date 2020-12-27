@@ -2,7 +2,7 @@ import chai from "chai";
 import sinon, { SinonStub } from "sinon";
 import sinonChai from "sinon-chai";
 
-import { TableColumn } from "../../../components/DataTable";
+import { TableColumn } from "../../../components/statistics/DataTable";
 import * as getAllSymbolAndCurrentPrices from "../getAllSymbolsAndCurrentPrices";
 import { INSTRUMENT_1 } from "../../fixtures/InstrumentFixtures";
 import { RH_POSITION_1 } from "../../fixtures/PositionsFixtures";

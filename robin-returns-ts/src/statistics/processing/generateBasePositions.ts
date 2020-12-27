@@ -1,5 +1,5 @@
 import { ServerData } from "components/DataPage";
-import { TableColumn } from "components/DataTable";
+import { TableColumn } from "components/statistics/DataTable";
 import {
   SymbolAndCurrentPrice,
   getAllSymbolsAndCurrentPrices,

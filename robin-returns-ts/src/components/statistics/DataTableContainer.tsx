@@ -1,7 +1,7 @@
+import Timestamp from "components/Timestamp";
 import React from "react";
 import { Position } from "statistics/Position";
 import DataTable from "./DataTable";
-import Timestamp from "./Timestamp";
 
 interface DataTableContainerProps {
   positions: Array<Position>;
