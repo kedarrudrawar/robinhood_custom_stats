@@ -1,14 +1,14 @@
-import { RHPosition } from "../ResponseTypes";
-import { TableColumn } from "../../components/DataTable";
+import { ServerData } from "components/DataPage";
+import { TableColumn } from "components/DataTable";
+import {
+  SymbolAndCurrentPrice,
+  getAllSymbolsAndCurrentPrices,
+} from "statistics/DAO/getAllSymbolsAndCurrentPrices";
+import { BasePosition } from "statistics/Position";
+import { RHPosition } from "statistics/ResponseTypes";
 import InstrumentMap, {
   createInstrumentToItemMapping,
 } from "./instrumentMapping";
-import {
-  getAllSymbolsAndCurrentPrices,
-  SymbolAndCurrentPrice,
-} from "../DAO/getAllSymbolsAndCurrentPrices";
-import { BasePosition } from "../Position";
-import { ServerData } from "../../components/DataPage";
 
 /**
  * Creates a mapping from a position's instrument url to the base position itself.

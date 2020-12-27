@@ -1,6 +1,7 @@
 import React from "react";
-import { Position } from "../statistics/Position";
+import { Position } from "statistics/Position";
 import DataTable from "./DataTable";
+import Timestamp from "./Timestamp";
 
 interface DataTableContainerProps {
   positions: Array<Position>;
@@ -13,9 +14,7 @@ export function DataTableContainer(
     <div>
       <div className="bottom-container">
         <div className="history-container">
-          <div className="history-header updated-stats">
-            Updated at 10:30 AM
-          </div>
+          <Timestamp />
           <DataTable positions={props.positions} />
         </div>
       </div>

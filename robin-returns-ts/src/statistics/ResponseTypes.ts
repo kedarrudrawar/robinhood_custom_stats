@@ -8,14 +8,14 @@ export interface Execution {
   id: string;
 }
 
-export type url = string;
+export type RobinhoodURL = string;
 
 export interface ResultsResponse<T> {
   results: Array<T>;
 }
 export interface PaginatedResultsResponse<T> extends ResultsResponse<T> {
-  next: url | null;
-  previous: url | null;
+  next: RobinhoodURL | null;
+  previous: RobinhoodURL | null;
 }
 
 /**
@@ -59,7 +59,7 @@ export type RHQuote = {
   has_traded: true;
   last_trade_price_source: string;
   updated_at: string;
-  instrument: url;
+  instrument: RobinhoodURL;
 };
 
 export type RHQuoteInactive = {
@@ -74,12 +74,12 @@ export function isInstrument(instrument: any): instrument is RHInstrument {
 
 export interface RHInstrument {
   id: string;
-  url: url;
-  quote: url;
-  fundamentals: url;
-  splits: url;
+  url: RobinhoodURL;
+  quote: RobinhoodURL;
+  fundamentals: RobinhoodURL;
+  splits: RobinhoodURL;
   state: "active";
-  market: url;
+  market: RobinhoodURL;
   simple_name: string;
   name: string;
   tradeable: boolean;
@@ -102,10 +102,10 @@ export interface RHInstrument {
 export interface RHOrder extends HasInstrument {
   id: string;
   ref_id: string | null;
-  url: url;
-  account: url;
-  position: url;
-  cancel: url | null;
+  url: RobinhoodURL;
+  account: RobinhoodURL;
+  position: RobinhoodURL;
+  cancel: RobinhoodURL | null;
   cumulative_quantity: string;
   average_price: string | null;
   fees: string;
@@ -157,8 +157,8 @@ export interface RHOrder extends HasInstrument {
 }
 
 export interface RHPosition extends HasInstrument {
-  url: url;
-  account: url;
+  url: RobinhoodURL;
+  account: RobinhoodURL;
   account_number: string;
   average_buy_price: string;
   pending_average_buy_price: string;
@@ -179,8 +179,8 @@ export interface RHPosition extends HasInstrument {
 
 export interface RHDividend extends HasInstrument {
   id: string;
-  url: url;
-  account: url;
+  url: RobinhoodURL;
+  account: RobinhoodURL;
   amount: string;
   rate: string;
   position: string;
@@ -203,8 +203,8 @@ export interface RHDividend extends HasInstrument {
 }
 
 export interface RHPortfolio {
-  url: url;
-  account: url;
+  url: RobinhoodURL;
+  account: RobinhoodURL;
   start_date: string;
   market_value: string;
   equity: string;

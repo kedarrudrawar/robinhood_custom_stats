@@ -1,12 +1,11 @@
-import _ from "underscore";
-import { url } from "../ResponseTypes";
+import { RobinhoodURL } from "statistics/ResponseTypes";
 
 export default interface InstrumentMap<T> {
   [instrument: string]: T;
 }
 
 export interface HasInstrument {
-  instrument: url;
+  instrument: RobinhoodURL;
 }
 
 export function instrumentMapToArray<T>(
@@ -16,7 +15,7 @@ export function instrumentMapToArray<T>(
 }
 
 export function createInstrumentToItemMapping<T>(
-  args: Array<T & { instrument: url }>
+  args: Array<T & { instrument: RobinhoodURL }>
 ): InstrumentMap<T> {
   const instrumentMap: InstrumentMap<T> = {};
   for (const arg of args) {
@@ -26,7 +25,7 @@ export function createInstrumentToItemMapping<T>(
 }
 
 export function createInstrumentToArrayMapping<T>(
-  args: Array<T & { instrument: url }>
+  args: Array<T & { instrument: RobinhoodURL }>
 ): InstrumentMap<Array<T>> {
   const instrumentMap: InstrumentMap<Array<T>> = {};
   for (const arg of args) {

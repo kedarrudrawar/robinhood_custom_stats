@@ -1,5 +1,5 @@
-import { TableColumn } from "../../components/DataTable";
-import { Position } from "../Position";
+import { TableColumn } from "components/DataTable";
+import { Position } from "statistics/Position";
 
 export default function removeWatchlistPositions(
   positions: Array<Position>

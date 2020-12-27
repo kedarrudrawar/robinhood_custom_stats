@@ -1,7 +1,7 @@
-import { TableColumn } from "../../components/DataTable";
-import { ServerData } from "../../components/DataPage";
-import { Position } from "../Position";
-import { RHDividend } from "../ResponseTypes";
+import { ServerData } from "components/DataPage";
+import { TableColumn } from "components/DataTable";
+import { Position } from "statistics/Position";
+import { RHDividend } from "statistics/ResponseTypes";
 import InstrumentMap from "./instrumentMapping";
 
 export function populateDividends(

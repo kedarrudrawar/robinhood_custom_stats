@@ -1,5 +1,5 @@
 import React from "react";
-import { beautifyPrice } from "../util/beautifyForRender";
+import { beautifyPrice } from "util/beautifyForRender";
 import { StatsSummaryData } from "./DataPage";
 import { StatsBoxCategory } from "./StatsBoxCategory";
 import { StatsBoxReturns } from "./StatsBoxReturns";

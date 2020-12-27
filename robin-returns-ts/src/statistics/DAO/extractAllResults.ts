@@ -1,20 +1,19 @@
 import axios, { AxiosResponse } from "axios";
-
 import {
-  url,
   PaginatedResultsResponse,
   isPaginatedResultsResponse,
-} from "../ResponseTypes";
+  RobinhoodURL,
+} from "statistics/ResponseTypes";
+import { assert } from "util/assert";
 import { AXIOS_HEADERS } from "./DAOConstants";
-import { assert } from "../../util/asserts";
 
 async function extractAllResults<ResultType>(
-  url: url,
+  url: RobinhoodURL,
   reverse: boolean = false
 ): Promise<Array<ResultType>> {
   let rv: AxiosResponse;
   let data: PaginatedResultsResponse<ResultType>;
-  let nextUrl: url | null = url;
+  let nextUrl: RobinhoodURL | null = url;
   let results: Array<ResultType> = [];
 
   while (nextUrl != null) {

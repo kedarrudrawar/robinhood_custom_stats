@@ -1,14 +1,14 @@
 import MaterialTable, { Column as MaterialTableColumn } from "material-table";
 import React from "react";
 
-import { Position } from "../statistics/Position";
-import { PriceButton } from "../ui/PriceButton";
+import { Position } from "statistics/Position";
+import "ui/css/styles.css";
+import { PriceButton } from "ui/PriceButton";
 import {
   beautifyPrice,
   beautifyQuantity,
   beautifyReturns,
-} from "../util/beautifyForRender";
-import "../ui/css/styles.css";
+} from "util/beautifyForRender";
 
 const TABLE_TITLE = "History";
 interface DataTableProps {

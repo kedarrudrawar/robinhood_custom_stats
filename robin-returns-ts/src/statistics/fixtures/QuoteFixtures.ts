@@ -1,4 +1,4 @@
-import { RHQuote, RHQuoteInactive } from "../ResponseTypes";
+import { RHQuote, RHQuoteInactive } from "statistics/ResponseTypes";
 
 export const QUOTE_1: RHQuote = {
   ask_price: "1720.730000",

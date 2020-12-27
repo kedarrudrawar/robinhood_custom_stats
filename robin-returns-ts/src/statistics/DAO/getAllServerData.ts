@@ -1,14 +1,14 @@
+import { ServerData } from "components/DataPage";
+import {
+  createInstrumentToItemMapping,
+  createInstrumentToArrayMapping,
+} from "statistics/processing/instrumentMapping";
+import { RHPosition, RHOrder, RHDividend } from "statistics/ResponseTypes";
+import getAccountInfo from "./getAccountInfo";
 import getAllOrders from "./getAllOrders";
 import getAllPositions from "./getAllPositions";
-import { getPaidDividends } from "./getDividends";
 import { getAllSymbolsAndCurrentPrices } from "./getAllSymbolsAndCurrentPrices";
-import { ServerData } from "../../components/DataPage";
-import {
-  createInstrumentToArrayMapping,
-  createInstrumentToItemMapping,
-} from "../processing/instrumentMapping";
-import { RHDividend, RHOrder, RHPosition } from "../ResponseTypes";
-import getAccountInfo from "./getAccountInfo";
+import { getPaidDividends } from "./getDividends";
 
 export async function getAllServerData(): Promise<ServerData> {
   const positions = createInstrumentToItemMapping<RHPosition>(

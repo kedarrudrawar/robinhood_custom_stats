@@ -1,4 +1,4 @@
-import { RHPortfolio } from "../ResponseTypes";
+import { RHPortfolio } from "statistics/ResponseTypes";
 
 export const PORTFOLIO_1: RHPortfolio = {
   url: "https://api.robinhood.com/portfolios/925501777/",

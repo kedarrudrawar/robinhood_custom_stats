@@ -1,4 +1,6 @@
-export const INSTRUMENT_1 = {
+import { RHInstrument } from "statistics/ResponseTypes";
+
+export const INSTRUMENT_1: RHInstrument = {
   id: "2ed64ef4-2c1a-44d6-832d-1be84741dc41",
   url:
     "https://api.robinhood.com/instruments/2ed64ef4-2c1a-44d6-832d-1be84741dc41/",

@@ -1,4 +1,3 @@
-import _ from "underscore";
 import { StatsSummaryData } from "./DataPage";
 import { StatsBox } from "./StatsBox";
 

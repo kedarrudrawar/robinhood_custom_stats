@@ -1,6 +1,6 @@
 import { TableColumn } from "../components/DataTable";
 import { HasInstrument } from "./processing/instrumentMapping";
-import { url } from "./ResponseTypes";
+import { RobinhoodURL } from "./ResponseTypes";
 
 // Includes ticker, quantity, avg cost, and current price.
 // Profits & Dividend are intentionally null.
@@ -32,5 +32,5 @@ export type UserFriendlyPosition = {
   [TableColumn.CURRENT_PRICE]: string;
   [TableColumn.DIVIDEND]: string;
   [TableColumn.AVERAGE_COST]: string;
-  instrument: url;
+  instrument: RobinhoodURL;
 };

@@ -1,9 +1,10 @@
-import { url } from "../ResponseTypes";
+import { RobinhoodURL } from "statistics/ResponseTypes";
 
-const BASE_URL: url = "https://api.robinhood.com/";
+const BASE_URL: RobinhoodURL = "https://api.robinhood.com/";
 
-export const ORDERS_URL: url = BASE_URL + "orders/";
-export const POSITIONS_URL: url = BASE_URL + "positions/";
-export const ACTIVE_POSITIONS_URL: url = BASE_URL + "positions/?nonzero=true";
-export const DIVIDENDS_URL: url = BASE_URL + "dividends/";
-export const PORTFOLIOS_URL: url = BASE_URL + "portfolios/";
+export const ORDERS_URL: RobinhoodURL = BASE_URL + "orders/";
+export const POSITIONS_URL: RobinhoodURL = BASE_URL + "positions/";
+export const ACTIVE_POSITIONS_URL: RobinhoodURL =
+  BASE_URL + "positions/?nonzero=true";
+export const DIVIDENDS_URL: RobinhoodURL = BASE_URL + "dividends/";
+export const PORTFOLIOS_URL: RobinhoodURL = BASE_URL + "portfolios/";

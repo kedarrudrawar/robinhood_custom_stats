@@ -1,4 +1,4 @@
-import { beautifyReturns } from "../util/beautifyForRender";
+import { beautifyReturns } from "util/beautifyForRender";
 
 export interface StatsBoxReturnsProps {
   returnsValue: number;

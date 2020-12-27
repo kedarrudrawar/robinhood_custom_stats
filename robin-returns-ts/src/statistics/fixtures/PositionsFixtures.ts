@@ -1,6 +1,6 @@
-import { Position } from "../Position";
-import { TableColumn } from "../../components/DataTable";
-import { PaginatedResultsResponse, RHPosition } from "../ResponseTypes";
+import { TableColumn } from "components/DataTable";
+import { Position } from "statistics/Position";
+import { PaginatedResultsResponse, RHPosition } from "statistics/ResponseTypes";
 
 export const FULL_POSITIONS_RESPONSE_1: PaginatedResultsResponse<RHPosition> = {
   next: null,

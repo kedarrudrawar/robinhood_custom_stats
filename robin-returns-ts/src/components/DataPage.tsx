@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
-import _ from "underscore";
 
-import { getAllServerData } from "../statistics/DAO/getAllServerData";
-import { SymbolAndCurrentPrice } from "../statistics/DAO/getAllSymbolsAndCurrentPrices";
-import { SERVER_DATA_1 } from "../statistics/fixtures/ServerDataFixtures";
-import { STATS_SUMMARY_1 } from "../statistics/fixtures/StatsSummaryFixtures";
-import { Position } from "../statistics/Position";
-import { populateProfitsFromServerData } from "../statistics/processing/calculateProfits";
-import { generateBasePositionsFromServerData } from "../statistics/processing/generateBasePositions";
+import { getAllServerData } from "statistics/DAO/getAllServerData";
+import { SymbolAndCurrentPrice } from "statistics/DAO/getAllSymbolsAndCurrentPrices";
+import { SERVER_DATA_1 } from "statistics/fixtures/ServerDataFixtures";
+import { STATS_SUMMARY_1 } from "statistics/fixtures/StatsSummaryFixtures";
+import { Position } from "statistics/Position";
+import { populateProfitsFromServerData } from "statistics/processing/calculateProfits";
+import { generateBasePositionsFromServerData } from "statistics/processing/generateBasePositions";
 import InstrumentMap, {
   instrumentMapToArray,
-} from "../statistics/processing/instrumentMapping";
-import { populateDividendsFromServerData } from "../statistics/processing/populateDividends";
-import removeWatchlistPositions from "../statistics/processing/removeWatchlistPositions";
-import { RHDividend, RHOrder, RHPosition } from "../statistics/ResponseTypes";
+} from "statistics/processing/instrumentMapping";
+import { populateDividendsFromServerData } from "statistics/processing/populateDividends";
+import removeWatchlistPositions from "statistics/processing/removeWatchlistPositions";
+import { RHOrder, RHPosition, RHDividend } from "statistics/ResponseTypes";
 import { TableColumn } from "./DataTable";
 import DataTableContainer from "./DataTableContainer";
 import LoadingLottie from "./LoadingLottie";

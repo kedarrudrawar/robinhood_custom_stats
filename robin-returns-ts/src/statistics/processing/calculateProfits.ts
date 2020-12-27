@@ -1,11 +1,11 @@
 import { TableColumn } from "../../components/DataTable";
 import { ServerData } from "../../components/DataPage";
 import { BasePosition, Position } from "../Position";
-import { RHPosition, url, RHOrder } from "../ResponseTypes";
+import { RHPosition, RobinhoodURL, RHOrder } from "../ResponseTypes";
 import InstrumentMap from "./instrumentMapping";
 
 interface OrderData {
-  instrument: url;
+  instrument: RobinhoodURL;
   state: "confirmed" | "filled" | "cancelled";
   side: "buy" | "sell";
   executed_notional: {

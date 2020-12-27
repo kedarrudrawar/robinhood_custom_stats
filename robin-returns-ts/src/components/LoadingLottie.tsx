@@ -1,6 +1,6 @@
 import Lottie from "react-lottie";
-import animationData from "../ui/lotties/green-loading.json";
-import "../ui/css/Loading.css";
+import animationData from "ui/lotties/green-loading.json";
+import "ui/css/Loading.css";
 
 export function LoadingLottie(): JSX.Element {
   const defaultOptions = {

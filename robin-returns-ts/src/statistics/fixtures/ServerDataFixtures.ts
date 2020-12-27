@@ -1,4 +1,4 @@
-import { ServerData } from "../../components/DataPage";
+import { ServerData } from "components/DataPage";
 import { DIVIDEND_1 } from "./DividendFixtures";
 import { SMALL_ORDERS_RESPONSE } from "./OrdersFixtures";
 import { RH_POSITION_1 } from "./PositionsFixtures";

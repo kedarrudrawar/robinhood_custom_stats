@@ -1,4 +1,4 @@
-import { RHPosition } from "../ResponseTypes";
+import { RHPosition } from "statistics/ResponseTypes";
 import extractAllResults from "./extractAllResults";
 import { POSITIONS_URL } from "./urls";
 

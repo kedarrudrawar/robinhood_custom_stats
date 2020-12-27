@@ -1,24 +1,25 @@
 import axios from "axios";
-import { assert } from "../../util/asserts";
+
 import {
-  url,
-  isQuote,
-  isInstrument,
   isInactiveQuote,
+  isInstrument,
+  isQuote,
+  RHInstrument,
   RHQuote,
   RHQuoteInactive,
-  RHInstrument,
-} from "../ResponseTypes";
+  RobinhoodURL,
+} from "statistics/ResponseTypes";
+import { assert } from "util/assert";
 import { AXIOS_HEADERS } from "./DAOConstants";
 
 export interface SymbolAndCurrentPrice {
-  instrument: url;
+  instrument: RobinhoodURL;
   currentPrice: number | null;
   symbol: string;
 }
 
 export async function getSymbolAndCurrentPrice(
-  instrument: url
+  instrument: RobinhoodURL
 ): Promise<SymbolAndCurrentPrice> {
   const { data: instrumentData } = await axios.get<RHInstrument>(
     instrument,
@@ -63,7 +64,7 @@ export async function getSymbolAndCurrentPrice(
 }
 
 export async function getAllSymbolsAndCurrentPrices(
-  instruments: Array<url>
+  instruments: Array<RobinhoodURL>
 ): Promise<Array<SymbolAndCurrentPrice>> {
   const promises = instruments.map((instrument) => {
     return getSymbolAndCurrentPrice(instrument);

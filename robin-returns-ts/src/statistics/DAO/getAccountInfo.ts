@@ -1,6 +1,6 @@
 import axios from "axios";
-import { AccountInfo } from "../../components/DataPage";
-import { ResultsResponse, RHPortfolio } from "../ResponseTypes";
+import { AccountInfo } from "components/DataPage";
+import { ResultsResponse, RHPortfolio } from "statistics/ResponseTypes";
 import { AXIOS_HEADERS } from "./DAOConstants";
 import { PORTFOLIOS_URL } from "./urls";
 

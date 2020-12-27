@@ -1,4 +1,4 @@
-import { PaginatedResultsResponse, RHOrder } from "../ResponseTypes";
+import { PaginatedResultsResponse, RHOrder } from "statistics/ResponseTypes";
 
 export const LARGE_ORDERS_RESPONSE: PaginatedResultsResponse<RHOrder> = {
   next:
