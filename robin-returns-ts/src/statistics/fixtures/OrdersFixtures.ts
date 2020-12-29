@@ -1,4 +1,7 @@
-import { PaginatedResultsResponse, RHOrder } from "statistics/ResponseTypes";
+import {
+  PaginatedResultsResponse,
+  RHOrder,
+} from "statistics/DAO/RHPortfolioDataResponseTypes";
 
 export const LARGE_ORDERS_RESPONSE: PaginatedResultsResponse<RHOrder> = {
   next:

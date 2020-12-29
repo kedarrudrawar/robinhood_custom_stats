@@ -1,8 +1,7 @@
-import { Position } from "../statistics/Position";
-import { TableColumn } from "../components/statistics/DataTable";
-import { beautifyPrice } from "../util/beautifyForRender";
-import "../ui/css/styles.css";
-import { ReactComponent as ArrowIcon } from "../ui/images/arrow.svg";
+import { TableColumn } from "components/statistics/DataTable";
+import { Position } from "statistics/Position";
+import { beautifyPrice } from "util/beautifyForRender";
+import { ReactComponent as ArrowIcon } from "ui/images/arrow.svg";
 interface PriceButtonProps {
   position: Position;
 }

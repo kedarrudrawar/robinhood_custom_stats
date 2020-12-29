@@ -1,15 +1,22 @@
 import axios from "axios";
 import { AccountInfo } from "components/DataPage";
-import { ResultsResponse, RHPortfolio } from "statistics/ResponseTypes";
-import { AXIOS_HEADERS } from "./DAOConstants";
-import { PORTFOLIOS_URL } from "./urls";
+import {
+  ResultsResponse,
+  RHPortfolio,
+} from "statistics/DAO/RHPortfolioDataResponseTypes";
+import {
+  AXIOS_HEADERS,
+  buildHeaders,
+  RobinhoodBaseToken,
+} from "../../DAOConstants";
+import { PORTFOLIOS_URL } from "./PortfolioDataURLs";
 
-async function getAccountInfo(): Promise<AccountInfo> {
+async function getAccountInfo(token: RobinhoodBaseToken): Promise<AccountInfo> {
   const {
     data: { results },
   } = await axios.get<ResultsResponse<RHPortfolio>>(
     PORTFOLIOS_URL,
-    AXIOS_HEADERS
+    buildHeaders(token)
   );
 
   const { withdrawable_amount, market_value } = results[0];

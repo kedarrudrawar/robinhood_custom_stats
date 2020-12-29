@@ -7,10 +7,14 @@ import {
   RHInstrument,
   RHQuote,
   RHQuoteInactive,
-  RobinhoodURL,
-} from "statistics/ResponseTypes";
+} from "statistics/DAO/RHPortfolioDataResponseTypes";
 import { assert } from "util/assert";
-import { AXIOS_HEADERS } from "./DAOConstants";
+import {
+  AXIOS_HEADERS,
+  buildHeaders,
+  RobinhoodBaseToken,
+  RobinhoodURL,
+} from "../../DAOConstants";
 
 export interface SymbolAndCurrentPrice {
   instrument: RobinhoodURL;
@@ -19,11 +23,12 @@ export interface SymbolAndCurrentPrice {
 }
 
 export async function getSymbolAndCurrentPrice(
-  instrument: RobinhoodURL
+  instrument: RobinhoodURL,
+  token: RobinhoodBaseToken
 ): Promise<SymbolAndCurrentPrice> {
   const { data: instrumentData } = await axios.get<RHInstrument>(
     instrument,
-    AXIOS_HEADERS
+    buildHeaders(token)
   );
   assert(
     isInstrument(instrumentData),
@@ -64,10 +69,11 @@ export async function getSymbolAndCurrentPrice(
 }
 
 export async function getAllSymbolsAndCurrentPrices(
-  instruments: Array<RobinhoodURL>
+  instruments: Array<RobinhoodURL>,
+  token: RobinhoodBaseToken
 ): Promise<Array<SymbolAndCurrentPrice>> {
   const promises = instruments.map((instrument) => {
-    return getSymbolAndCurrentPrice(instrument);
+    return getSymbolAndCurrentPrice(instrument, token);
   });
 
   return await Promise.all(promises);

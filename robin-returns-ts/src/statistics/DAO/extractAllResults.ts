@@ -2,24 +2,39 @@ import axios, { AxiosResponse } from "axios";
 import {
   PaginatedResultsResponse,
   isPaginatedResultsResponse,
-  RobinhoodURL,
-} from "statistics/ResponseTypes";
+} from "statistics/DAO/RHPortfolioDataResponseTypes";
 import { assert } from "util/assert";
-import { AXIOS_HEADERS } from "./DAOConstants";
+import {
+  AXIOS_HEADERS,
+  buildHeaders,
+  RobinhoodBaseToken,
+  RobinhoodURL,
+} from "../../DAOConstants";
 
-async function extractAllResults<ResultType>(
-  url: RobinhoodURL,
-  reverse: boolean = false
-): Promise<Array<ResultType>> {
+/**
+ *
+ * @param url Robinhood's endpoint URL to send request to
+ * @param reverse useful for when Robinhood sends results in anti-chronological order
+ */
+async function extractAllResults<ResultType>({
+  endpoint,
+  token,
+  reverse = false,
+}: {
+  endpoint: RobinhoodURL;
+  token: RobinhoodBaseToken;
+  reverse?: boolean;
+}): Promise<Array<ResultType>> {
   let rv: AxiosResponse;
   let data: PaginatedResultsResponse<ResultType>;
-  let nextUrl: RobinhoodURL | null = url;
+  let nextUrl: RobinhoodURL | null = endpoint;
   let results: Array<ResultType> = [];
+  let headers = buildHeaders(token);
 
   while (nextUrl != null) {
     rv = await axios.get<PaginatedResultsResponse<ResultType>>(
       nextUrl,
-      AXIOS_HEADERS
+      headers
     );
     data = rv.data;
     assert(
@@ -32,7 +47,6 @@ async function extractAllResults<ResultType>(
     nextUrl = data.next;
   }
 
-  // orders are returned by API anti-chronologically
   if (reverse) {
     results.reverse();
   }

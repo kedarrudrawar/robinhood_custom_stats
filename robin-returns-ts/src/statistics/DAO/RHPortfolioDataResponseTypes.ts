@@ -1,4 +1,5 @@
-import { HasInstrument } from "./processing/instrumentMapping";
+import { RobinhoodURL } from "DAOConstants";
+import { HasInstrument } from "../processing/instrumentMapping";
 
 export interface Execution {
   price: string;
@@ -7,8 +8,6 @@ export interface Execution {
   timestamp: string;
   id: string;
 }
-
-export type RobinhoodURL = string;
 
 export interface ResultsResponse<T> {
   results: Array<T>;

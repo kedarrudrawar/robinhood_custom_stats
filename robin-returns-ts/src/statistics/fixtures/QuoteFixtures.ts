@@ -1,4 +1,7 @@
-import { RHQuote, RHQuoteInactive } from "statistics/ResponseTypes";
+import {
+  RHQuote,
+  RHQuoteInactive,
+} from "statistics/DAO/RHPortfolioDataResponseTypes";
 
 export const QUOTE_1: RHQuote = {
   ask_price: "1720.730000",

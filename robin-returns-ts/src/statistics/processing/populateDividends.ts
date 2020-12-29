@@ -1,7 +1,7 @@
 import { ServerData } from "components/DataPage";
 import { TableColumn } from "components/statistics/DataTable";
 import { Position } from "statistics/Position";
-import { RHDividend } from "statistics/ResponseTypes";
+import { RHDividend } from "statistics/DAO/RHPortfolioDataResponseTypes";
 import InstrumentMap from "./instrumentMapping";
 
 export function populateDividends(

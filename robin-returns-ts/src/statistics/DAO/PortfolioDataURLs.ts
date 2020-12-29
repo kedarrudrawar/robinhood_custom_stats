@@ -1,4 +1,4 @@
-import { RobinhoodURL } from "statistics/ResponseTypes";
+import { RobinhoodURL } from "DAOConstants";
 
 const BASE_URL: RobinhoodURL = "https://api.robinhood.com/";
 

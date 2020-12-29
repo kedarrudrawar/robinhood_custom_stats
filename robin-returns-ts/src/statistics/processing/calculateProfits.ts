@@ -1,8 +1,9 @@
 import { TableColumn } from "../../components/statistics/DataTable";
 import { ServerData } from "../../components/DataPage";
 import { BasePosition, Position } from "../Position";
-import { RHPosition, RobinhoodURL, RHOrder } from "../ResponseTypes";
+import { RHPosition, RHOrder } from "../DAO/RHPortfolioDataResponseTypes";
 import InstrumentMap from "./instrumentMapping";
+import { RobinhoodURL } from "DAOConstants";
 
 interface OrderData {
   instrument: RobinhoodURL;

@@ -2,7 +2,6 @@ import MaterialTable, { Column as MaterialTableColumn } from "material-table";
 import React from "react";
 
 import { Position } from "statistics/Position";
-import "ui/css/styles.css";
 import { PriceButton } from "ui/PriceButton";
 import {
   beautifyPrice,

@@ -1,6 +1,6 @@
+import { RobinhoodURL } from "DAOConstants";
 import { TableColumn } from "../components/statistics/DataTable";
 import { HasInstrument } from "./processing/instrumentMapping";
-import { RobinhoodURL } from "./ResponseTypes";
 
 // Includes ticker, quantity, avg cost, and current price.
 // Profits & Dividend are intentionally null.

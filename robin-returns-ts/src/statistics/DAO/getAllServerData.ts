@@ -3,22 +3,29 @@ import {
   createInstrumentToItemMapping,
   createInstrumentToArrayMapping,
 } from "statistics/processing/instrumentMapping";
-import { RHPosition, RHOrder, RHDividend } from "statistics/ResponseTypes";
+import {
+  RHPosition,
+  RHOrder,
+  RHDividend,
+} from "statistics/DAO/RHPortfolioDataResponseTypes";
 import getAccountInfo from "./getAccountInfo";
 import getAllOrders from "./getAllOrders";
 import getAllPositions from "./getAllPositions";
 import { getAllSymbolsAndCurrentPrices } from "./getAllSymbolsAndCurrentPrices";
 import { getPaidDividends } from "./getDividends";
+import { RobinhoodBaseToken } from "DAOConstants";
 
-export async function getAllServerData(): Promise<ServerData> {
+export async function getAllServerData(
+  token: RobinhoodBaseToken
+): Promise<ServerData> {
   const positions = createInstrumentToItemMapping<RHPosition>(
-    await getAllPositions()
+    await getAllPositions(token)
   );
   const ordersArrays = createInstrumentToArrayMapping<RHOrder>(
-    await getAllOrders()
+    await getAllOrders(token)
   );
   const dividends = createInstrumentToArrayMapping<RHDividend>(
-    await getPaidDividends()
+    await getPaidDividends(token)
   );
 
   let allInstruments: Array<string> = [
@@ -28,10 +35,10 @@ export async function getAllServerData(): Promise<ServerData> {
   allInstruments = Array.from(new Set(allInstruments));
 
   const symbolAndCurrentPrice = createInstrumentToItemMapping(
-    await getAllSymbolsAndCurrentPrices(allInstruments)
+    await getAllSymbolsAndCurrentPrices(allInstruments, token)
   );
 
-  const accountInfo = await getAccountInfo();
+  const accountInfo = await getAccountInfo(token);
 
   return {
     ordersArrays,

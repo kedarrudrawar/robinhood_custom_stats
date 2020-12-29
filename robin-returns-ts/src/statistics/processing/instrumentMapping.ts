@@ -1,4 +1,4 @@
-import { RobinhoodURL } from "statistics/ResponseTypes";
+import { RobinhoodURL } from "DAOConstants";
 
 export default interface InstrumentMap<T> {
   [instrument: string]: T;

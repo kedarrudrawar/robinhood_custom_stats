@@ -1,4 +1,7 @@
-import { RHDividend, PaginatedResultsResponse } from "statistics/ResponseTypes";
+import {
+  RHDividend,
+  PaginatedResultsResponse,
+} from "statistics/DAO/RHPortfolioDataResponseTypes";
 
 export const DIVIDEND_DRIP = {
   id: "f1e3e308-92d6-531f-b9c7-384a02acc876",

@@ -12,13 +12,19 @@ import InstrumentMap, {
 } from "statistics/processing/instrumentMapping";
 import { populateDividendsFromServerData } from "statistics/processing/populateDividends";
 import removeWatchlistPositions from "statistics/processing/removeWatchlistPositions";
-import { RHOrder, RHPosition, RHDividend } from "statistics/ResponseTypes";
+import {
+  RHOrder,
+  RHPosition,
+  RHDividend,
+} from "statistics/DAO/RHPortfolioDataResponseTypes";
 import { TableColumn } from "./statistics/DataTable";
 import LoadingLottie from "./LoadingLottie";
 import { StatsHeader } from "./statistics/StatsHeader";
 import DataTableContainer from "./statistics/DataTableContainer";
+import { AuthContext } from "login/AuthContext";
+import { RobinhoodBaseToken } from "DAOConstants";
 
-const DEBUG = true;
+const DEBUG = false;
 
 export interface AccountInfo {
   portfolioCash: number;
@@ -62,14 +68,19 @@ export function DataPage(): JSX.Element {
     },
   });
 
+  const { token: TOKEN, logout } = useContext(AuthContext);
+
   async function fetchAndSetServerData(
-    options: { debug: boolean } = { debug: false }
+    options: { debug: boolean; token: RobinhoodBaseToken | null } = {
+      debug: true,
+      token: null,
+    }
   ): Promise<ServerData> {
     let data: ServerData;
-    if (!options.debug) {
-      data = await getAllServerData();
-    } else {
+    if (options.debug || options.token == null) {
       data = { ...SERVER_DATA_1 };
+    } else {
+      data = await getAllServerData(options.token);
     }
     setServerData(data);
     return data;
@@ -77,7 +88,7 @@ export function DataPage(): JSX.Element {
 
   // Fetch full positions and orders from server
   useEffect(() => {
-    fetchAndSetServerData({ debug: DEBUG });
+    fetchAndSetServerData({ debug: DEBUG, token: TOKEN });
   }, []);
 
   useEffect(() => {
@@ -138,10 +149,10 @@ export function DataPage(): JSX.Element {
             content: "Refresh",
             onClick: () => {
               setLoadingState(true);
-              fetchAndSetServerData({ debug: DEBUG });
+              fetchAndSetServerData({ debug: DEBUG, token: TOKEN });
             },
           },
-          // { content: "Log out", onClick: _.noop },
+          { content: "Log out", onClick: logout },
         ]}
       />
       <DataTableContainer positions={hydratedPositions} />

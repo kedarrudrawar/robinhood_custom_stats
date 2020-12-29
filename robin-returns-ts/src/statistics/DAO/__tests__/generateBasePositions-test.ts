@@ -1,69 +1,61 @@
 import chai from "chai";
-import sinon, { SinonStub } from "sinon";
+import sinon from "sinon";
 import sinonChai from "sinon-chai";
-
-import { TableColumn } from "../../../components/statistics/DataTable";
-import * as getAllSymbolAndCurrentPrices from "../getAllSymbolsAndCurrentPrices";
-import { INSTRUMENT_1 } from "../../fixtures/InstrumentFixtures";
-import { RH_POSITION_1 } from "../../fixtures/PositionsFixtures";
-import { generateBasePositions } from "../../processing/generateBasePositions";
-import { createInstrumentToItemMapping } from "../../processing/instrumentMapping";
-import { BasePosition } from "../../Position";
 
 chai.use(sinonChai);
 var sandbox = sinon.createSandbox();
 
-describe("generateBasePositions", () => {
-  let getAllSymbolsAndCurrentPrices: SinonStub<
-    [instrument: Array<string>],
-    Promise<Array<getAllSymbolAndCurrentPrices.SymbolAndCurrentPrice>>
-  >;
+// describe("generateBasePositions", () => {
+//   let getAllSymbolsAndCurrentPrices: SinonStub<
+//     [instrument: Array<string>],
+//     Promise<Array<getAllSymbolAndCurrentPrices.SymbolAndCurrentPrice>>
+//   >;
 
-  beforeEach(() => {
-    getAllSymbolsAndCurrentPrices = sandbox.stub(
-      getAllSymbolAndCurrentPrices,
-      "getAllSymbolsAndCurrentPrices"
-    );
-  });
+//   beforeEach(() => {
+//     getAllSymbolsAndCurrentPrices = sandbox.stub(
+//       getAllSymbolAndCurrentPrices,
+//       "getAllSymbolsAndCurrentPrices"
+//     );
+//   });
 
-  afterEach(() => {
-    sandbox.restore();
-  });
+//   afterEach(() => {
+//     sandbox.restore();
+//   });
 
-  it("should convert positions from server to a base position", async () => {
-    getAllSymbolsAndCurrentPrices.returns(
-      new Promise((resolve) =>
-        resolve([
-          {
-            instrument: INSTRUMENT_1.url,
-            symbol: INSTRUMENT_1.symbol,
-            currentPrice: 100,
-          },
-        ])
-      )
-    );
+//   it("should convert positions from server to a base position", async () => {
+//     getAllSymbolsAndCurrentPrices.returns(
+//       new Promise((resolve) =>
+//         resolve([
+//           {
+//             instrument: INSTRUMENT_1.url,
+//             symbol: INSTRUMENT_1.symbol,
+//             currentPrice: 100,
+//           },
+//         ])
+//       )
+//     );
 
-    const positionsFromServer = [
-      { ...RH_POSITION_1, instrument: INSTRUMENT_1.url },
-    ];
+//     const positionsFromServer = [
+//       { ...RH_POSITION_1, instrument: INSTRUMENT_1.url },
+//     ];
 
-    const actualBasePositions = await generateBasePositions(
-      createInstrumentToItemMapping(positionsFromServer)
-    );
+//     const actualBasePositions = await generateBasePositions(
+//       createInstrumentToItemMapping(positionsFromServer)
+//     );
 
-    const expectedBasePosition: BasePosition = {
-      [TableColumn.TICKER]: INSTRUMENT_1.symbol,
-      [TableColumn.QUANTITY]: parseFloat(RH_POSITION_1.quantity),
-      [TableColumn.CURRENT_PRICE]: 100,
-      [TableColumn.AVERAGE_COST]: parseFloat(RH_POSITION_1.average_buy_price),
-      [TableColumn.REALIZED_PROFIT]: null,
-      [TableColumn.UNREALIZED_PROFIT]: null,
-      [TableColumn.DIVIDEND]: null,
-      instrument: INSTRUMENT_1.url,
-    };
+//     const expectedBasePosition: BasePosition = {
+//       [TableColumn.TICKER]: INSTRUMENT_1.symbol,
+//       [TableColumn.QUANTITY]: parseFloat(RH_POSITION_1.quantity),
+//       [TableColumn.CURRENT_PRICE]: 100,
+//       [TableColumn.AVERAGE_COST]: parseFloat(RH_POSITION_1.average_buy_price),
+//       [TableColumn.REALIZED_PROFIT]: null,
+//       [TableColumn.UNREALIZED_PROFIT]: null,
+//       [TableColumn.DIVIDEND]: null,
+//       instrument: INSTRUMENT_1.url,
+//     };
 
-    chai.expect(actualBasePositions).deep.equal({
-      [INSTRUMENT_1.url]: expectedBasePosition,
-    });
-  });
-});
+//     chai.expect(actualBasePositions).deep.equal({
+//       [INSTRUMENT_1.url]: expectedBasePosition,
+//     });
+//   });
+// });
