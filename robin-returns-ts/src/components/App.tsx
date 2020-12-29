@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { DataPage } from "./DataPage";
+
+import { AuthContext } from "login/AuthContext";
 import {
   BrowserRouter as Router,
   Redirect,
@@ -8,12 +9,14 @@ import {
   RouteProps,
   Switch,
 } from "react-router-dom";
+import { DataPage } from "./DataPage";
+import { Head } from "./Head";
 import { LoginPage } from "./login/LoginPage";
-import { AuthContext } from "login/AuthContext";
 import { MFALoginPage } from "./login/MFALoginPage";
 
 import "ui/css/Login.css";
 import "ui/css/styles.css";
+import "ui/css/MFALogin.css";
 
 interface ProtectedRouteProps extends RouteProps {
   isLoggedIn: boolean;
@@ -58,54 +61,57 @@ function App() {
   }
 
   return (
-    <AuthContext.Provider
-      value={{
-        isLoggedIn,
-        token,
-        login,
-        logout,
-        username,
-        password,
-        updateCredentials: (username: string, password: string) => {
-          setUsername(username);
-          setPassword(password);
-        },
-      }}
-    >
-      <Router>
-        <Switch>
-          <ProtectedRoute
-            path="/statistics"
-            isLoggedIn={isLoggedIn}
-            token={token}
-            logout={logout}
-            component={DataPage}
-          />
-          <Route
-            path="/login"
-            render={(props: RouteComponentProps) => (
-              <LoginPage {...props} onSubmit={async () => true} />
-            )}
-          />
-          <Route
-            path="/MFA"
-            exact
-            render={(props) => (
-              <MFALoginPage
-                loginWithToken={(token: string) => {
-                  setToken(token);
-                  login();
-                }}
-                performOnValidatedResponse={() => {
-                  // Validate response
-                  props.history.push("/statistics");
-                }}
-              />
-            )}
-          />
-        </Switch>
-      </Router>
-    </AuthContext.Provider>
+    <>
+      <Head />
+      <AuthContext.Provider
+        value={{
+          isLoggedIn,
+          token,
+          login,
+          logout,
+          username,
+          password,
+          updateCredentials: (username: string, password: string) => {
+            setUsername(username);
+            setPassword(password);
+          },
+        }}
+      >
+        <Router>
+          <Switch>
+            <ProtectedRoute
+              path="/statistics"
+              isLoggedIn={isLoggedIn}
+              token={token}
+              logout={logout}
+              component={DataPage}
+            />
+            <Route
+              path="/login"
+              render={(props: RouteComponentProps) => (
+                <LoginPage {...props} onSubmit={async () => true} />
+              )}
+            />
+            <Route
+              path="/MFA"
+              exact
+              render={(props) => (
+                <MFALoginPage
+                  loginWithToken={(token: string) => {
+                    setToken(token);
+                    login();
+                  }}
+                  performOnValidatedResponse={() => {
+                    // Validate response
+                    props.history.push("/statistics");
+                  }}
+                />
+              )}
+            />
+          </Switch>
+        </Router>
+      </AuthContext.Provider>
+    </>
   );
 }
 

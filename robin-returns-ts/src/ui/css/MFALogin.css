@@ -8,7 +8,14 @@
   font-family: "IBM Plex Sans";
 }
 
-.login-page {
+.spacer-above {
+  flex: 1 1 20%;
+}
+.spacer-below {
+  flex: 1 1 60%;
+}
+
+.mfa-login-page {
   display: flex;
   align-items: center;
   height: 100vh;
@@ -18,56 +25,14 @@
   background-color: #f8f8f8;
 }
 
-.preview-container {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  align-items: center;
-  height: 100vh;
-  /* border: 3px green solid; */
-  flex: 3;
+.mfa-container {
+  flex-direction: column;
 }
 
-.graphic {
-  display: flex;
-  width: 90%;
-  height: 90%;
-  /* border: 2px green solid; */
-}
-
-.login-container {
-  display: flex;
-  justify-content: center;
-  width: 30vw;
-  margin: 0px 30px;
-  flex: 2;
-  /* border: 3px orange solid; */
-}
-
-.login-width {
-  width: 425px;
-}
-
-.login {
+.mfa-login-body {
   display: flex;
   flex-direction: column;
-  align-items: left;
-  /* padding: 232px 0 232px 0; */
-  /* border: 2px green solid; */
-}
-
-.header {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-  /* border: 2px purple solid; */
-}
-
-.login-body {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  /* border: 2px black solid; */
+  width: 60%;
 }
 
 .login-contents {
@@ -76,14 +41,16 @@
   margin-bottom: 10px;
 }
 
-.large-title {
+.mfa-title {
   /* font-family: Roboto; */
-  font-style: normal;
+  /* font-family: IBM Plex Sans; */
   font-weight: bold;
-  font-size: 30px;
-  line-height: 35px;
-  color: #1a202c;
-  /* border: 2px black solid; */
+  font-style: normal;
+  font-size: 22px;
+  /* line-height: 21px; */
+  /* identical to box height */
+  /* 800 */
+  color: #2d3748;
 }
 
 .input-box {
