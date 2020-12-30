@@ -48,15 +48,12 @@ export interface StatsSummaryData {
 
 export function DataPage(): JSX.Element {
   const [loadingState, setLoadingState] = useState<boolean>(true);
-
   const [hydratedPositions, setHydratedPositions] = useState<Array<Position>>(
     []
   );
-
   const [statsSummaryData, setStatsSummaryData] = useState<StatsSummaryData>(
     STATS_SUMMARY_1
   );
-
   const [serverData, setServerData] = useState<ServerData>({
     ordersArrays: {},
     positions: {},
@@ -67,6 +64,7 @@ export function DataPage(): JSX.Element {
       portfolioCash: 0,
     },
   });
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
 
   const { token: TOKEN, logout } = useContext(AuthContext);
 
@@ -83,13 +81,14 @@ export function DataPage(): JSX.Element {
       data = await getAllServerData(options.token);
     }
     setServerData(data);
+    setUpdatedAt(new Date().toLocaleTimeString());
     return data;
   }
 
   // Fetch full positions and orders from server
   useEffect(() => {
     fetchAndSetServerData({ debug: DEBUG, token: TOKEN });
-  }, []);
+  }, [TOKEN]);
 
   useEffect(() => {
     const basePositions = generateBasePositionsFromServerData(serverData);
@@ -141,7 +140,7 @@ export function DataPage(): JSX.Element {
     return <LoadingLottie />;
   }
   return (
-    <div>
+    <div style={{ height: "100%" }}>
       <StatsHeader
         {...statsSummaryData}
         headerButtons={[
@@ -155,7 +154,7 @@ export function DataPage(): JSX.Element {
           { content: "Log out", onClick: logout },
         ]}
       />
-      <DataTableContainer positions={hydratedPositions} />
+      <DataTableContainer positions={hydratedPositions} updatedAt={updatedAt} />
     </div>
   );
 }

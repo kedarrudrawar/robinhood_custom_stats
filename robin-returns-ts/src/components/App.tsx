@@ -49,7 +49,7 @@ function App() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
   const [token, setToken] = useState<string | null>(null);
 
   function login() {
@@ -61,7 +61,7 @@ function App() {
   }
 
   return (
-    <>
+    <div style={{ height: "100%" }}>
       <Head />
       <AuthContext.Provider
         value={{
@@ -111,7 +111,7 @@ function App() {
           </Switch>
         </Router>
       </AuthContext.Provider>
-    </>
+    </div>
   );
 }
 

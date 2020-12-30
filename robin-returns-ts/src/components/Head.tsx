@@ -4,6 +4,10 @@ export const Head = () => {
   return (
     <Helmet>
       <meta charSet="UTF-8" />
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      />
       <title>Robin Returns</title>
     </Helmet>
   );

@@ -56,13 +56,6 @@
   /* border: 2px green solid; */
 }
 
-.header {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-  /* border: 2px purple solid; */
-}
-
 .login-body {
   display: flex;
   flex-direction: column;

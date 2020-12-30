@@ -5,18 +5,17 @@ import DataTable from "./DataTable";
 
 interface DataTableContainerProps {
   positions: Array<Position>;
+  updatedAt: string | null;
 }
 
 export function DataTableContainer(
   props: DataTableContainerProps
 ): JSX.Element {
   return (
-    <div>
-      <div className="bottom-container">
-        <div className="history-container">
-          <Timestamp />
-          <DataTable positions={props.positions} />
-        </div>
+    <div className="bottom-container">
+      <div className="history-container">
+        <Timestamp updatedAt={props.updatedAt} />
+        <DataTable positions={props.positions} />
       </div>
     </div>
   );
