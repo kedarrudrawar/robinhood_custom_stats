@@ -13,6 +13,7 @@ chai.use(dirtyChai);
 var sandbox = sinon.createSandbox();
 
 describe("extractAllResults", () => {
+  const token = "";
   let getStub: SinonStub;
 
   beforeEach(() => {
@@ -45,7 +46,7 @@ describe("extractAllResults", () => {
 
     // Should NOT be in reversed order.
     chai
-      .expect(await extractAllResults(ORDERS_URL))
+      .expect(await extractAllResults({ endpoint: ORDERS_URL, token }))
       .deep.equal([
         SMALL_ORDERS_RESPONSE.results[0],
         SMALL_ORDERS_RESPONSE.results[1],
@@ -53,7 +54,9 @@ describe("extractAllResults", () => {
 
     // Should be in reversed order.
     chai
-      .expect(await extractAllResults(ORDERS_URL, true))
+      .expect(
+        await extractAllResults({ endpoint: ORDERS_URL, reverse: true, token })
+      )
       .deep.equal([
         SMALL_ORDERS_RESPONSE.results[1],
         SMALL_ORDERS_RESPONSE.results[0],
@@ -82,7 +85,7 @@ describe("extractAllResults", () => {
 
     // Should NOT be in reversed order.
     chai
-      .expect(await extractAllResults(POSITIONS_URL))
+      .expect(await extractAllResults({ endpoint: POSITIONS_URL, token }))
       .deep.equal(FULL_POSITIONS_RESPONSE_1.results.slice(0, 6));
   });
 });
