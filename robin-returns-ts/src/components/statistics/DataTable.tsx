@@ -1,4 +1,4 @@
-import MaterialTable, { Column as MaterialTableColumn } from "material-table";
+import MaterialTable from "material-table";
 import React from "react";
 
 import Timestamp from "components/Timestamp";

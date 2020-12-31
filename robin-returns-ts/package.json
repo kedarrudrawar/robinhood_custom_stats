@@ -4,7 +4,7 @@
   "description": "An application that calculates total returns for your Robinhood portfolio.",
   "author": "Kedar Rudrawar",
   "repository": {
-    "url": "https://github.com/kedarrudrawar/Robin-Returns", 
+    "url": "https://github.com/kedarrudrawar/Robin-Returns",
     "type": "git"
   },
   "private": true,
