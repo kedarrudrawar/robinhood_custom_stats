@@ -1,5 +1,5 @@
 import { ServerData } from "components/DataPage";
-import { TableColumn } from "components/statistics/DataTable";
+import { PositionData } from "components/statistics/DataTable";
 import { Position } from "statistics/Position";
 import { RHDividend } from "statistics/DAO/RHPortfolioDataResponseTypes";
 import InstrumentMap from "./instrumentMapping";
@@ -16,7 +16,7 @@ export function populateDividends(
     if (dividendString != null) {
       const dividend = dividendString ? parseFloat(dividendString) : null;
 
-      instrumentToPosition[instrument][TableColumn.DIVIDEND] = dividend;
+      instrumentToPosition[instrument][PositionData.DIVIDEND] = dividend;
     }
   }
 
@@ -40,16 +40,16 @@ export function populateDividendsFromServerData(
     for (const { amount: dividendString } of dividends) {
       const dividend = parseFloat(dividendString);
       if (
-        instrumentToPositionWithDividend[instrument][TableColumn.DIVIDEND] ==
+        instrumentToPositionWithDividend[instrument][PositionData.DIVIDEND] ==
         null
       ) {
         instrumentToPositionWithDividend[instrument][
-          TableColumn.DIVIDEND
+          PositionData.DIVIDEND
         ] = dividend;
       } else {
         // @ts-expect-error - TypeScript not recognizing null-check in the conditional.
         instrumentToPositionWithDividend[instrument][
-          TableColumn.DIVIDEND
+          PositionData.DIVIDEND
         ] += dividend;
       }
     }

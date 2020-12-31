@@ -34,8 +34,13 @@ export async function getAllServerData(
   ];
   allInstruments = Array.from(new Set(allInstruments));
 
+  const allSymbolsAndCurrentPrices = await getAllSymbolsAndCurrentPrices(
+    allInstruments,
+    token
+  );
+
   const symbolAndCurrentPrice = createInstrumentToItemMapping(
-    await getAllSymbolsAndCurrentPrices(allInstruments, token)
+    allSymbolsAndCurrentPrices
   );
 
   const accountInfo = await getAccountInfo(token);

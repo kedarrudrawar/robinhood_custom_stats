@@ -2,8 +2,13 @@ import React from "react";
 import { StatsSummaryData } from "../DataPage";
 import { StatsSummary } from "./StatsSummary";
 
+interface HeaderButton {
+  onClick: () => void;
+  content: string;
+}
+
 export interface StatsHeaderProps extends StatsSummaryData {
-  headerButtons: Array<{ onClick: () => any; content: string }>;
+  headerButtons: Array<HeaderButton>;
 }
 
 export function StatsHeader(props: StatsHeaderProps): JSX.Element {

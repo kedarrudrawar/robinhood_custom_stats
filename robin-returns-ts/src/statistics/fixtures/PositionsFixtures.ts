@@ -1,4 +1,4 @@
-import { TableColumn } from "components/statistics/DataTable";
+import { PositionData } from "components/statistics/DataTable";
 import { Position } from "statistics/Position";
 import {
   PaginatedResultsResponse,
@@ -749,6 +749,30 @@ export const RH_POSITION_1: RHPosition = {
   created_at: "2020-04-30T17:32:59.643955Z",
 };
 
+export const RH_POSITION_2: RHPosition = {
+  url:
+    "https://api.robinhood.com/positions/925501777/e39ed23a-7bd1-4587-b060-71988d9ef483/",
+  instrument:
+    "https://api.robinhood.com/instruments/e39ed23a-7bd1-4587-b060-71988d9ef483/",
+  account: "https://api.robinhood.com/accounts/925501777/",
+  account_number: "925501777",
+  average_buy_price: "454.1437",
+  pending_average_buy_price: "454.1437",
+  quantity: "2.43315100",
+  intraday_average_buy_price: "0.0000",
+  intraday_quantity: "0.00000000",
+  shares_available_for_exercise: "2.43315100",
+  shares_held_for_buys: "0.00000000",
+  shares_held_for_sells: "0.00000000",
+  shares_held_for_stock_grants: "0.00000000",
+  shares_held_for_options_collateral: "0.00000000",
+  shares_held_for_options_events: "0.00000000",
+  shares_pending_from_options_events: "0.00000000",
+  shares_available_for_closing_short_position: "0.00000000",
+  updated_at: "2020-12-02T14:32:19.238109Z",
+  created_at: "2020-01-08T18:47:53.092057Z",
+};
+
 export const SIMPLE_POSITIONS_RESPONSE: PaginatedResultsResponse<RHPosition> = {
   next: null,
   previous: null,
@@ -758,13 +782,13 @@ export const SIMPLE_POSITIONS_RESPONSE: PaginatedResultsResponse<RHPosition> = {
 const { quantity, average_buy_price } = SIMPLE_POSITIONS_RESPONSE.results[0];
 
 export const POSITION: Position = {
-  [TableColumn.TICKER]: "AAPL",
-  [TableColumn.QUANTITY]: parseFloat(quantity),
-  [TableColumn.AVERAGE_COST]: parseFloat(average_buy_price),
-  [TableColumn.DIVIDEND]: 115,
-  [TableColumn.UNREALIZED_PROFIT]: 100,
-  [TableColumn.REALIZED_PROFIT]: 100,
-  [TableColumn.CURRENT_PRICE]: 100,
+  [PositionData.TICKER]: "AAPL",
+  [PositionData.QUANTITY]: parseFloat(quantity),
+  [PositionData.AVERAGE_COST]: parseFloat(average_buy_price),
+  [PositionData.DIVIDEND]: 115,
+  [PositionData.UNREALIZED_PROFIT]: 100,
+  [PositionData.REALIZED_PROFIT]: 100,
+  [PositionData.CURRENT_PRICE]: 100,
   instrument:
     "https://api.robinhood.com/instruments/450dfc6d-5510-4d40-abfb-f633b7d9be3e/",
 };

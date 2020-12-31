@@ -161,11 +161,11 @@ body,
   line-height: 18px;
 }
 
-.updated-stats {
-  font-size: 14px;
+.timestamp {
+  font-size: 15px;
   line-height: 18px;
   color: #747384;
-  margin-top: 32px;
+  padding-bottom: 5px;
 }
 
 .table-title {
@@ -176,7 +176,8 @@ body,
 }
 
 .bottom-container {
-  background-color: #f3f3f3;
+  /* background-color: #f3f3f3; */
+  /* background-color: #00c804; */
   margin-top: 32px;
   padding: 30px 0;
   height: 100%;
@@ -187,7 +188,7 @@ body,
   background: #ffffff;
   border: 1px solid #cdcdcd;
   border-radius: 4px;
-  padding-top: 32px;
+  padding-top: 24px;
 }
 
 .history-categories {

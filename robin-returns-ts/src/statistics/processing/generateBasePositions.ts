@@ -1,5 +1,5 @@
 import { ServerData } from "components/DataPage";
-import { TableColumn } from "components/statistics/DataTable";
+import { PositionData } from "components/statistics/DataTable";
 import { BasePosition } from "statistics/Position";
 import InstrumentMap, {
   createInstrumentToItemMapping,
@@ -17,13 +17,13 @@ export function generateBasePositionsFromServerData(
       const { instrument, quantity, average_buy_price } = rhPosition;
       const { currentPrice, symbol } = symbolAndCurrentPrice[instrument];
       return {
-        [TableColumn.TICKER]: symbol,
-        [TableColumn.QUANTITY]: parseFloat(quantity),
-        [TableColumn.AVERAGE_COST]: parseFloat(average_buy_price),
-        [TableColumn.CURRENT_PRICE]: currentPrice,
-        [TableColumn.DIVIDEND]: null,
-        [TableColumn.UNREALIZED_PROFIT]: null,
-        [TableColumn.REALIZED_PROFIT]: null,
+        [PositionData.TICKER]: symbol,
+        [PositionData.QUANTITY]: parseFloat(quantity),
+        [PositionData.AVERAGE_COST]: parseFloat(average_buy_price),
+        [PositionData.CURRENT_PRICE]: currentPrice,
+        [PositionData.DIVIDEND]: null,
+        [PositionData.UNREALIZED_PROFIT]: null,
+        [PositionData.REALIZED_PROFIT]: null,
         instrument,
       };
     }

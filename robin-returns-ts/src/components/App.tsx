@@ -13,6 +13,8 @@ import { DataPage } from "./DataPage";
 import { Head } from "./Head";
 import { LoginPage } from "./login/LoginPage";
 import { MFALoginPage } from "./login/MFALoginPage";
+import { RobinhoodBaseToken } from "DAOConstants";
+import { useEnvToken, DEBUG } from "config";
 
 import "ui/css/Login.css";
 import "ui/css/styles.css";
@@ -21,14 +23,12 @@ import "ui/css/MFALogin.css";
 interface ProtectedRouteProps extends RouteProps {
   isLoggedIn: boolean;
   token: string | null;
-  logout: () => void;
   component: React.ComponentType<RouteComponentProps> | React.ComponentType;
 }
 
 function ProtectedRoute({
   isLoggedIn,
   token,
-  logout,
   component: Component,
   ...rest
 }: ProtectedRouteProps) {
@@ -49,8 +49,10 @@ function App() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
-  const [token, setToken] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(DEBUG);
+  const [token, setToken] = useState<RobinhoodBaseToken | null>(
+    (useEnvToken && process.env.REACT_APP_BEARER) || null
+  );
 
   function login() {
     setIsLoggedIn(true);
@@ -79,19 +81,11 @@ function App() {
       >
         <Router>
           <Switch>
-            <ProtectedRoute
-              path="/statistics"
-              isLoggedIn={isLoggedIn}
-              token={token}
-              logout={logout}
-              component={DataPage}
-            />
             <Route
               path="/login"
-              render={(props: RouteComponentProps) => (
-                <LoginPage {...props} onSubmit={async () => true} />
-              )}
+              render={(props: RouteComponentProps) => <LoginPage {...props} />}
             />
+
             <Route
               path="/MFA"
               exact
@@ -102,11 +96,16 @@ function App() {
                     login();
                   }}
                   performOnValidatedResponse={() => {
-                    // Validate response
                     props.history.push("/statistics");
                   }}
                 />
               )}
+            />
+            <ProtectedRoute
+              path={["/", "/statistics"]}
+              isLoggedIn={isLoggedIn}
+              token={token}
+              component={DataPage}
             />
           </Switch>
         </Router>

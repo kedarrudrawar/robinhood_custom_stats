@@ -5,7 +5,7 @@ export interface TimestampProps {
 function Timestamp(props: TimestampProps): JSX.Element {
   if (props.updatedAt != null) {
     return (
-      <div className="history-header updated-stats">
+      <div className="timestamp">
         Updated at {props.updatedAt.toLocaleString()}
       </div>
     );

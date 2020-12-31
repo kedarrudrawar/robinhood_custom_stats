@@ -15,9 +15,7 @@ import {
 } from "login/RobinhoodResponseConstants";
 import { LaptopPreview } from "./LaptopPreview";
 
-export interface LoginPageProps extends RouteComponentProps {
-  onSubmit: (username: string, password: string) => Promise<{}>;
-}
+export interface LoginPageProps extends RouteComponentProps {}
 
 export function LoginPage(props: LoginPageProps): JSX.Element {
   const [username, setUsername] = useState("");

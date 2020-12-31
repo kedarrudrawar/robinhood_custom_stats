@@ -12,11 +12,9 @@ interface BaseHeader {
   "Accept-Language": "en;q=1, fr;q=0.9, de;q=0.8, ja;q=0.7, nl;q=0.6, it;q=0.5,";
   "Content-Type": "application/x-www-form-urlencoded; charset=utf-8,";
   "Cache-Control": "no-cache";
-  Accept: "*/*";
 }
 
 interface HeaderWithToken extends BaseHeader {
-  // TODO kedar: See if I even need the accept:
   Authorization: RobinhoodBearerToken;
 }
 
@@ -40,7 +38,6 @@ export interface AuthPayloadWithCredentials extends AuthPayload {
 }
 
 const BASE_HEADER: BaseHeader = {
-  Accept: "*/*",
   "Accept-Language":
     "en;q=1, fr;q=0.9, de;q=0.8, ja;q=0.7, nl;q=0.6, it;q=0.5,",
   "Content-Type": "application/x-www-form-urlencoded; charset=utf-8,",
@@ -54,7 +51,6 @@ const AUTH_HEADER: AuthHeader = {
 
 const HEADERS_WITH_TOKEN: HeaderWithToken = {
   ...BASE_HEADER,
-  Accept: "*/*",
   Authorization: `Bearer ${process.env.REACT_APP_BEARER}`,
 };
 
@@ -62,7 +58,6 @@ export function buildHeaders(token: string): { headers: HeaderWithToken } {
   return {
     headers: {
       ...BASE_HEADER,
-      Accept: "*/*",
       Authorization: `Bearer ${token}`,
     },
   };

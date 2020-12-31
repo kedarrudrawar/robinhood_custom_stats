@@ -1,4 +1,4 @@
-import { TableColumn } from "../../components/statistics/DataTable";
+import { PositionData } from "../../components/statistics/DataTable";
 import { ServerData } from "../../components/DataPage";
 import { BasePosition, Position } from "../Position";
 import { RHPosition, RHOrder } from "../DAO/RHPortfolioDataResponseTypes";
@@ -83,7 +83,6 @@ function filterOutBuyOrdersOccurringAfterLastSell({
   return { buyOrderData, sellOrderData };
 }
 
-// TODO kedar: Figure out why it doesn't work on ERI.
 /**
  *
  * @param instrumentToOrders Mapping from instrument to all orders of that instrument. Must be in chronological order (earliest to latest)
@@ -93,7 +92,9 @@ function populateRealizedProfits(
   instrumentToOrders: InstrumentMap<Array<RHOrder>>,
   basePositions: InstrumentMap<BasePosition>
 ): InstrumentMap<Position> {
-  const basePositionsWithRealizedProfits: InstrumentMap<Position> = {};
+  const basePositionsWithRealizedProfits: InstrumentMap<Position> = {
+    ...basePositions,
+  };
 
   for (const [instrument, orders] of Object.entries(instrumentToOrders)) {
     const separatedOrderData = separateOrdersIntoBuyAndSell(orders);
@@ -140,7 +141,7 @@ function populateRealizedProfits(
     // Copy base position with realized profits added
     basePositionsWithRealizedProfits[instrument] = {
       ...basePositions[instrument],
-      [TableColumn.REALIZED_PROFIT]: realizedProfit,
+      [PositionData.REALIZED_PROFIT]: realizedProfit,
     };
   }
 
@@ -158,12 +159,12 @@ function populateUnrealizedProfits(
     const {
       average_buy_price: averageBuyPrice,
     } = instrumentToPositionFromServer[instrument];
-    const quantity = basePosition[TableColumn.QUANTITY];
-    const currentPrice = basePosition[TableColumn.CURRENT_PRICE];
+    const quantity = basePosition[PositionData.QUANTITY];
+    const currentPrice = basePosition[PositionData.CURRENT_PRICE];
 
     basePositionWithUnrealizedProfits[instrument] = {
       ...basePosition,
-      [TableColumn.UNREALIZED_PROFIT]:
+      [PositionData.UNREALIZED_PROFIT]:
         currentPrice != null && quantity > 0
           ? (currentPrice - parseFloat(averageBuyPrice)) * quantity
           : null,

@@ -17,14 +17,12 @@ import {
   RHPosition,
   RHDividend,
 } from "statistics/DAO/RHPortfolioDataResponseTypes";
-import { TableColumn } from "./statistics/DataTable";
+import { PositionData } from "./statistics/DataTable";
 import LoadingLottie from "./LoadingLottie";
 import { StatsHeader } from "./statistics/StatsHeader";
 import DataTableContainer from "./statistics/DataTableContainer";
 import { AuthContext } from "login/AuthContext";
 import { RobinhoodBaseToken } from "DAOConstants";
-
-const DEBUG = false;
 
 export interface AccountInfo {
   portfolioCash: number;
@@ -66,20 +64,13 @@ export function DataPage(): JSX.Element {
   });
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
 
-  const { token: TOKEN, logout } = useContext(AuthContext);
+  const { token, logout } = useContext(AuthContext);
 
   async function fetchAndSetServerData(
-    options: { debug: boolean; token: RobinhoodBaseToken | null } = {
-      debug: true,
-      token: null,
-    }
+    token: RobinhoodBaseToken | null = null
   ): Promise<ServerData> {
-    let data: ServerData;
-    if (options.debug || options.token == null) {
-      data = { ...SERVER_DATA_1 };
-    } else {
-      data = await getAllServerData(options.token);
-    }
+    const data =
+      token == null ? { ...SERVER_DATA_1 } : await getAllServerData(token);
     setServerData(data);
     setUpdatedAt(new Date().toLocaleTimeString());
     return data;
@@ -87,8 +78,8 @@ export function DataPage(): JSX.Element {
 
   // Fetch full positions and orders from server
   useEffect(() => {
-    fetchAndSetServerData({ debug: DEBUG, token: TOKEN });
-  }, [TOKEN]);
+    fetchAndSetServerData(token);
+  }, [token]);
 
   useEffect(() => {
     const basePositions = generateBasePositionsFromServerData(serverData);
@@ -119,8 +110,8 @@ export function DataPage(): JSX.Element {
     let totalUnrealizedReturn = 0;
 
     for (const position of filteredPositions) {
-      totalRealizedReturn += position[TableColumn.REALIZED_PROFIT] ?? 0;
-      totalUnrealizedReturn += position[TableColumn.UNREALIZED_PROFIT] ?? 0;
+      totalRealizedReturn += position[PositionData.REALIZED_PROFIT] ?? 0;
+      totalUnrealizedReturn += position[PositionData.UNREALIZED_PROFIT] ?? 0;
     }
 
     setStatsSummaryData({
@@ -148,7 +139,7 @@ export function DataPage(): JSX.Element {
             content: "Refresh",
             onClick: () => {
               setLoadingState(true);
-              fetchAndSetServerData({ debug: DEBUG, token: TOKEN });
+              fetchAndSetServerData(token);
             },
           },
           { content: "Log out", onClick: logout },

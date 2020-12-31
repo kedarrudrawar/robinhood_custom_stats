@@ -1,4 +1,3 @@
-import Timestamp from "components/Timestamp";
 import React from "react";
 import { Position } from "statistics/Position";
 import DataTable from "./DataTable";
@@ -14,8 +13,7 @@ export function DataTableContainer(
   return (
     <div className="bottom-container">
       <div className="history-container">
-        <Timestamp updatedAt={props.updatedAt} />
-        <DataTable positions={props.positions} />
+        <DataTable {...props} />
       </div>
     </div>
   );

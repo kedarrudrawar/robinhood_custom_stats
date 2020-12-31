@@ -4,11 +4,7 @@ import {
   ResultsResponse,
   RHPortfolio,
 } from "statistics/DAO/RHPortfolioDataResponseTypes";
-import {
-  AXIOS_HEADERS,
-  buildHeaders,
-  RobinhoodBaseToken,
-} from "../../DAOConstants";
+import { buildHeaders, RobinhoodBaseToken } from "../../DAOConstants";
 import { PORTFOLIOS_URL } from "./PortfolioDataURLs";
 
 async function getAccountInfo(token: RobinhoodBaseToken): Promise<AccountInfo> {
@@ -22,7 +18,7 @@ async function getAccountInfo(token: RobinhoodBaseToken): Promise<AccountInfo> {
   const { withdrawable_amount, market_value } = results[0];
   return {
     portfolioCash: parseFloat(withdrawable_amount),
-    // TODO kedar: figure out why i'm getting the entire pfolio value here
+    // TODO kedar: Fix these values :(
     totalMarketValue: parseFloat(market_value),
   };
 }

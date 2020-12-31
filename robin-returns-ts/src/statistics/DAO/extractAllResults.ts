@@ -1,15 +1,10 @@
 import axios, { AxiosResponse } from "axios";
+import { RobinhoodURL, RobinhoodBaseToken, buildHeaders } from "DAOConstants";
 import {
   PaginatedResultsResponse,
   isPaginatedResultsResponse,
 } from "statistics/DAO/RHPortfolioDataResponseTypes";
 import { assert } from "util/assert";
-import {
-  AXIOS_HEADERS,
-  buildHeaders,
-  RobinhoodBaseToken,
-  RobinhoodURL,
-} from "../../DAOConstants";
 
 /**
  *

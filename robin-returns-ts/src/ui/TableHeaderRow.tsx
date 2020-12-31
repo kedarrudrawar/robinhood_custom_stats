@@ -1,8 +1,8 @@
-import { TableColumn } from "../components/statistics/DataTable";
+import { PositionData } from "../components/statistics/DataTable";
 import { TableHeaderCell } from "./TableHeaderCell";
 
 interface TableHeaderRowProps {
-  columns: Array<TableColumn>;
+  columns: Array<PositionData>;
 }
 
 export function TableHeaderRow(props: TableHeaderRowProps) {

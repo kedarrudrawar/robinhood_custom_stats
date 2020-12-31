@@ -1,4 +1,4 @@
-import { TableColumn } from "components/statistics/DataTable";
+import { PositionData } from "components/statistics/DataTable";
 import { Position } from "statistics/Position";
 
 export default function removeWatchlistPositions(
@@ -6,7 +6,7 @@ export default function removeWatchlistPositions(
 ): Array<Position> {
   return positions.filter(
     (position) =>
-      position[TableColumn.REALIZED_PROFIT] != null ||
-      position[TableColumn.UNREALIZED_PROFIT] != null
+      position[PositionData.REALIZED_PROFIT] != null ||
+      position[PositionData.UNREALIZED_PROFIT] != null
   );
 }
