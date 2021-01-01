@@ -48,12 +48,6 @@ const AUTH_HEADER: AuthHeader = {
   ...BASE_HEADER,
   "X-Robinhood-API-Version": "1.0.0",
 };
-
-const HEADERS_WITH_TOKEN: HeaderWithToken = {
-  ...BASE_HEADER,
-  Authorization: `Bearer ${process.env.REACT_APP_BEARER}`,
-};
-
 export function buildHeaders(token: string): { headers: HeaderWithToken } {
   return {
     headers: {
@@ -62,10 +56,6 @@ export function buildHeaders(token: string): { headers: HeaderWithToken } {
     },
   };
 }
-
-export const AXIOS_HEADERS: { headers: HeaderWithToken } = {
-  headers: HEADERS_WITH_TOKEN,
-};
 
 export const BASE_AUTH_PAYLOAD: AuthPayload = {
   headers: AUTH_HEADER,

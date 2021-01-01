@@ -10,7 +10,6 @@ import {
 } from "statistics/DAO/RHPortfolioDataResponseTypes";
 import { assert } from "util/assert";
 import {
-  AXIOS_HEADERS,
   buildHeaders,
   RobinhoodBaseToken,
   RobinhoodURL,
@@ -26,9 +25,10 @@ export async function getSymbolAndCurrentPrice(
   instrument: RobinhoodURL,
   token: RobinhoodBaseToken
 ): Promise<SymbolAndCurrentPrice> {
+  const authHeaders = buildHeaders(token);
   const { data: instrumentData } = await axios.get<RHInstrument>(
     instrument,
-    buildHeaders(token)
+    authHeaders
   );
   assert(
     isInstrument(instrumentData),
@@ -38,9 +38,8 @@ export async function getSymbolAndCurrentPrice(
   const { quote } = instrumentData;
   let quoteData: RHQuote | RHQuoteInactive;
   try {
-    quoteData = (
-      await axios.get<RHQuote | RHQuoteInactive>(quote, AXIOS_HEADERS)
-    ).data;
+    quoteData = (await axios.get<RHQuote | RHQuoteInactive>(quote, authHeaders))
+      .data;
   } catch (err) {
     quoteData = err.response.data;
     if (isInactiveQuote(quoteData)) {
