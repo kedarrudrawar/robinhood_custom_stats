@@ -34,7 +34,7 @@ export function MFALoginPage(props: MFALoginPageProps) {
                     const response = await attemptMFALogin({
                       username,
                       password,
-                      MFACode: parseInt(MFACode),
+                      MFACode: MFACode,
                       onReject: (data: RobinhoodError) => {
                         alert(getErrorMessage(data));
                       },

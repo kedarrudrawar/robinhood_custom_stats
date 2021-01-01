@@ -82,7 +82,7 @@ export async function attemptMFALogin({
 }: {
   username: string;
   password: string;
-  MFACode: number;
+  MFACode: string;
   onReject: (data: RobinhoodError) => void;
 }): Promise<AxiosResponse<MFALoginResponse> | null> {
   const payload: MFALoginRequest = {
