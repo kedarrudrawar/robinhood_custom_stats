@@ -7,7 +7,7 @@ import {
   RHInstrument,
   RHQuote,
   RHQuoteInactive,
-} from "statistics/DAO/RHPortfolioDataResponseTypes";
+} from "statistics/DAO/ServerResponseTypes";
 import { assert } from "util/assert";
 import {
   buildHeaders,

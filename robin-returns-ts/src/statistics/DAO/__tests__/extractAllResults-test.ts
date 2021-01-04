@@ -6,7 +6,7 @@ import sinon, { SinonStub } from "sinon";
 import { ORDERS_URL, POSITIONS_URL } from "../PortfolioDataURLs";
 import { SMALL_ORDERS_RESPONSE } from "../../fixtures/OrdersFixtures";
 import { FULL_POSITIONS_RESPONSE_1 } from "../../fixtures/PositionsFixtures";
-import extractAllResults from "../../DAO/extractAllResults";
+import extractAllResults from "../DAOUtils";
 
 chai.use(dirtyChai);
 

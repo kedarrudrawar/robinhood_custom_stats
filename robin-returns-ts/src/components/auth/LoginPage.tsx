@@ -2,17 +2,17 @@ import { AxiosResponse } from "axios";
 import React, { useContext, useState } from "react";
 import { RouteComponentProps } from "react-router-dom";
 
-import { AuthContext } from "login/AuthContext";
-import { attemptInitialLogin } from "login/AuthDAO";
-import { getErrorMessage } from "login/ErrorUtil";
+import { AuthContext } from "auth/AuthContext";
+import { attemptInitialLogin } from "auth/AuthDAO";
+import { getErrorMessage } from "auth/ErrorUtil";
 import {
   isChallengeRequired,
   isMFARequired,
-} from "login/RHResponseTypePredicates";
+} from "auth/ServerResponseTypePredicates";
 import {
   InitialLoginResponse,
   RobinhoodError,
-} from "login/RobinhoodResponseConstants";
+} from "auth/ServerResponseConstants";
 import { LaptopPreview } from "./LaptopPreview";
 
 export interface LoginPageProps extends RouteComponentProps {}

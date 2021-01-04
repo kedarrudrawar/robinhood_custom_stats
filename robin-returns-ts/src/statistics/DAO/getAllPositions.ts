@@ -1,6 +1,6 @@
 import { RobinhoodBaseToken } from "DAOConstants";
-import { RHPosition } from "statistics/DAO/RHPortfolioDataResponseTypes";
-import extractAllResults from "./extractAllResults";
+import { RHPosition } from "statistics/DAO/ServerResponseTypes";
+import extractAllResults from "./DAOUtils";
 import { POSITIONS_URL } from "./PortfolioDataURLs";
 
 export default async function getAllPositions(

@@ -1,29 +1,15 @@
 import axios, { AxiosResponse } from "axios";
 
-import { AuthPayloadWithCredentials, BASE_AUTH_PAYLOAD } from "DAOConstants";
 import { OAUTH2_URL } from "./AuthURLs";
 import {
   InitialLoginResponse,
   MFALoginResponse,
   RobinhoodError,
-} from "./RobinhoodResponseConstants";
-import {
-  InitialLoginRequest,
-  MFALoginRequest,
-} from "./RobinhoodRequestConstants";
+} from "./ServerResponseConstants";
+import { InitialLoginRequest, MFALoginRequest } from "./ServerRequestConstants";
 import { assert } from "util/assert";
-import { isRobinhoodError } from "./RHResponseTypePredicates";
-
-export function buildAuthPayload(
-  username: string,
-  password: string
-): AuthPayloadWithCredentials {
-  return {
-    ...BASE_AUTH_PAYLOAD,
-    username,
-    password,
-  };
-}
+import { isRobinhoodError } from "./ServerResponseTypePredicates";
+import { buildAuthPayload } from "./DAO/DAOUtils";
 
 async function attemptLogin<RequestPayloadType, ResponseType>({
   endpoint,

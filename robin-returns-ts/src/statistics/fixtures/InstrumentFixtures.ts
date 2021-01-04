@@ -1,4 +1,4 @@
-import { RHInstrument } from "statistics/DAO/RHPortfolioDataResponseTypes";
+import { RHInstrument } from "statistics/DAO/ServerResponseTypes";
 
 export const INSTRUMENT_1: RHInstrument = {
   id: "2ed64ef4-2c1a-44d6-832d-1be84741dc41",

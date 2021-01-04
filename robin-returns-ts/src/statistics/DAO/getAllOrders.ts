@@ -1,6 +1,6 @@
 import { ORDERS_URL } from "./PortfolioDataURLs";
-import extractAllResults from "./extractAllResults";
-import { RHOrder } from "statistics/DAO/RHPortfolioDataResponseTypes";
+import extractAllResults from "./DAOUtils";
+import { RHOrder } from "statistics/DAO/ServerResponseTypes";
 import { RobinhoodBaseToken } from "DAOConstants";
 
 export default async function getAllOrders(

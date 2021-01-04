@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { AuthContext } from "login/AuthContext";
+import { AuthContext } from "auth/AuthContext";
 import {
   BrowserRouter as Router,
   Redirect,
@@ -11,14 +11,14 @@ import {
 } from "react-router-dom";
 import { DataPage } from "./DataPage";
 import { Head } from "./Head";
-import { LoginPage } from "./login/LoginPage";
-import { MFALoginPage } from "./login/MFALoginPage";
 import { RobinhoodBaseToken } from "DAOConstants";
 import { useEnvToken, DEBUG } from "config";
 
 import "ui/css/Login.css";
 import "ui/css/styles.css";
 import "ui/css/MFALogin.css";
+import { LoginPage } from "./auth/LoginPage";
+import { MFALoginPage } from "./auth/MFALoginPage";
 
 interface ProtectedRouteProps extends RouteProps {
   isLoggedIn: boolean;

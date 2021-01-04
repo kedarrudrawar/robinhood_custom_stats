@@ -1,8 +1,8 @@
 import {
   isErrorDetail,
   isErrorWithDescription,
-} from "./RHResponseTypePredicates";
-import { RobinhoodError } from "./RobinhoodResponseConstants";
+} from "./ServerResponseTypePredicates";
+import { RobinhoodError } from "./ServerResponseConstants";
 
 export function getErrorMessage(error: RobinhoodError): string | null {
   if (isErrorWithDescription(error)) {

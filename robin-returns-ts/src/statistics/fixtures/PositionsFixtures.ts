@@ -3,7 +3,7 @@ import { Position } from "statistics/Position";
 import {
   PaginatedResultsResponse,
   RHPosition,
-} from "statistics/DAO/RHPortfolioDataResponseTypes";
+} from "statistics/DAO/ServerResponseTypes";
 
 export const FULL_POSITIONS_RESPONSE_1: PaginatedResultsResponse<RHPosition> = {
   next: null,

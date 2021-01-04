@@ -16,17 +16,18 @@ import {
   RHOrder,
   RHPosition,
   RHDividend,
-} from "statistics/DAO/RHPortfolioDataResponseTypes";
+} from "statistics/DAO/ServerResponseTypes";
 import { PositionData } from "./statistics/DataTable";
 import LoadingLottie from "./LoadingLottie";
 import { StatsHeader } from "./statistics/StatsHeader";
 import DataTableContainer from "./statistics/DataTableContainer";
-import { AuthContext } from "login/AuthContext";
+import { AuthContext } from "auth/AuthContext";
 import { RobinhoodBaseToken } from "DAOConstants";
 
 export interface AccountInfo {
-  portfolioCash: number;
-  totalMarketValue: number;
+  buyingPower: number;
+  totalInvested: number;
+  totalAccountValue: number;
 }
 
 export interface ServerData {
@@ -42,6 +43,7 @@ export interface StatsSummaryData {
   totalRealizedReturn: number;
   totalUnrealizedReturn: number;
   totalCash: number;
+  totalAccountValue: number;
 }
 
 export function DataPage(): JSX.Element {
@@ -58,8 +60,9 @@ export function DataPage(): JSX.Element {
     dividends: {},
     symbolAndCurrentPrice: {},
     accountInfo: {
-      totalMarketValue: 0,
-      portfolioCash: 0,
+      totalInvested: 0,
+      buyingPower: 0,
+      totalAccountValue: 0,
     },
   });
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
@@ -101,10 +104,10 @@ export function DataPage(): JSX.Element {
     setHydratedPositions(filteredPositions);
 
     const {
-      portfolioCash: totalCash,
-      totalMarketValue,
+      buyingPower: totalCash,
+      totalInvested,
+      totalAccountValue,
     } = serverData.accountInfo;
-    const totalInvested = totalMarketValue + totalCash;
 
     let totalRealizedReturn = 0;
     let totalUnrealizedReturn = 0;
@@ -119,6 +122,7 @@ export function DataPage(): JSX.Element {
       totalInvested,
       totalRealizedReturn,
       totalUnrealizedReturn,
+      totalAccountValue,
     });
 
     // TODO kedar: figure out a better way to set loading

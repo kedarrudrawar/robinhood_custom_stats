@@ -1,4 +1,4 @@
-import { RHPortfolio } from "statistics/DAO/RHPortfolioDataResponseTypes";
+import { RHPortfolio } from "statistics/DAO/ServerResponseTypes";
 
 export const PORTFOLIO_1: RHPortfolio = {
   url: "https://api.robinhood.com/portfolios/925501777/",

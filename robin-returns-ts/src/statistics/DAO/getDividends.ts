@@ -1,5 +1,5 @@
-import { RHDividend } from "./RHPortfolioDataResponseTypes";
-import extractAllResults from "./extractAllResults";
+import { RHDividend } from "./ServerResponseTypes";
+import extractAllResults from "./DAOUtils";
 import { DIVIDENDS_URL } from "./PortfolioDataURLs";
 import { RobinhoodBaseToken } from "DAOConstants";
 

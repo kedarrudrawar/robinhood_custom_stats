@@ -1,7 +1,7 @@
-import { AuthContext, AuthContextType } from "login/AuthContext";
-import { attemptMFALogin } from "login/AuthDAO";
-import { getErrorMessage } from "login/ErrorUtil";
-import { RobinhoodError } from "login/RobinhoodResponseConstants";
+import { AuthContext, AuthContextType } from "auth/AuthContext";
+import { attemptMFALogin } from "auth/AuthDAO";
+import { getErrorMessage } from "auth/ErrorUtil";
+import { RobinhoodError } from "auth/ServerResponseConstants";
 import React, { useState } from "react";
 import { LaptopPreview } from "./LaptopPreview";
 

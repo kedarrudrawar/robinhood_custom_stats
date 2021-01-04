@@ -1,11 +1,10 @@
 import axios, { AxiosResponse } from "axios";
 import { RobinhoodURL, RobinhoodBaseToken, buildHeaders } from "DAOConstants";
-import {
-  PaginatedResultsResponse,
-  isPaginatedResultsResponse,
-} from "statistics/DAO/RHPortfolioDataResponseTypes";
+import { PaginatedResultsResponse } from "statistics/DAO/ServerResponseTypes";
 import { assert } from "util/assert";
+import { isValidPaginatedResultsResponse } from "./ServerResponseTypePredicates";
 
+// TODO kedar: Create a list of possible result types, so we invoke subtype validation here using the type parameter.
 /**
  *
  * @param url Robinhood's endpoint URL to send request to
@@ -33,7 +32,7 @@ async function extractAllResults<ResultType>({
     );
     data = rv.data;
     assert(
-      isPaginatedResultsResponse<ResultType>(data),
+      isValidPaginatedResultsResponse<ResultType>(data),
       "Data should be of shape `PaginatedResultsResponse`."
     );
     // TODO kedar: Need to assert shape of actual result, not just response

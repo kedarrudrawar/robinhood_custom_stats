@@ -7,7 +7,7 @@ import {
   RHPosition,
   RHOrder,
   RHDividend,
-} from "statistics/DAO/RHPortfolioDataResponseTypes";
+} from "statistics/DAO/ServerResponseTypes";
 import getAccountInfo from "./getAccountInfo";
 import getAllOrders from "./getAllOrders";
 import getAllPositions from "./getAllPositions";

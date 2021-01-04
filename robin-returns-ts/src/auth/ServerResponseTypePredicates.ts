@@ -6,7 +6,7 @@ import {
   ChallengeRequiredResponse,
   ErrorWithDescription,
   RobinhoodError,
-} from "./RobinhoodResponseConstants";
+} from "./ServerResponseConstants";
 
 export function isErrorDetail(data: any): data is ErrorWithDetail {
   return data.hasOwnProperty("detail");

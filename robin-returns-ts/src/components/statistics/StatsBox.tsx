@@ -12,13 +12,14 @@ export function StatsBox(props: StatsBoxProps) {
     totalRealizedReturn,
     totalUnrealizedReturn,
     totalCash,
+    totalAccountValue,
   } = props;
 
   return (
     <div className="stats-box">
       <div className="stats-box-title text">Total Portfolio</div>
       <div className="stats-box-value condensed">
-        {beautifyPrice(totalInvested + totalCash)}
+        {beautifyPrice(totalAccountValue)}
       </div>
       <div className={"stats-box-data-row"}>
         <StatsBoxCategory category={"Realized Return"} />

@@ -33,7 +33,9 @@ export const SERVER_DATA_1: ServerData = {
     },
   },
   accountInfo: {
-    portfolioCash: 10000,
-    totalMarketValue: 20000,
+    buyingPower: 10000,
+    totalInvested: 20000,
+    // accounts for cash for pending orders, options collateral, etc.
+    totalAccountValue: 35000,
   },
 };

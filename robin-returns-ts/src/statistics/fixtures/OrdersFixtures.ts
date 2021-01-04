@@ -1,7 +1,7 @@
 import {
   PaginatedResultsResponse,
   RHOrder,
-} from "statistics/DAO/RHPortfolioDataResponseTypes";
+} from "statistics/DAO/ServerResponseTypes";
 
 export const LARGE_ORDERS_RESPONSE: PaginatedResultsResponse<RHOrder> = {
   next:

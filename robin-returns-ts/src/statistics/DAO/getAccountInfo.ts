@@ -3,7 +3,7 @@ import { AccountInfo } from "components/DataPage";
 import {
   ResultsResponse,
   RHPortfolio,
-} from "statistics/DAO/RHPortfolioDataResponseTypes";
+} from "statistics/DAO/ServerResponseTypes";
 import { buildHeaders, RobinhoodBaseToken } from "../../DAOConstants";
 import { PORTFOLIOS_URL } from "./PortfolioDataURLs";
 
@@ -14,12 +14,12 @@ async function getAccountInfo(token: RobinhoodBaseToken): Promise<AccountInfo> {
     PORTFOLIOS_URL,
     buildHeaders(token)
   );
-
-  const { withdrawable_amount, market_value } = results[0];
+  // TODO kedar: This is only during trading hours, figure out how to get market value during after hours.
+  const { withdrawable_amount, market_value, equity } = results[0];
   return {
-    portfolioCash: parseFloat(withdrawable_amount),
-    // TODO kedar: Fix these values :(
-    totalMarketValue: parseFloat(market_value),
+    buyingPower: parseFloat(withdrawable_amount),
+    totalInvested: parseFloat(market_value),
+    totalAccountValue: parseFloat(equity),
   };
 }
 

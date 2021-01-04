@@ -1,7 +1,7 @@
 import { PositionData } from "../../components/statistics/DataTable";
 import { ServerData } from "../../components/DataPage";
 import { BasePosition, Position } from "../Position";
-import { RHPosition, RHOrder } from "../DAO/RHPortfolioDataResponseTypes";
+import { RHPosition, RHOrder } from "../DAO/ServerResponseTypes";
 import InstrumentMap from "./instrumentMapping";
 import { RobinhoodURL } from "DAOConstants";
 

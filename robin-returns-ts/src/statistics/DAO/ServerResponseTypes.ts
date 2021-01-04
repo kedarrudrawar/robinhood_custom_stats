@@ -17,22 +17,6 @@ export interface PaginatedResultsResponse<T> extends ResultsResponse<T> {
   previous: RobinhoodURL | null;
 }
 
-/**
- * Type predicate to make sure server response is of right shape.
- * @param response
- * @param recurseAndCheck // TODO kedar: figure out how to validate the generic type object
- */
-export function isPaginatedResultsResponse<T>(
-  response: any,
-  recurseAndCheck?: (subtype: any) => subtype is T
-): response is PaginatedResultsResponse<T> {
-  return (
-    response.hasOwnProperty("next") &&
-    response.hasOwnProperty("previous") &&
-    response.hasOwnProperty("results")
-  );
-}
-
 export function isQuote(quote: any): quote is RHQuote {
   return quote.hasOwnProperty("last_trade_price");
 }
@@ -198,7 +182,7 @@ export interface RHDividend extends HasInstrument {
   drip_enabled: boolean;
   drip_order_state?: "filled";
   drip_skipped_reason?: "no_fractional_tradability";
-  nra_withholding: "0";
+  nra_withholding: string;
 }
 
 export interface RHPortfolio {
@@ -224,4 +208,106 @@ export interface RHPortfolio {
   withdrawable_amount: string;
   unwithdrawable_deposits: string;
   unwithdrawable_grants: string;
+}
+
+export interface RHAccount {
+  url: RobinhoodURL;
+  portfolio_cash: string;
+  can_downgrade_to_cash: string;
+  user: RobinhoodURL;
+  account_number: string;
+  type: string;
+  created_at: string;
+  updated_at: string;
+  deactivated: boolean;
+  deposit_halted: boolean;
+  withdrawal_halted: boolean;
+  only_position_closing_trades: boolean;
+  buying_power: string;
+  cash_available_for_withdrawal: string;
+  cash: string;
+  amount_eligible_for_deposit_cancellation: string;
+  cash_held_for_orders: string;
+  uncleared_deposits: string;
+  sma: string;
+  sma_held_for_orders: string;
+  unsettled_funds: string;
+  unsettled_debit: string;
+  crypto_buying_power: string;
+  max_ach_early_access_amount: string;
+  cash_balances: null;
+  margin_balances: {
+    uncleared_deposits: string;
+    cash: string;
+    cash_held_for_dividends: string;
+    cash_held_for_restrictions: string;
+    cash_held_for_nummus_restrictions: string;
+    cash_held_for_orders: string;
+    cash_available_for_withdrawal: string;
+    unsettled_funds: string;
+    unsettled_debit: string;
+    outstanding_interest: string;
+    unallocated_margin_cash: string;
+    margin_limit: string;
+    crypto_buying_power: string;
+    day_trade_buying_power: string;
+    sma: string;
+    day_trades_protection: false;
+    start_of_day_overnight_buying_power: string;
+    overnight_buying_power: string;
+    overnight_buying_power_held_for_orders: string;
+    day_trade_buying_power_held_for_orders: string;
+    overnight_ratio: string;
+    day_trade_ratio: string;
+    marked_pattern_day_trader_date: string;
+    created_at: string;
+    updated_at: string;
+    start_of_day_dtbp: string;
+    portfolio_cash: string;
+    cash_held_for_options_collateral: string;
+    gold_equity_requirement: string;
+    uncleared_nummus_deposits: string;
+    cash_pending_from_options_events: string;
+    settled_amount_borrowed: string;
+    pending_deposit: string;
+    funding_hold_balance: string;
+    pending_debit_card_debits: string;
+    net_moving_cash: string;
+    margin_withdrawal_limit: null;
+    instant_used: string;
+    instant_allocated: string;
+    eligible_deposit_as_instant: string;
+  };
+  sweep_enabled: false;
+  instant_eligibility: {
+    reason: string;
+    reinstatement_date: null;
+    reversal: null;
+    state: string;
+    updated_at: null;
+    additional_deposit_needed: string;
+    compliance_user_major_oak_email: null;
+    created_at: string;
+    created_by: null;
+  };
+  option_level: string;
+  is_pinnacle_account: true;
+  rhs_account_number: number;
+  state: "active";
+  active_subscription_id: null;
+  locked: false;
+  permanently_deactivated: false;
+  received_ach_debit_locked: true;
+  drip_enabled: true;
+  eligible_for_fractionals: true;
+  eligible_for_drip: true;
+  eligible_for_cash_management: null;
+  cash_management_enabled: true;
+  option_trading_on_expiration_enabled: false;
+  cash_held_for_options_collateral: string;
+  fractional_position_closing_only: false;
+  user_id: string;
+  rhs_stock_loan_consent_status: string;
+  equity_trading_lock: string;
+  option_trading_lock: string;
 }
