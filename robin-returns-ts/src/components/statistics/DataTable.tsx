@@ -81,14 +81,7 @@ export function DataTable(props: DataTableProps): JSX.Element {
               return (
                 <div>
                   <div className={"text"}>{position[PositionData.TICKER]}</div>
-                  <div
-                    style={{
-                      fontSize: "12px",
-                      lineHeight: "16px",
-                      textDecorationLine: "underline",
-                      color: "#747384",
-                    }}
-                  >
+                  <div className="shares-quantity">
                     {position[PositionData.QUANTITY]} shares
                   </div>
                 </div>

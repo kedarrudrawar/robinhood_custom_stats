@@ -1,6 +1,6 @@
 import { AuthContext, AuthContextType } from "auth/AuthContext";
 import { attemptMFALogin } from "auth/AuthDAO";
-import { getErrorMessage } from "auth/ErrorUtil";
+import { getErrorMessage } from "auth/ServerResponseHandlers";
 import { RobinhoodError } from "auth/ServerResponseConstants";
 import React, { useState } from "react";
 import { LaptopPreview } from "./LaptopPreview";

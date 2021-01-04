@@ -4,7 +4,7 @@ import { RouteComponentProps } from "react-router-dom";
 
 import { AuthContext } from "auth/AuthContext";
 import { attemptInitialLogin } from "auth/AuthDAO";
-import { getErrorMessage } from "auth/ErrorUtil";
+import { getErrorMessage } from "auth/ServerResponseHandlers";
 import {
   isChallengeRequired,
   isMFARequired,
