@@ -12,6 +12,7 @@ interface DataTableProps {
   updatedAt: string | null;
 }
 
+// TODO kedar: Add Total Equity column
 export enum PositionData {
   TICKER = "Name",
   AVERAGE_COST = "Average Buy Price",
@@ -101,11 +102,7 @@ export function DataTable(props: DataTableProps): JSX.Element {
 
           case PositionData.DIVIDEND:
             render = (position: Position) => {
-              return (
-                <div className={"text"}>
-                  {beautifyReturns(position[PositionData.DIVIDEND])}
-                </div>
-              );
+              return renderProfits(position[PositionData.DIVIDEND]);
             };
             break;
 
