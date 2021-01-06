@@ -8,7 +8,7 @@
     "@testing-library/user-event": "^7.2.1",
     "@types/react-router": "^5.1.8",
     "@types/uuid": "^8.3.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "elliptic": "^6.5.3",
     "lodash": "^4.17.19",
     "pandas-js": "^0.2.4",
