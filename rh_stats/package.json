@@ -9,7 +9,7 @@
     "@types/react-router": "^5.1.8",
     "@types/uuid": "^8.3.0",
     "axios": "^0.19.2",
-    "elliptic": "^6.5.3",
+    "elliptic": "^6.5.4",
     "lodash": "^4.17.19",
     "pandas-js": "^0.2.4",
     "react": "^16.13.1",
